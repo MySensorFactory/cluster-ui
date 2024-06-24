@@ -1,9 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
+import {Button} from "./buttons/Button";
 
 const SidebarContainer = styled.div`
   width: 250px;
-  background-color: #2e2e2e;
+  background-color: #1C1C21;
   color: white;
   padding: 20px;
   display: flex;
@@ -21,14 +22,10 @@ const UserProfileImage = styled.img`
   border-radius: 50%;
 `;
 
-const Nav = styled.nav`
-  ul {
-    list-style: none;
-    padding: 0;
-  }
-  li {
-    margin: 15px 0;
-  }
+const ButtonContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 `;
 
 function Sidebar() {
@@ -41,13 +38,11 @@ function Sidebar() {
                     <p>View profile</p>
                 </div>
             </UserProfile>
-            <Nav>
-                <ul>
-                    <li>Home</li>
-                    <li>Reports</li>
-                    <li>Users management</li>
-                </ul>
-            </Nav>
+            <ButtonContainer>
+                <Button>Home</Button>
+                <Button>Reports</Button>
+                <Button>Users management</Button>
+            </ButtonContainer>
         </SidebarContainer>
     );
 }
