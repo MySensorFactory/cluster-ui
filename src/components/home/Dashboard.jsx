@@ -8,7 +8,7 @@ import AverageMetrics from './AverageMetrics';
 
 const DashboardContainer = styled.div`
   padding: 20px;
-  background-color: #1c1c24;
+  background-color: #1C1C21;
   color: white;
   min-height: 100vh;
 `;
