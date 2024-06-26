@@ -1,25 +1,19 @@
 import React from 'react';
 import styled from 'styled-components';
-import {Button} from "./buttons/Button";
+import {ButtonWithIcon} from "./buttons/ButtonWithIcon";
+import Home from "../assets/Home";
+import Report from "../assets/Reports";
+import Users from "../assets/Users";
+import {UserProfile} from "./UserProfile";
 
 const SidebarContainer = styled.div`
-  width: 250px;
-  background-color: #1C1C21;
-  color: white;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-`;
-
-const UserProfile = styled.div`
-  display: flex;
-  gap: 10px;
-  align-items: center;
-`;
-
-const UserProfileImage = styled.img`
-  border-radius: 50%;
+    width: 200px;
+    background-color: #1C1C21;
+    color: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 `;
 
 const ButtonContainer = styled.div`
@@ -31,17 +25,17 @@ const ButtonContainer = styled.div`
 function Sidebar() {
     return (
         <SidebarContainer>
-            <UserProfile>
-                <UserProfileImage src="https://via.placeholder.com/40" alt="User" />
-                <div>
-                    <p>Username</p>
-                    <p>View profile</p>
-                </div>
-            </UserProfile>
+            <UserProfile/>
             <ButtonContainer>
-                <Button>Home</Button>
-                <Button>Reports</Button>
-                <Button>Users management</Button>
+                <ButtonWithIcon
+                    svgComponent={<Home/>}
+                    text={'Home'}/>
+                <ButtonWithIcon
+                    svgComponent={<Report/>}
+                    text={'Reports'}/>
+                <ButtonWithIcon
+                    svgComponent={<Users/>}
+                    text={'Users Management'}/>
             </ButtonContainer>
         </SidebarContainer>
     );
