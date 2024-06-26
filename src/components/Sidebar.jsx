@@ -8,6 +8,7 @@ import {UserProfile} from "./UserProfile";
 
 const SidebarContainer = styled.div`
     width: 200px;
+    height: 100vh;
     background-color: #1C1C21;
     color: white;
     padding: 10px 20px 20px;

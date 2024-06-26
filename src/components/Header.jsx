@@ -13,6 +13,7 @@ const HeaderContainer = styled.div`
     justify-content: flex-start;
     align-items: center;
     font-family: Inter, sans-serif;
+    font-size: 12px;
     height: 1%;
     border-bottom: 1px solid white;
 `;
