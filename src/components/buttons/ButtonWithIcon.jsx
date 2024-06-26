@@ -12,6 +12,8 @@ export const ButtonWithIconContainer = styled.button`
     cursor: pointer;
     transition: background-color 0.3s ease;
     border-radius: 10px;
+    font-family: Inter, monospace;
+    font-size: 12px;
 
     &:hover {
         background-color: #3D404A;
@@ -22,7 +24,7 @@ export const ButtonWithIconContainer = styled.button`
 export const ButtonWithIcon = ({svgComponent, text}) => {
 
     const iconSize = 20;
-    const marginBetweenTextAndIcon = '5px';
+    const marginBetweenTextAndIcon = '7px';
 
     return (
         <ButtonWithIconContainer>
