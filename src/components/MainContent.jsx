@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 const MainContentContainer = styled.div`
-  background-color: #1e1e1e;
+  background-color: #1C1C21;
   color: white;
   padding: 20px;
   flex: 1;
