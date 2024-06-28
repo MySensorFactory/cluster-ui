@@ -80,16 +80,15 @@ const StyledLabel = styled.label`
 `;
 
 const events = [
-    {title: 'Speed workout at the track', time: '16-02-2024, 6:00 PM - 8:00 PM', isAlert: true, date: '2024-06-27'},
-    {title: 'Speed workout at the track', time: 'Thursday, 6:00 PM - 8:00 PM', isAlert: true, date: '2024-06-27'},
-    {title: 'Long run from the club house', time: 'Sunday, 8:00 AM - 10:00 AM', isAlert: false, date: '2024-06-30'},
-    {title: 'Speed workout at the track', time: 'Thursday, 6:00 PM - 8:00 PM', isAlert: true, date: '2024-06-27'},
-    {title: 'Long run from the club house', time: 'Sunday, 8:00 AM - 10:00 AM', isAlert: false, date: '2024-06-30'},
-    {title: 'Speed workout at the track', time: 'Thursday, 6:00 PM - 8:00 PM', isAlert: true, date: '2024-06-27'},
-    {title: 'Hill repeats on 5th Street', time: 'Tuesday, 7:00 PM - 8:00 PM', isAlert: false, date: '2024-07-02'},
-    {title: 'Hill repeats on 5th Street', time: 'Tuesday, 7:00 PM - 8:00 PM', isAlert: false, date: '2024-07-02'},
-    {title: 'Hill repeats on 5th Street', time: 'Tuesday, 7:00 PM - 8:00 PM', isAlert: false, date: '2024-07-02'}
-    // Add more events as needed
+    {title: 'Speed workout at the track', time: new Date('2024-06-27T18:00:00'), isAlert: true},
+    {title: 'Speed workout at the track', time: new Date('2024-06-27T18:00:00'), isAlert: true},
+    {title: 'Long run from the club house', time: new Date('2024-06-30T08:00:00'), isAlert: false},
+    {title: 'Speed workout at the track', time: new Date('2024-06-27T18:00:00'), isAlert: true},
+    {title: 'Long run from the club house', time: new Date('2024-06-30T08:00:00'), isAlert: false},
+    {title: 'Speed workout at the track', time: new Date('2024-06-27T18:00:00'), isAlert: true},
+    {title: 'Hill repeats on 5th Street', time: new Date('2024-07-02T19:00:00'), isAlert: false},
+    {title: 'Hill repeats on 5th Street', time: new Date('2024-07-02T19:00:00'), isAlert: false},
+    {title: 'Hill repeats on 5th Street', time: new Date('2024-07-02T19:00:00'), isAlert: false}
 ];
 
 const Events = () => {
@@ -113,8 +112,10 @@ const Events = () => {
         }
 
         if (dateRange.start && dateRange.end) {
+            const start = new Date(dateRange.start);
+            const end = new Date(dateRange.end);
             result = result.filter(event =>
-                event.date >= dateRange.start && event.date <= dateRange.end
+                event.time >= start && event.time <= end
             );
         }
 

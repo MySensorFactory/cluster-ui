@@ -28,7 +28,7 @@ const EventItem = ({title, time, isAlert = false }) => {
             style = {isAlert ? {background: '#5f2424'} : {}}
         >
             <EventTitle>{title}</EventTitle>
-            <EventTime>{time}</EventTime>
+            <EventTime>{time.toLocaleString()}</EventTime>
         </EventItemContainer>
     );
 };
