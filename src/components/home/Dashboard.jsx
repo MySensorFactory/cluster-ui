@@ -2,9 +2,9 @@ import React from 'react';
 import styled from 'styled-components';
 import Header from './Header';
 import Events from './Events';
-import TemperatureChart from './TemperatureChart';
 import SensorValues from './SensorValues';
 import AverageMetrics from './AverageMetrics';
+import Chart from "./Chart";
 
 const DashboardContainer = styled.div`
   padding: 20px;
@@ -18,7 +18,7 @@ const Dashboard = () => {
         <DashboardContainer>
             <Header />
             <Events />
-            <TemperatureChart />
+            <Chart/>
             <SensorValues />
             <AverageMetrics />
         </DashboardContainer>
