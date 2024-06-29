@@ -7,20 +7,21 @@ import AverageMetrics from './AverageMetrics';
 import Charts from "./Charts";
 
 const DashboardContainer = styled.div`
-  padding: 20px;
-  background-color: #1C1C21;
-  color: white;
-  min-height: 100vh;
+    padding: 20px;
+    background-color: #1C1C21;
+    padding-bottom: 150px;
+    color: white;
+    min-height: 100vh;
 `;
 
 const Dashboard = () => {
     return (
         <DashboardContainer>
-            <Header />
-            <Events />
+            <Header/>
+            <Events/>
             <Charts/>
-            <SensorValues />
-            <AverageMetrics />
+            <SensorValues/>
+            <AverageMetrics/>
         </DashboardContainer>
     );
 };

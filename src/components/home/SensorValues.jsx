@@ -3,8 +3,14 @@ import styled from 'styled-components';
 import SensorValueItem from './SensorValueItem';
 
 const SensorValuesContainer = styled.div`
-  margin-bottom: 20px;
-    
+    margin-bottom: 20px;
+    padding: 20px;
+`;
+
+const SensorValuesGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
 `;
 
 const sensorValues = [
@@ -20,11 +26,11 @@ const SensorValues = () => {
     return (
         <SensorValuesContainer>
             <h2>Current sensors values</h2>
-            <div>
+            <SensorValuesGrid>
                 {sensorValues.map((sensor, index) => (
                     <SensorValueItem key={index} label={sensor.label} value={sensor.value} />
                 ))}
-            </div>
+            </SensorValuesGrid>
         </SensorValuesContainer>
     );
 };

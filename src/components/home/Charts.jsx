@@ -153,8 +153,8 @@ const Charts = () => {
                 title="Temperature before compressor"
                 dataKey="value"
                 stroke="#4fc3f7"
-                domain={[15, 25]}
-                yAxisUnit="°C"
+                domain={[5, 40]}
+                yAxisUnit="K"
                 days={days}
                 numTicks={10} // Set the number of ticks you want to show
             />
@@ -163,7 +163,7 @@ const Charts = () => {
                 title="Pressure after compressor"
                 dataKey="value"
                 stroke="#ff9800"
-                domain={[4, 6]}
+                domain={[2, 8]}
                 yAxisUnit="MPa"
                 days={days}
                 numTicks={10} // Set the number of ticks you want to show
@@ -173,7 +173,7 @@ const Charts = () => {
                 title="Flow rate"
                 dataKey="value"
                 stroke="#4caf50"
-                domain={[100, 200]}
+                domain={[0, 300]}
                 yAxisUnit="m³/h"
                 days={days}
                 numTicks={10} // Set the number of ticks you want to show
