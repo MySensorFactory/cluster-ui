@@ -7,7 +7,7 @@ const ChartsContainer = styled.div`
     background-color: #1C1C21;
     border-radius: 8px;
     padding: 20px;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 `;
 
 const ChartsTitle = styled.h2`
@@ -74,7 +74,7 @@ const Chart = ({ data, title, dataKey, stroke, domain, yAxisUnit, days, numTicks
                         scale="time"
                         type="number"
                         ticks={ticks}
-                        label={{ value: 'Time', position: 'insideBottom', offset: -25, fill: '#888' }}
+                        label={{ value: 'Time', position: 'insideBottom', offset: -21, fill: '#888' }}
                         tick={{ dy: 15 }}
                     />
                     <YAxis
