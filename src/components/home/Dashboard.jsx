@@ -4,7 +4,7 @@ import Header from './Header';
 import Events from './Events';
 import SensorValues from './SensorValues';
 import AverageMetrics from './AverageMetrics';
-import Chart from "./Chart";
+import Charts from "./Charts";
 
 const DashboardContainer = styled.div`
   padding: 20px;
@@ -18,7 +18,7 @@ const Dashboard = () => {
         <DashboardContainer>
             <Header />
             <Events />
-            <Chart/>
+            <Charts/>
             <SensorValues />
             <AverageMetrics />
         </DashboardContainer>
