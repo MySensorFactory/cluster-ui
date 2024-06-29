@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { format, subDays, eachMinuteOfInterval } from 'date-fns';
 
 const ChartsContainer = styled.div`
     background-color: #1C1C21;
@@ -25,63 +26,128 @@ const ChartTitle = styled.h3`
     font-size: 18px;
 `;
 
-const generateData = (min, max) => {
-    const data = [];
-    for (let hour = 0; hour < 24; hour++) {
-        for (let minute = 0; minute < 60; minute += 15) {
-            const time = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
-            const value = Math.random() * (max - min) + min;
-            data.push({ time, value });
-        }
-    }
-    return data;
+const TimeRangeSelector = styled.select`
+    background-color: #1C1C21;
+    color: white;
+    border: 1px solid #555;
+    padding: 5px;
+    margin-bottom: 20px;
+`;
+
+const generateData = (min, max, days) => {
+    const now = new Date();
+    const startDate = subDays(now, days);
+    const interval = eachMinuteOfInterval({ start: startDate, end: now }, { step: 15 });
+
+    return interval.map((date) => ({
+        time: date.getTime(),
+        value: Math.random() * (max - min) + min,
+    }));
 };
 
-const temperatureData = generateData(15, 25);
-const pressureData = generateData(4, 6);
-const flowData = generateData(100, 200);
+const formatTime = (timestamp, days) => {
+    const date = new Date(timestamp);
+    if (days <= 1) {
+        return format(date, 'HH:mm');
+    }
+    return format(date, 'dd HH:mm');
+};
 
-const Chart = ({ data, title, dataKey, stroke, domain, yAxisUnit }) => (
-    <ChartWrapper>
-        <ChartTitle>{title}</ChartTitle>
-        <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 25 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-                <XAxis
-                    dataKey="time"
-                    stroke="#888"
-                    interval={23}
-                    tickFormatter={(time) => time.split(':')[0]}
-                    label={{ value: 'Time (hours)', position: 'insideBottom', offset: -10, fill: '#888' }}
-                />
-                <YAxis
-                    stroke="#888"
-                    domain={domain}
-                    label={{ value: yAxisUnit, position: 'insideLeft', offset: -10, fill: '#888' }}
-                    tickFormatter={(value) => `${value}`}
-                />
-                <Tooltip
-                    contentStyle={{ backgroundColor: '#333', border: 'none' }}
-                    labelStyle={{ color: 'white' }}
-                    itemStyle={{ color: stroke }}
-                    formatter={(value) => [`${value.toFixed(2)} ${yAxisUnit}`, '']}
-                />
-                <Line
-                    type="monotone"
-                    dataKey={dataKey}
-                    stroke={stroke}
-                    strokeWidth={2}
-                    dot={false}
-                />
-            </LineChart>
-        </ResponsiveContainer>
-    </ChartWrapper>
-);
+const calculateTicks = (data, numTicks) => {
+    const step = Math.ceil(data.length / numTicks);
+    return data.filter((_, index) => index % step === 0).map(item => item.time);
+};
+
+const Chart = ({ data, title, dataKey, stroke, domain, yAxisUnit, days, numTicks }) => {
+    const ticks = calculateTicks(data, numTicks);
+    return (
+        <ChartWrapper>
+            <ChartTitle>{title}</ChartTitle>
+            <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 25 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                    <XAxis
+                        dataKey="time"
+                        stroke="#888"
+                        tickFormatter={(time) => formatTime(time, days)}
+                        domain={['auto', 'auto']}
+                        scale="time"
+                        type="number"
+                        ticks={ticks}
+                        label={{ value: 'Time', position: 'insideBottom', offset: -25, fill: '#888' }}
+                        tick={{ dy: 15 }}
+                    />
+                    <YAxis
+                        stroke="#888"
+                        domain={domain}
+                        label={{ value: yAxisUnit, position: 'insideLeft', offset: -15, fill: '#888' }}
+                        tickFormatter={(value) => `${value}`}
+                    />
+                    <Tooltip
+                        contentStyle={{ backgroundColor: '#333', border: 'none' }}
+                        labelStyle={{ color: 'white' }}
+                        itemStyle={{ color: stroke }}
+                        formatter={(value) => [`${value.toFixed(2)} ${yAxisUnit}`, '']}
+                        labelFormatter={(time) => formatTime(time, days)}
+                    />
+                    <Line
+                        type="monotone"
+                        dataKey={dataKey}
+                        stroke={stroke}
+                        strokeWidth={2}
+                        dot={false}
+                    />
+                </LineChart>
+            </ResponsiveContainer>
+        </ChartWrapper>
+    );
+};
 
 const Charts = () => {
+    const [timeRange, setTimeRange] = useState('oneLastDay');
+    const [temperatureData, setTemperatureData] = useState([]);
+    const [pressureData, setPressureData] = useState([]);
+    const [flowData, setFlowData] = useState([]);
+    const [days, setDays] = useState(1);
+
+    useEffect(() => {
+        let days;
+        switch (timeRange) {
+            case 'oneLastDay':
+                days = 1;
+                break;
+            case 'twoLastDays':
+                days = 2;
+                break;
+            case 'threeLastDays':
+                days = 3;
+                break;
+            case 'fiveLastDays':
+                days = 5;
+                break;
+            case 'lastWeek':
+                days = 7;
+                break;
+            default:
+                days = 1;
+                break;
+        }
+        setDays(days);
+        setTemperatureData(generateData(15, 25, days));
+        setPressureData(generateData(4, 6, days));
+        setFlowData(generateData(100, 200, days));
+    }, [timeRange]);
+
     return (
         <ChartsContainer>
             <ChartsTitle>Realtime data charts</ChartsTitle>
+            <TimeRangeSelector onChange={(e) => setTimeRange(e.target.value)} value={timeRange}>
+                <option value="oneLastDay">One last day</option>
+                <option value="twoLastDays">Two last days</option>
+                <option value="threeLastDays">Three last days</option>
+                <option value="fiveLastDays">Five last days</option>
+                <option value="lastWeek">Last week</option>
+            </TimeRangeSelector>
             <Chart
                 data={temperatureData}
                 title="Temperature before compressor"
@@ -89,6 +155,8 @@ const Charts = () => {
                 stroke="#4fc3f7"
                 domain={[15, 25]}
                 yAxisUnit="°C"
+                days={days}
+                numTicks={10} // Set the number of ticks you want to show
             />
             <Chart
                 data={pressureData}
@@ -97,6 +165,8 @@ const Charts = () => {
                 stroke="#ff9800"
                 domain={[4, 6]}
                 yAxisUnit="MPa"
+                days={days}
+                numTicks={10} // Set the number of ticks you want to show
             />
             <Chart
                 data={flowData}
@@ -105,6 +175,8 @@ const Charts = () => {
                 stroke="#4caf50"
                 domain={[100, 200]}
                 yAxisUnit="m³/h"
+                days={days}
+                numTicks={10} // Set the number of ticks you want to show
             />
         </ChartsContainer>
     );
