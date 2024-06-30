@@ -1,70 +1,90 @@
-import React from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
+import {useAppState} from '../AppStateContext';
+import Edit from "../../assets/Edit";
+import Delete from "../../assets/Delete";
+import SvgResizer from "react-svg-resizer";
 
-const SensorValueItemContainer = styled.div`
+const ItemContainer = styled.div`
     background: #2a2a36;
     padding: 20px;
     border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-
-    &:hover {
-        transform: scale(1.05);
-    }
-
-    &:last-child {
-        grid-column: span 2;
-    }
+    position: relative;
+    overflow: hidden;
 `;
 
 const SensorLabel = styled.div`
     font-size: 14px;
     color: #9a9ab0;
     margin-bottom: 5px;
-    text-align: center;
 `;
 
 const SensorValue = styled.div`
     font-size: 24px;
     font-weight: bold;
     color: white;
+`;
 
-    .fraction {
-        display: inline-block;
-        vertical-align: middle;
-        text-align: center;
-        font-size: 0.8em;
-    }
-    .fraction > span {
-        display: block;
-    }
-    .fraction span.bottom {
-        border-top: 1px solid;
-        padding-top: 2px;
+const HoverOverlay = styled.div`
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(95, 36, 36, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+
+    ${ItemContainer}:hover & {
+        opacity: 1;
     }
 `;
 
-const formatUnit = (value) => {
-    return value
-        .replace(/\^3/, '³')
-        .replace(/CO2/g, 'CO₂')
-        .replace(/H2/g, 'H₂')
-        .replace(/O2/g, 'O₂')
-        .replace(/N2/g, 'N₂')
-        .replace(/NH3/g, 'NH₃')
-        .replace(/m³\/min/g, '<span class="fraction"><span>m³</span><span class="bottom">min</span></span>');
-};
+const OverlayButton = styled.button`
+    width: 60px;
+    height: 60px;
+    background-color: #1C1C21;
+    border: none;
+    padding: 5px 10px;
+    margin: 0 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
 
-const SensorValueItem = ({ label, value }) => {
+    &:hover {
+        background-color: #e0e0e0;
+    }
+`;
+
+const SensorValueItem = ({label, value, onEdit, onDelete}) => {
+    const {homeSubMenu} = useAppState();
+    const [isHovered, setIsHovered] = useState(false);
+
     return (
-        <SensorValueItemContainer>
+        <ItemContainer
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+        >
             <SensorLabel>{label}</SensorLabel>
-            <SensorValue dangerouslySetInnerHTML={{ __html: formatUnit(value) }} />
-        </SensorValueItemContainer>
+            <SensorValue dangerouslySetInnerHTML={{__html: value}}/>
+            {homeSubMenu === 'edit' && isHovered && (
+                <HoverOverlay>
+                    <OverlayButton onClick={onEdit}>
+                        <SvgResizer size={40}>
+                            <Edit/>
+                        </SvgResizer>
+                    </OverlayButton>
+                    <OverlayButton onClick={onDelete}>
+                        <SvgResizer size={5}>
+                            <Delete/>
+                        </SvgResizer>
+                    </OverlayButton>
+                </HoverOverlay>
+            )}
+        </ItemContainer>
     );
 };
 

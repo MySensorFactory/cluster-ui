@@ -32,12 +32,28 @@ const SensorValues = () => {
         console.log('Add new sensor');
     };
 
+    const handleEditSensor = (index) => {
+        // Implement logic to edit a sensor
+        console.log('Edit sensor at index', index);
+    };
+
+    const handleDeleteSensor = (index) => {
+        // Implement logic to delete a sensor
+        console.log('Delete sensor at index', index);
+    };
+
     return (
         <SensorValuesContainer>
             <h2>Current sensors values</h2>
             <SensorValuesGrid>
                 {sensorValues.map((sensor, index) => (
-                    <SensorValueItem key={index} label={sensor.label} value={sensor.value} />
+                    <SensorValueItem
+                        key={index}
+                        label={sensor.label}
+                        value={sensor.value}
+                        onEdit={() => handleEditSensor(index)}
+                        onDelete={() => handleDeleteSensor(index)}
+                    />
                 ))}
                 {homeSubMenu === 'edit' && (
                     <AddSensorButton onClick={handleAddSensor}/>
