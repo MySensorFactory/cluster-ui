@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { ButtonWithIcon } from "./buttons/ButtonWithIcon";
+import {ButtonWithIcon} from "./buttons/ButtonWithIcon";
 import Home from "../assets/Home";
 import Report from "../assets/Reports";
 import Users from "../assets/Users";
-import { UserProfile } from "./UserProfile";
+import {UserProfile} from "./UserProfile";
+import {useAppState} from "./AppStateContext";
 
 const SidebarContainer = styled.div`
     width: 200px;
@@ -48,8 +49,7 @@ const SubMenuItem = styled.button`
 `;
 
 function Sidebar() {
-    const [activeMenu, setActiveMenu] = useState('Home');
-    const [homeSubMenu, setHomeSubMenu] = useState('view');
+    const { activeMenu, setActiveMenu, homeSubMenu, setHomeSubMenu } = useAppState();
 
     const handleMenuClick = (menu) => {
         setActiveMenu(menu);

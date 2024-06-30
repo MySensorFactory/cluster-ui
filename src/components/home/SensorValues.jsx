@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import SensorValueItem from './SensorValueItem';
+import { useAppState } from '../AppStateContext';
 
 const SensorValuesContainer = styled.div`
     margin-bottom: 20px;
@@ -8,9 +9,26 @@ const SensorValuesContainer = styled.div`
 `;
 
 const SensorValuesGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+`;
+
+const AddSensorButton = styled.div`
+    background-color: #4CAF50;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 24px;
+    transition: background-color 0.3s ease;
+    min-height: 100px;
+    grid-column: span 1;  // Ensure it only takes up one column
+    &:hover {
+        background-color: #45a049;
+    }
 `;
 
 const sensorValues = [
@@ -23,6 +41,13 @@ const sensorValues = [
 ];
 
 const SensorValues = () => {
+    const { homeSubMenu} = useAppState();
+
+    const handleAddSensor = () => {
+        // Implement logic to add a new sensor
+        console.log('Add new sensor');
+    };
+
     return (
         <SensorValuesContainer>
             <h2>Current sensors values</h2>
@@ -30,6 +55,11 @@ const SensorValues = () => {
                 {sensorValues.map((sensor, index) => (
                     <SensorValueItem key={index} label={sensor.label} value={sensor.value} />
                 ))}
+                {homeSubMenu === 'edit' && (
+                    <AddSensorButton onClick={handleAddSensor}>
+                        <span>+</span>
+                    </AddSensorButton>
+                )}
             </SensorValuesGrid>
         </SensorValuesContainer>
     );
