@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { format, subDays, eachMinuteOfInterval } from 'date-fns';
+import {AddSensorButton} from "./AddSensorButton";
+import {useAppState} from "../AppStateContext";
 
 const ChartsContainer = styled.div`
     background-color: #1C1C21;
@@ -109,6 +111,12 @@ const Charts = () => {
     const [pressureData, setPressureData] = useState([]);
     const [flowData, setFlowData] = useState([]);
     const [days, setDays] = useState(1);
+    const { homeSubMenu} = useAppState();
+
+    const handleAddSensor = () => {
+        // Implement logic to add a new sensor
+        console.log('Add new sensor');
+    };
 
     useEffect(() => {
         let days;
@@ -178,6 +186,9 @@ const Charts = () => {
                 days={days}
                 numTicks={10} // Set the number of ticks you want to show
             />
+            {homeSubMenu === 'edit' && (
+                <AddSensorButton onClick={handleAddSensor}/>
+            )}
         </ChartsContainer>
     );
 };
