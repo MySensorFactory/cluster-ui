@@ -2,6 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import SensorValueItem from './SensorValueItem';
 import { useAppState } from '../AppStateContext';
+import Add from "../../assets/Add";
+import SvgResizer from "react-svg-resizer";
 
 const SensorValuesContainer = styled.div`
     margin-bottom: 20px;
@@ -15,7 +17,7 @@ const SensorValuesGrid = styled.div`
 `;
 
 const AddSensorButton = styled.div`
-    background-color: #4CAF50;
+    background-color: #4CAF5080 ;
     color: white;
     display: flex;
     align-items: center;
@@ -57,7 +59,9 @@ const SensorValues = () => {
                 ))}
                 {homeSubMenu === 'edit' && (
                     <AddSensorButton onClick={handleAddSensor}>
-                        <span>+</span>
+                        <SvgResizer size={30}>
+                            <Add/>
+                        </SvgResizer>
                     </AddSensorButton>
                 )}
             </SensorValuesGrid>
