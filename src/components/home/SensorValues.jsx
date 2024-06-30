@@ -1,9 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import SensorValueItem from './SensorValueItem';
-import { useAppState } from '../AppStateContext';
-import Add from "../../assets/Add";
-import SvgResizer from "react-svg-resizer";
+import {useAppState} from '../AppStateContext';
+import {AddSensorButton} from "./AddSensorButton";
 
 const SensorValuesContainer = styled.div`
     margin-bottom: 20px;
@@ -14,23 +13,6 @@ const SensorValuesGrid = styled.div`
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 20px;
-`;
-
-const AddSensorButton = styled.div`
-    background-color: #4CAF5080 ;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 24px;
-    transition: background-color 0.3s ease;
-    min-height: 100px;
-    grid-column: span 1;  // Ensure it only takes up one column
-    &:hover {
-        background-color: #45a049;
-    }
 `;
 
 const sensorValues = [
@@ -58,11 +40,7 @@ const SensorValues = () => {
                     <SensorValueItem key={index} label={sensor.label} value={sensor.value} />
                 ))}
                 {homeSubMenu === 'edit' && (
-                    <AddSensorButton onClick={handleAddSensor}>
-                        <SvgResizer size={30}>
-                            <Add/>
-                        </SvgResizer>
-                    </AddSensorButton>
+                    <AddSensorButton onClick={handleAddSensor}/>
                 )}
             </SensorValuesGrid>
         </SensorValuesContainer>

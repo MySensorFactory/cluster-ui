@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import SensorValueItem from './SensorValueItem';
+import {useAppState} from "../AppStateContext";
+import {AddSensorButton} from "./AddSensorButton";
 
 const AverageMetricsContainer = styled.div`
     margin-bottom: 20px;
@@ -22,6 +24,13 @@ const averageMetrics = [
 ];
 
 const AverageMetrics = () => {
+    const { homeSubMenu} = useAppState();
+
+    const handleAddSensor = () => {
+        // Implement logic to add a new sensor
+        console.log('Add new sensor');
+    };
+
     return (
         <AverageMetricsContainer>
             <h2>Average sensors metrics</h2>
@@ -29,6 +38,9 @@ const AverageMetrics = () => {
                 {averageMetrics.map((sensor, index) => (
                     <SensorValueItem key={index} label={sensor.label} value={sensor.value}/>
                 ))}
+                {homeSubMenu === 'edit' && (
+                    <AddSensorButton onClick={handleAddSensor}/>
+                )}
             </SensorValuesGrid>
         </AverageMetricsContainer>
     );
