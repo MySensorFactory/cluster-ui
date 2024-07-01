@@ -24,13 +24,8 @@ const sensorValues = [
     { label: 'Input gas composition', value: '42 % CO2, 18 % H2, 10 % NH3, 15 % O2, 15% N2' },
 ];
 
-const SensorValues = () => {
+const SensorValues = ({onAddSensor}) => {
     const { homeSubMenu} = useAppState();
-
-    const handleAddSensor = () => {
-        // Implement logic to add a new sensor
-        console.log('Add new sensor');
-    };
 
     const handleEditSensor = (index) => {
         // Implement logic to edit a sensor
@@ -56,7 +51,7 @@ const SensorValues = () => {
                     />
                 ))}
                 {homeSubMenu === 'edit' && (
-                    <AddSensorButton onClick={handleAddSensor}/>
+                    <AddSensorButton onAddNewSensor={onAddSensor}/>
                 )}
             </SensorValuesGrid>
         </SensorValuesContainer>

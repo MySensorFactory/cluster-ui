@@ -23,13 +23,8 @@ const averageMetrics = [
     {label: 'Output flow rate', value: '2.3 m^3/min'},
 ];
 
-const AverageMetrics = () => {
+const AverageMetrics = ({onAddSensor}) => {
     const { homeSubMenu} = useAppState();
-
-    const handleAddSensor = () => {
-        // Implement logic to add a new sensor
-        console.log('Add new sensor');
-    };
 
     return (
         <AverageMetricsContainer>
@@ -39,7 +34,7 @@ const AverageMetrics = () => {
                     <SensorValueItem key={index} label={sensor.label} value={sensor.value}/>
                 ))}
                 {homeSubMenu === 'edit' && (
-                    <AddSensorButton onClick={handleAddSensor}/>
+                    <AddSensorButton onAddNewSensor={onAddSensor}/>
                 )}
             </SensorValuesGrid>
         </AverageMetricsContainer>
