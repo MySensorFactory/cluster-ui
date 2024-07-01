@@ -119,7 +119,7 @@ const Chart = ({ data, title, dataKey, stroke, domain, yAxisUnit, days, numTicks
     </ChartWrapper>;
 };
 
-const Charts = () => {
+const Charts = ({onAddSensor}) => {
     const [timeRange, setTimeRange] = useState('oneLastDay');
     const [temperatureData, setTemperatureData] = useState([]);
     const [pressureData, setPressureData] = useState([]);
@@ -127,10 +127,6 @@ const Charts = () => {
     const [days, setDays] = useState(1);
     const { homeSubMenu} = useAppState();
 
-    const handleAddSensor = () => {
-        //TODO Implement logic to add a new sensor
-        console.log('Add new sensor');
-    };
 
     useEffect(() => {
         let days;
@@ -201,7 +197,7 @@ const Charts = () => {
                 numTicks={10} // Set the number of ticks you want to show
             />
             {homeSubMenu === 'edit' && (
-                <AddSensorButton onClick={handleAddSensor}/>
+                <AddSensorButton onAddNewSensor={onAddSensor} />
             )}
         </ChartsContainer>
     );

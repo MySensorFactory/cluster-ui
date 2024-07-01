@@ -20,10 +20,10 @@ const AddSensorButtonContainer = styled.div`
         background-color: #45a049;
     }
 `;
-export const AddSensorButton = () =>
+export const AddSensorButton = ({onAddNewSensor}) =>
 {
     return (
-        <AddSensorButtonContainer>
+        <AddSensorButtonContainer onClick={onAddNewSensor}>
             <SvgResizer size={30}>
                 <Add/>
             </SvgResizer>
