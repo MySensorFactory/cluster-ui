@@ -40,7 +40,7 @@ const AverageSensorValues = ({onAddSensorValueItem, onEditSensorValueItem, onDel
                     />
                 ))}
                 {homeSubMenu === 'edit' && (
-                    <AddSensorButton onAddNewSensor={onAddSensorValueItem}/>
+                    <AddSensorButton onButtonClicked={onAddSensorValueItem}/>
                 )}
             </SensorValuesGrid>
         </AverageMetricsContainer>

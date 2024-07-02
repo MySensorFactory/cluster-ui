@@ -46,7 +46,7 @@ const CurrentSensorValues = ({onAddSensorValueItem, onEditSensorValueItem}) => {
                     />
                 ))}
                 {homeSubMenu === 'edit' && (
-                    <AddSensorButton onAddNewSensor={onAddSensorValueItem}/>
+                    <AddSensorButton onButtonClicked={onAddSensorValueItem}/>
                 )}
             </SensorValuesGrid>
         </SensorValuesContainer>
