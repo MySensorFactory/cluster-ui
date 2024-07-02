@@ -30,30 +30,35 @@ const Overlay = styled.div`
 
 const Dashboard = () => {
     const [isAddingSensor, setIsAddingSensor] = useState(false);
+    const [isEditingSensor, setIsEditingSensor] = useState(false);
 
-    const handleAddSensor = () => {
+    const handleAddSensorItem = () => {
         setIsAddingSensor(true);
+    };
+
+    const handleEditSensorItem = () => {
+        setIsEditingSensor(true);
     };
 
     const handleClosePopup = () => {
         setIsAddingSensor(false);
+        setIsEditingSensor(false);
     };
 
     const handleAddNewSensor = (newSensor) => {
-        // Implement logic to add the new sensor
-        console.log('New sensor:', newSensor);
+        //TODO Implement logic to add the new sensor
     };
 
     return (
         <>
-            <DashboardContainer isBlurred={isAddingSensor}>
+            <DashboardContainer isBlurred={isAddingSensor || isEditingSensor}>
                 <Header />
                 <Events />
-                <Charts onAddSensor={handleAddSensor} />
-                <SensorValues onAddSensor={handleAddSensor} />
-                <AverageMetrics onAddSensor={handleAddSensor} />
+                <Charts onAddChart={handleAddSensorItem} onEditChart={handleEditSensorItem}/>
+                <SensorValues onAddSensor={handleAddSensorItem} />
+                <AverageMetrics onAddSensor={handleAddSensorItem} />
             </DashboardContainer>
-            {isAddingSensor && (
+            {(isAddingSensor || isEditingSensor) && (
                 <>
                     <Overlay onClick={handleClosePopup} />
                     <AddSensorPopup onClose={handleClosePopup} onAdd={handleAddNewSensor} />
