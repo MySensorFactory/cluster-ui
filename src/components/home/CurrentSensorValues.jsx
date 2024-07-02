@@ -16,21 +16,16 @@ const SensorValuesGrid = styled.div`
 `;
 
 const sensorValues = [
-    { label: 'Pressure after compressor', value: '5.4 MPa' },
-    { label: 'Temperature before compressor', value: '300 K' },
-    { label: 'Temperature in combustion chamber', value: '700 K' },
-    { label: 'Input flow rate', value: '4 m^3/min' },
-    { label: 'Output flow rate', value: '2.3 m^3/min' },
-    { label: 'Input gas composition', value: '42 % CO2, 18 % H2, 10 % NH3, 15 % O2, 15% N2' },
+    {label: 'Pressure after compressor', value: '5.4 MPa'},
+    {label: 'Temperature before compressor', value: '300 K'},
+    {label: 'Temperature in combustion chamber', value: '700 K'},
+    {label: 'Input flow rate', value: '4 m^3/min'},
+    {label: 'Output flow rate', value: '2.3 m^3/min'},
+    {label: 'Input gas composition', value: '42 % CO2, 18 % H2, 10 % NH3, 15 % O2, 15% N2'},
 ];
 
-const SensorValues = ({onAddSensor}) => {
-    const { homeSubMenu} = useAppState();
-
-    const handleEditSensor = (index) => {
-        // Implement logic to edit a sensor
-        console.log('Edit sensor at index', index);
-    };
+const CurrentSensorValues = ({onAddSensorValueItem, onEditSensorValueItem}) => {
+    const {homeSubMenu} = useAppState();
 
     const handleDeleteSensor = (index) => {
         // Implement logic to delete a sensor
@@ -46,16 +41,16 @@ const SensorValues = ({onAddSensor}) => {
                         key={index}
                         label={sensor.label}
                         value={sensor.value}
-                        onEdit={() => handleEditSensor(index)}
+                        onEdit={onEditSensorValueItem}
                         onDelete={() => handleDeleteSensor(index)}
                     />
                 ))}
                 {homeSubMenu === 'edit' && (
-                    <AddSensorButton onAddNewSensor={onAddSensor}/>
+                    <AddSensorButton onAddNewSensor={onAddSensorValueItem}/>
                 )}
             </SensorValuesGrid>
         </SensorValuesContainer>
     );
 };
 
-export default SensorValues;
+export default CurrentSensorValues;

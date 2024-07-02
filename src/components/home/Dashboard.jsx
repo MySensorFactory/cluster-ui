@@ -1,10 +1,10 @@
 // Dashboard.js
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
 import Header from './Header';
 import Events from './Events';
-import SensorValues from './SensorValues';
-import AverageMetrics from './AverageMetrics';
+import CurrentSensorValues from './CurrentSensorValues';
+import AverageSensorValues from './AverageSensorValues';
 import Charts from "./Charts";
 import AddSensorPopup from './AddSensorPopup';
 
@@ -19,13 +19,13 @@ const DashboardContainer = styled.div`
 `;
 
 const Overlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 999;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
 `;
 
 const Dashboard = () => {
@@ -52,16 +52,25 @@ const Dashboard = () => {
     return (
         <>
             <DashboardContainer isBlurred={isAddingSensor || isEditingSensor}>
-                <Header />
-                <Events />
-                <Charts onAddChart={handleAddSensorItem} onEditChart={handleEditSensorItem}/>
-                <SensorValues onAddSensor={handleAddSensorItem} />
-                <AverageMetrics onAddSensor={handleAddSensorItem} />
+                <Header/>
+                <Events/>
+                <Charts
+                    onAddChart={handleAddSensorItem}
+                    onEditChart={handleEditSensorItem}
+                />
+                <CurrentSensorValues
+                    onAddSensorValueItem={handleAddSensorItem}
+                    onEditSensorValueItem={handleEditSensorItem}
+                />
+                <AverageSensorValues
+                    onAddSensorValueItem={handleAddSensorItem}
+                    onEditSensorValueItem={handleEditSensorItem}
+                />
             </DashboardContainer>
             {(isAddingSensor || isEditingSensor) && (
                 <>
-                    <Overlay onClick={handleClosePopup} />
-                    <AddSensorPopup onClose={handleClosePopup} onAdd={handleAddNewSensor} />
+                    <Overlay onClick={handleClosePopup}/>
+                    <AddSensorPopup onClose={handleClosePopup} onAdd={handleAddNewSensor}/>
                 </>
             )}
         </>

@@ -23,22 +23,27 @@ const averageMetrics = [
     {label: 'Output flow rate', value: '2.3 m^3/min'},
 ];
 
-const AverageMetrics = ({onAddSensor}) => {
-    const { homeSubMenu} = useAppState();
+const AverageSensorValues = ({onAddSensorValueItem, onEditSensorValueItem}) => {
+    const {homeSubMenu} = useAppState();
 
     return (
         <AverageMetricsContainer>
             <h2>Average sensors metrics</h2>
             <SensorValuesGrid>
                 {averageMetrics.map((sensor, index) => (
-                    <SensorValueItem key={index} label={sensor.label} value={sensor.value}/>
+                    <SensorValueItem
+                        key={index}
+                        label={sensor.label}
+                        value={sensor.value}
+                        onEdit={onEditSensorValueItem}
+                    />
                 ))}
                 {homeSubMenu === 'edit' && (
-                    <AddSensorButton onAddNewSensor={onAddSensor}/>
+                    <AddSensorButton onAddNewSensor={onAddSensorValueItem}/>
                 )}
             </SensorValuesGrid>
         </AverageMetricsContainer>
     );
 };
 
-export default AverageMetrics;
+export default AverageSensorValues;
