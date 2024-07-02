@@ -32,13 +32,18 @@ const Dashboard = () => {
     const [isAddingSensor, setIsAddingSensor] = useState(false);
     const [isEditingSensor, setIsEditingSensor] = useState(false);
 
-    const handleAddSensorItem = () => {
+    const handleAddButtonClicked = () => {
         setIsAddingSensor(true);
     };
 
-    const handleEditSensorItem = () => {
+    const handleEditButtonClicked = () => {
         setIsEditingSensor(true);
     };
+
+    const handleDeleteButtonClicked = (newSensor) => {
+        // TODO Implement logic to delete the sensor
+        console.log('Delete sensor:', newSensor);
+    }
 
     const handleClosePopup = () => {
         setIsAddingSensor(false);
@@ -55,16 +60,19 @@ const Dashboard = () => {
                 <Header/>
                 <Events/>
                 <Charts
-                    onAddChart={handleAddSensorItem}
-                    onEditChart={handleEditSensorItem}
+                    onAddChartButtonClicked={handleAddButtonClicked}
+                    onEditChartButtonClicked={handleEditButtonClicked}
+                    onDeleteButtonClicked={handleDeleteButtonClicked}
                 />
                 <CurrentSensorValues
-                    onAddSensorValueItem={handleAddSensorItem}
-                    onEditSensorValueItem={handleEditSensorItem}
+                    onAddSensorValueItem={handleAddButtonClicked}
+                    onEditSensorValueItem={handleEditButtonClicked}
+                    onDeleteButtonClicked={handleDeleteButtonClicked}
                 />
                 <AverageSensorValues
-                    onAddSensorValueItem={handleAddSensorItem}
-                    onEditSensorValueItem={handleEditSensorItem}
+                    onAddSensorValueItem={handleAddButtonClicked}
+                    onEditSensorValueItem={handleEditButtonClicked}
+                    onDeleteButtonClicked={handleDeleteButtonClicked}
                 />
             </DashboardContainer>
             {(isAddingSensor || isEditingSensor) && (

@@ -23,7 +23,7 @@ const averageMetrics = [
     {label: 'Output flow rate', value: '2.3 m^3/min'},
 ];
 
-const AverageSensorValues = ({onAddSensorValueItem, onEditSensorValueItem}) => {
+const AverageSensorValues = ({onAddSensorValueItem, onEditSensorValueItem, onDeleteButtonClicked}) => {
     const {homeSubMenu} = useAppState();
 
     return (
@@ -36,6 +36,7 @@ const AverageSensorValues = ({onAddSensorValueItem, onEditSensorValueItem}) => {
                         label={sensor.label}
                         value={sensor.value}
                         onEdit={onEditSensorValueItem}
+                        onDelete={onDeleteButtonClicked}
                     />
                 ))}
                 {homeSubMenu === 'edit' && (

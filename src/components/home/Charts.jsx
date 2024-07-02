@@ -119,7 +119,7 @@ const Chart = ({ data, title, dataKey, stroke, domain, yAxisUnit, days, numTicks
     </ChartWrapper>;
 };
 
-const Charts = ({onAddChart, onEditChart}) => {
+const Charts = ({onAddChartButtonClicked, onEditChartButtonClicked, onDeleteButtonClicked}) => {
     const [timeRange, setTimeRange] = useState('oneLastDay');
     const [temperatureData, setTemperatureData] = useState([]);
     const [pressureData, setPressureData] = useState([]);
@@ -175,7 +175,8 @@ const Charts = ({onAddChart, onEditChart}) => {
                 yAxisUnit="K"
                 days={days}
                 numTicks={10} // Set the number of ticks you want to show
-                onEdit={onEditChart}
+                onEdit={onEditChartButtonClicked}
+                onDelete={onDeleteButtonClicked}
             />
             <Chart
                 data={pressureData}
@@ -186,7 +187,8 @@ const Charts = ({onAddChart, onEditChart}) => {
                 yAxisUnit="MPa"
                 days={days}
                 numTicks={10} // Set the number of ticks you want to show
-                onEdit={onEditChart}
+                onEdit={onEditChartButtonClicked}
+                onDelete={onDeleteButtonClicked}
             />
             <Chart
                 data={flowData}
@@ -197,10 +199,11 @@ const Charts = ({onAddChart, onEditChart}) => {
                 yAxisUnit="m³/h"
                 days={days}
                 numTicks={10} // Set the number of ticks you want to show
-                onEdit={onEditChart}
+                onEdit={onEditChartButtonClicked}
+                onDelete={onDeleteButtonClicked}
             />
             {homeSubMenu === 'edit' && (
-                <AddSensorButton onAddNewSensor={onAddChart} />
+                <AddSensorButton onButtonClicked={onAddChartButtonClicked} />
             )}
         </ChartsContainer>
     );
