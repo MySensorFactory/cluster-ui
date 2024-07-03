@@ -10,9 +10,17 @@ const SensorValuesContainer = styled.div`
 `;
 
 const SensorValuesGrid = styled.div`
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     gap: 20px;
+`;
+
+const SensorItemWrapper = styled.div`
+    flex: 0 0 calc(20.0% - 20px);
+    
+    &.wide {
+        flex: 0 0 calc(40.00% - 20px);
+    }
 `;
 
 const sensorValues = [
@@ -21,7 +29,7 @@ const sensorValues = [
     {label: 'Temperature in combustion chamber', value: '700 K'},
     {label: 'Input flow rate', value: '4 m^3/min'},
     {label: 'Output flow rate', value: '2.3 m^3/min'},
-    {label: 'Input gas composition', value: '42 % CO2, 18 % H2, 10 % NH3, 15 % O2, 15% N2'},
+    {label: 'Input gas composition', value: '42 % CO₂, 18 % H₂, 10 % NH₃, 15 % O₂, 15% N₂'},
 ];
 
 const CurrentSensorValues = ({onAddSensorValueItem, onEditSensorValueItem}) => {
@@ -37,16 +45,22 @@ const CurrentSensorValues = ({onAddSensorValueItem, onEditSensorValueItem}) => {
             <h2>Current sensors values</h2>
             <SensorValuesGrid>
                 {sensorValues.map((sensor, index) => (
-                    <SensorValueItem
+                    <SensorItemWrapper
                         key={index}
-                        label={sensor.label}
-                        value={sensor.value}
-                        onEdit={onEditSensorValueItem}
-                        onDelete={() => handleDeleteSensor(index)}
-                    />
+                        className={sensor.label === 'Input gas composition' ? 'wide' : ''}
+                    >
+                        <SensorValueItem
+                            label={sensor.label}
+                            value={sensor.value}
+                            onEdit={onEditSensorValueItem}
+                            onDelete={() => handleDeleteSensor(index)}
+                        />
+                    </SensorItemWrapper>
                 ))}
                 {homeSubMenu === 'edit' && (
-                    <AddSensorButton onButtonClicked={onAddSensorValueItem}/>
+                    <SensorItemWrapper>
+                        <AddSensorButton onButtonClicked={onAddSensorValueItem}/>
+                    </SensorItemWrapper>
                 )}
             </SensorValuesGrid>
         </SensorValuesContainer>

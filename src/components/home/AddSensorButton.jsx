@@ -14,7 +14,6 @@ const AddSensorButtonContainer = styled.div`
     font-size: 24px;
     transition: background-color 0.3s ease;
     min-height: 100px;
-    grid-column: span 1; // Ensure it only takes up one column
 
     &:hover {
         background-color: #45a049;
