@@ -27,8 +27,8 @@ const sensorValues = [
     {label: 'Pressure after compressor', value: '5.4 MPa'},
     {label: 'Temperature before compressor', value: '300 K'},
     {label: 'Temperature in combustion chamber', value: '700 K'},
-    {label: 'Input flow rate', value: '4 m^3/min'},
-    {label: 'Output flow rate', value: '2.3 m^3/min'},
+    {label: 'Input flow rate', value: '4 m\u00B3/min'},
+    {label: 'Output flow rate', value: '2.3 m\u00B3/min'},
     {label: 'Input gas composition', value: '42 % CO₂, 18 % H₂, 10 % NH₃, 15 % O₂, 15% N₂'},
 ];
 

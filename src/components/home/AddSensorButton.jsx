@@ -13,7 +13,7 @@ const AddSensorButtonContainer = styled.div`
     cursor: pointer;
     font-size: 24px;
     transition: background-color 0.3s ease;
-    min-height: 100px;
+    min-height: 90px;
 
     &:hover {
         background-color: #45a049;
@@ -23,7 +23,7 @@ export const AddSensorButton = ({onButtonClicked}) =>
 {
     return (
         <AddSensorButtonContainer onClick={onButtonClicked}>
-            <SvgResizer size={30}>
+            <SvgResizer size={45}>
                 <Add/>
             </SvgResizer>
         </AddSensorButtonContainer>
