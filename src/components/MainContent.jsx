@@ -1,6 +1,8 @@
+// components/MainContent.jsx
 import React from 'react';
 import styled from 'styled-components';
 import Dashboard from "./home/Dashboard";
+import ReportsDashboard from "./reports/ReportsDashboard";
 import {useAppState} from "./AppStateContext";
 
 const MainContentContainer = styled.div`
@@ -19,7 +21,7 @@ function MainContent() {
             case 'Home':
                 return <Dashboard />;
             case 'Reports':
-                return <div>Reports Content</div>;
+                return <ReportsDashboard />;
             case 'Users Management':
                 return <div>Users Management Content</div>;
             default:

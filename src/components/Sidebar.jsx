@@ -77,8 +77,8 @@ function Sidebar() {
             case 'Reports':
                 return (
                     <SubMenuContainer>
-                        <SubMenuItem>Report 1</SubMenuItem>
-                        <SubMenuItem>Report 2</SubMenuItem>
+                        <SubMenuItem>Define report</SubMenuItem>
+                        <SubMenuItem>Reports list</SubMenuItem>
                     </SubMenuContainer>
                 );
             case 'Users Management':
