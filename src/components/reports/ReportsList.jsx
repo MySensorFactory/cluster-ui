@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
 
 const ListContainer = styled.div`
@@ -38,6 +38,36 @@ const MoreButton = styled.button`
     font-size: 20px;
 `;
 
+const PaginationContainer = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+`;
+
+const PageButton = styled.button`
+    background-color: #2a2a36;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    margin: 0 5px;
+    cursor: pointer;
+    border-radius: 3px;
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    &:hover:not(:disabled) {
+        background-color: #3a3a46;
+    }
+`;
+
+const PageInfo = styled.span`
+    margin: 0 10px;
+    color: white;
+`;
 
 const reports = [
     {
@@ -121,6 +151,19 @@ const reports = [
 ];
 
 const ReportsList = () => {
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10; // You can adjust this number as needed
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentReports = reports.slice(indexOfFirstItem, indexOfLastItem);
+
+    const totalPages = Math.ceil(reports.length / itemsPerPage);
+
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
+
     return (
         <ListContainer>
             <ColumnHeaders>
@@ -130,7 +173,7 @@ const ReportsList = () => {
                 <div>Included sensors</div>
                 <div></div>
             </ColumnHeaders>
-            {reports.map((report, index) => (
+            {currentReports.map((report, index) => (
                 <ReportItem key={index}>
                     <ReportInfo>{report.name}<br/>{report.dateRange}</ReportInfo>
                     <ReportInfo>{report.description}</ReportInfo>
@@ -139,6 +182,23 @@ const ReportsList = () => {
                     <MoreButton>...</MoreButton>
                 </ReportItem>
             ))}
+            <PaginationContainer>
+                <PageButton
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                >
+                    Previous
+                </PageButton>
+                <PageInfo>
+                    Page {currentPage} of {totalPages}
+                </PageInfo>
+                <PageButton
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                >
+                    Next
+                </PageButton>
+            </PaginationContainer>
         </ListContainer>
     );
 };
