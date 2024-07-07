@@ -69,6 +69,22 @@ const PageInfo = styled.span`
     color: white;
 `;
 
+const PageInput = styled.input`
+    background-color: #2a2a36;
+    color: white;
+    border: 1px solid #3a3a46;
+    padding: 5px;
+    width: 50px;
+    margin: 0 5px;
+    text-align: center;
+    border-radius: 3px;
+
+    &:focus {
+        outline: none;
+        border-color: #4a4a56;
+    }
+`;
+
 const reports = [
     {
         name: 'Very important report from compressor',
@@ -152,6 +168,7 @@ const reports = [
 
 const ReportsList = () => {
     const [currentPage, setCurrentPage] = useState(1);
+    const [inputPage, setInputPage] = useState('');
     const itemsPerPage = 10; // You can adjust this number as needed
 
     const indexOfLastItem = currentPage * itemsPerPage;
@@ -162,6 +179,20 @@ const ReportsList = () => {
 
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber);
+        setInputPage('');
+    };
+
+    const handleInputChange = (e) => {
+        setInputPage(e.target.value);
+    };
+
+    const handleInputSubmit = (e) => {
+        e.preventDefault();
+        const pageNumber = parseInt(inputPage, 10);
+        if (pageNumber >= 1 && pageNumber <= totalPages) {
+            setCurrentPage(pageNumber);
+            setInputPage('');
+        }
     };
 
     return (
@@ -198,6 +229,17 @@ const ReportsList = () => {
                 >
                     Next
                 </PageButton>
+                <form onSubmit={handleInputSubmit}>
+                    <PageInput
+                        type="text"
+                        min="1"
+                        max={totalPages}
+                        value={inputPage}
+                        onChange={handleInputChange}
+                        placeholder="Go to"
+                    />
+                    <PageButton type="submit">Go</PageButton>
+                </form>
             </PaginationContainer>
         </ListContainer>
     );
