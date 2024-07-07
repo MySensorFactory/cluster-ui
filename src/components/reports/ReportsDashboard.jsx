@@ -10,6 +10,33 @@ const DashboardContainer = styled.div`
     min-height: 100vh;
 `;
 
+const ReportsScrollContainer = styled.div`
+    max-height: 700px; // Adjust this value as needed
+    overflow-y: auto;
+    padding-right: 10px;
+
+    &::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: #2c2c2c;
+        border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: #444;
+        border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+
+    scrollbar-width: thin;
+    scrollbar-color: #444 #2c2c2c;
+`;
+
 const Title = styled.h2`
     font-size: 24px;
     margin-bottom: 20px;
@@ -217,7 +244,9 @@ const ReportsDashboard = () => {
                     {sortDirection === 'asc' ? '↑' : '↓'}
                 </SortDirectionButton>
             </SearchContainer>
-            <ReportsList />
+            <ReportsScrollContainer>
+                <ReportsList />
+            </ReportsScrollContainer>
         </DashboardContainer>
     );
 };
