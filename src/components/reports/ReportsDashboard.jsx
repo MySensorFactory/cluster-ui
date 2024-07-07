@@ -43,55 +43,66 @@ const DateInput = styled.input`
     }
 `;
 
-// const Select = styled.select`
-//     width: 100%;
-//     padding: 10px;
-//     background-color: #1C1C21;
-//     color: white;
-//     border: 1px solid #3a3a3a;
-//     border-radius: 5px;
-//     font-size: 14px;
-//     box-sizing: border-box;
-//
-//     &:focus {
-//         outline: none;
-//         border-color: #4caf50;
-//     }
-// `;
+const customStyles = {
+    control: (provided, state) => ({
+        ...provided,
+        backgroundColor: '#2a2a36',
+        borderColor: state.isFocused ? '#4caf50' : '#3a3a3a',
+        boxShadow: 'none',
+        '&:hover': {
+            borderColor: '#4caf50',
+        },
+    }),
+    menu: (provided) => ({
+        ...provided,
+        backgroundColor: '#1C1C21',
+    }),
+    option: (provided, state) => ({
+        ...provided,
+        backgroundColor: state.isSelected ? '#3a3a3a' : '#1C1C21',
+        color: 'white',
+        '&:hover': {
+            backgroundColor: '#2a2a36',
+        },
+    }),
+    singleValue: (provided) => ({
+        ...provided,
+        color: 'white',
+    }),
+    multiValue: (provided) => ({
+        ...provided,
+        backgroundColor: '#3a3a3a',
+    }),
+    multiValueLabel: (provided) => ({
+        ...provided,
+        color: 'white',
+    }),
+    multiValueRemove: (provided) => ({
+        ...provided,
+        color: 'white',
+        '&:hover': {
+            backgroundColor: '#4a4a4a',
+            color: 'white',
+        },
+    }),
+    input: (provided) => ({
+        ...provided,
+        color: 'white',
+    }),
+    placeholder: (provided) => ({
+        ...provided,
+        color: '#999',
+    }),
+    dropdownIndicator: (provided) => ({
+        ...provided,
+        color: 'white',
+    }),
+    indicatorSeparator: (provided) => ({
+        ...provided,
+        backgroundColor: '#3a3a3a',
+    }),
+};
 
-const StyledSelect = styled(Select)`
-  width: 300px;
-
-  .react-select__control {
-    background-color: #2a2a36;
-    border: none;
-    border-radius: 5px;
-  }
-
-  .react-select__menu {
-    background-color: #2a2a36;
-    color: white;
-  }
-
-  .react-select__option {
-    background-color: #2a2a36;
-    &:hover {
-      background-color: #3a3a46;
-    }
-  }
-
-  .react-select__single-value {
-    color: white;
-  }
-
-  .react-select__multi-value {
-    background-color: #3a3a46;
-  }
-
-  .react-select__multi-value__label {
-    color: white;
-  }
-`;
 
 const ReportsDashboard = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -150,19 +161,21 @@ const ReportsDashboard = () => {
                     value={endDate}
                     onChange={handleEndDateChange}
                 />
-                <StyledSelect
+                <Select
                     isMulti
                     options={predefinedLabels}
                     value={selectedLabels}
                     onChange={setSelectedLabels}
                     placeholder="Select sensor labels"
+                    styles={customStyles}
                 />
-                <StyledSelect
+                <Select
                     isMulti
                     options={sensorTypes}
                     value={selectedSensorTypes}
                     onChange={setSelectedSensorTypes}
                     placeholder="Select included sensor types"
+                    styles={customStyles}
                 />
             </SearchContainer>
             <ReportsList />
