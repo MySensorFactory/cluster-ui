@@ -31,11 +31,11 @@ const ReportInfo = styled.div`
 `;
 
 const MoreButton = styled.button`
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-  font-size: 20px;
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 20px;
 `;
 
 
@@ -62,7 +62,7 @@ const ReportsList = () => {
             </ColumnHeaders>
             {reports.map((report, index) => (
                 <ReportItem key={index}>
-                    <ReportInfo>{report.name}<br />{report.dateRange}</ReportInfo>
+                    <ReportInfo>{report.name}<br/>{report.dateRange}</ReportInfo>
                     <ReportInfo>{report.description}</ReportInfo>
                     <ReportInfo>{report.sensorLabel}</ReportInfo>
                     <ReportInfo>{report.includedSensors}</ReportInfo>

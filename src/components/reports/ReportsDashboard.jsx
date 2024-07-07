@@ -1,5 +1,4 @@
-// components/reports/ReportsDashboard.jsx
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
 import ReportsList from './ReportsList';
 
@@ -22,25 +21,25 @@ const SearchContainer = styled.div`
 `;
 
 const SearchInput = styled.input`
-  background-color: #2a2a36;
-  border: none;
-  color: white;
-  padding: 10px;
-  border-radius: 5px;
-  width: 300px;
+    background-color: #2a2a36;
+    border: none;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    width: 300px;
 `;
 
 const DateInput = styled.input`
-  background-color: #2a2a36;
-  border: none;
-  color: white;
-  padding: 10px;
-  border-radius: 5px;
-  width: 150px;
+    background-color: #2a2a36;
+    border: none;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    width: 150px;
 
-  &::-webkit-calendar-picker-indicator {
-    filter: invert(1);
-  }
+    &::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+    }
 `;
 
 const ReportsDashboard = () => {
@@ -84,7 +83,7 @@ const ReportsDashboard = () => {
                     onChange={handleEndDateChange}
                 />
             </SearchContainer>
-            <ReportsList />
+            <ReportsList/>
         </DashboardContainer>
     );
 };
