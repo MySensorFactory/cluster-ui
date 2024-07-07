@@ -42,10 +42,28 @@ const DateInput = styled.input`
     }
 `;
 
+const Select = styled.select`
+    width: 100%;
+    padding: 10px;
+    background-color: #1C1C21;
+    color: white;
+    border: 1px solid #3a3a3a;
+    border-radius: 5px;
+    font-size: 14px;
+    box-sizing: border-box;
+
+    &:focus {
+        outline: none;
+        border-color: #4caf50;
+    }
+`;
+
 const ReportsDashboard = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
+    const [label, setLabel] = useState('');
+    const [sensorType, setSensorType] = useState('');
 
     const handleSearch = (e) => {
         setSearchTerm(e.target.value);
@@ -61,6 +79,14 @@ const ReportsDashboard = () => {
         setEndDate(e.target.value);
         // Implement date filtering logic here
     };
+
+    const predefinedLabels = [
+        "Temperature before compressor",
+        "Pressure after compressor",
+        "Input flow rate",
+        "Output flow rate",
+        "Gas composition"
+    ];
 
     return (
         <DashboardContainer>
@@ -82,6 +108,26 @@ const ReportsDashboard = () => {
                     value={endDate}
                     onChange={handleEndDateChange}
                 />
+                <Select
+                    value={label}
+                    onChange={(e) => setLabel(e.target.value)}
+                >
+                    <option value="">Select sensor labels</option>
+                    {predefinedLabels.map((l, index) => (
+                        <option key={index} value={l}>{l}</option>
+                    ))}
+                    <option value="custom">Custom Label</option>
+                </Select>
+                <Select
+                    value={sensorType}
+                    onChange={(e) => setSensorType(e.target.value)}
+                >
+                    <option value="">Select included sensor types</option>
+                    <option value="temperature">Temperature</option>
+                    <option value="pressure">Pressure</option>
+                    <option value="flow">Flow Rate</option>
+                    <option value="composition">Gas Composition</option>
+                </Select>
             </SearchContainer>
             <ReportsList/>
         </DashboardContainer>
