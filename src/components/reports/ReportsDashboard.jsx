@@ -104,12 +104,30 @@ const customStyles = {
 };
 
 
+const SortDirectionButton = styled.button`
+  background-color: #2a2a36;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  &:hover {
+    background-color: #3a3a46;
+  }
+`;
+
 const ReportsDashboard = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
     const [selectedLabels, setSelectedLabels] = useState([]);
     const [selectedSensorTypes, setSelectedSensorTypes] = useState([]);
+    const [sortProperty, setSortProperty] = useState(null);
+    const [sortDirection, setSortDirection] = useState('asc');
 
     const handleSearch = (e) => {
         setSearchTerm(e.target.value);
@@ -126,6 +144,10 @@ const ReportsDashboard = () => {
         // Implement date filtering logic here
     };
 
+    const toggleSortDirection = () => {
+        setSortDirection(prevDirection => prevDirection === 'asc' ? 'desc' : 'asc');
+    };
+
     const predefinedLabels = [
         { value: "Temperature before compressor", label: "Temperature before compressor" },
         { value: "Pressure after compressor", label: "Pressure after compressor" },
@@ -139,6 +161,13 @@ const ReportsDashboard = () => {
         { value: "pressure", label: "Pressure" },
         { value: "flow", label: "Flow Rate" },
         { value: "composition", label: "Gas Composition" }
+    ];
+
+    const sortOptions = [
+        { value: "date", label: "Date" },
+        { value: "sensorType", label: "Sensor Type" },
+        { value: "label", label: "Sensor Label" },
+        { value: "value", label: "Sensor Value" }
     ];
 
     return (
@@ -177,6 +206,16 @@ const ReportsDashboard = () => {
                     placeholder="Select included sensor types"
                     styles={customStyles}
                 />
+                <Select
+                    options={sortOptions}
+                    value={sortProperty}
+                    onChange={setSortProperty}
+                    placeholder="Select sorting property"
+                    styles={customStyles}
+                />
+                <SortDirectionButton onClick={toggleSortDirection}>
+                    {sortDirection === 'asc' ? '↑' : '↓'}
+                </SortDirectionButton>
             </SearchContainer>
             <ReportsList />
         </DashboardContainer>
