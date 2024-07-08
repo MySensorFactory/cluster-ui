@@ -1,4 +1,3 @@
-// components/MainContent.jsx
 import React from 'react';
 import styled from 'styled-components';
 import Dashboard from "./home/Dashboard";

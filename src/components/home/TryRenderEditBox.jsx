@@ -38,6 +38,28 @@ const OverlayButton = styled.button`
     }
 `;
 
+export const EditButton = ({onEdit, iconSize}) => {
+
+    return (
+        <OverlayButton onClick={onEdit}>
+            <SvgResizer size={iconSize}>
+                <Edit/>
+            </SvgResizer>
+        </OverlayButton>
+    );
+}
+export const DeleteButton = ({onDelete, iconSize}) => {
+
+    return (
+        <OverlayButton onClick={onDelete}>
+            <SvgResizer size={iconSize}>
+                <Delete/>
+            </SvgResizer>
+        </OverlayButton>
+    );
+}
+
+
 export function tryRenderEditBox(homeSubMenu, isHovered, onEdit, onDelete, parentSelector = '') {
     if (homeSubMenu !== 'edit' || !isHovered) {
         return null;
@@ -48,16 +70,8 @@ export function tryRenderEditBox(homeSubMenu, isHovered, onEdit, onDelete, paren
 
     return (
         <HoverOverlay parentSelector={parentSelector}>
-            <OverlayButton onClick={onEdit}>
-                <SvgResizer size={editIconSize}>
-                    <Edit/>
-                </SvgResizer>
-            </OverlayButton>
-            <OverlayButton onClick={onDelete}>
-                <SvgResizer size={deleteIconSize}>
-                    <Delete/>
-                </SvgResizer>
-            </OverlayButton>
+            <EditButton onEdit={onEdit} iconSize={editIconSize} />
+            <DeleteButton onDelete={onDelete} iconSize={deleteIconSize} />
         </HoverOverlay>
     );
 }
