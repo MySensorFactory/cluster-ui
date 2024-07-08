@@ -17,7 +17,7 @@ const ReportItem = styled.div`
     margin-bottom: 10px;
     border-radius: 5px;
     display: grid;
-    grid-template-columns: 2fr 2fr 1fr 2fr 0.5fr;
+    grid-template-columns: 2fr 2fr 1fr 2fr;
     gap: 10px;
     align-items: center;
     cursor: pointer;
@@ -26,6 +26,20 @@ const ReportItem = styled.div`
     &:hover {
         transform: scale(1.02);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+`;
+
+const ActionButton = styled.button`
+    background-color: #3a3a46;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    margin: 5px;
+    cursor: pointer;
+    border-radius: 3px;
+
+    &:hover {
+        background-color: #4a4a56;
     }
 `;
 
@@ -73,13 +87,6 @@ const ReportInfo = styled.div`
     font-size: 14px;
 `;
 
-const MoreButton = styled.button`
-    background: none;
-    border: none;
-    color: white;
-    cursor: pointer;
-    font-size: 20px;
-`;
 
 const PaginationContainer = styled.div`
     display: flex;
@@ -206,9 +213,8 @@ const reports = [
         sensorLabel: 'Before compressor',
         includedSensors: 'Temperature, Pressure, Flow rate',
     },
-    // Add more report objects as needed
+    //TODO  Add more report objects as needed
 ];
-
 
 
 const ReportsList = () => {
@@ -249,6 +255,18 @@ const ReportsList = () => {
         setSelectedReport(null);
     };
 
+    const handleEditClick = (e, report) => {
+        e.stopPropagation();
+        console.log('Edit report:', report);
+        //TODO Implement your edit logic here
+    };
+
+    const handleDeleteClick = (e, report) => {
+        e.stopPropagation();
+        console.log('Delete report:', report);
+        //TODO Implement your delete logic here
+    };
+
     return (
         <>
             <ReportsContainer isBlurred={selectedReport !== null}>
@@ -257,7 +275,6 @@ const ReportsList = () => {
                     <div>Description</div>
                     <div>Sensor label</div>
                     <div>Included sensors</div>
-                    <div></div>
                 </ColumnHeaders>
                 {currentReports.map((report, index) => (
                     <ReportItem key={index} onClick={() => handleReportClick(report)}>
@@ -265,41 +282,40 @@ const ReportsList = () => {
                         <ReportInfo>{report.description}</ReportInfo>
                         <ReportInfo>{report.sensorLabel}</ReportInfo>
                         <ReportInfo>{report.includedSensors}</ReportInfo>
-                        <MoreButton>...</MoreButton>
                     </ReportItem>
                 ))}
-            <PaginationContainer>
-                <PageButton
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                >
-                    Previous
-                </PageButton>
-                <PageInfo>
-                    Page {currentPage} of {totalPages}
-                </PageInfo>
-                <PageButton
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                >
-                    Next
-                </PageButton>
-                <form onSubmit={handleInputSubmit}>
-                    <PageInput
-                        type="text"
-                        min="1"
-                        max={totalPages}
-                        value={inputPage}
-                        onChange={handleInputChange}
-                        placeholder="Go to"
-                    />
-                    <PageButton type="submit">Go</PageButton>
-                </form>
-            </PaginationContainer>
+                <PaginationContainer>
+                    <PageButton
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                    >
+                        Previous
+                    </PageButton>
+                    <PageInfo>
+                        Page {currentPage} of {totalPages}
+                    </PageInfo>
+                    <PageButton
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                    >
+                        Next
+                    </PageButton>
+                    <form onSubmit={handleInputSubmit}>
+                        <PageInput
+                            type="text"
+                            min="1"
+                            max={totalPages}
+                            value={inputPage}
+                            onChange={handleInputChange}
+                            placeholder="Go to"
+                        />
+                        <PageButton type="submit">Go</PageButton>
+                    </form>
+                </PaginationContainer>
             </ReportsContainer>
             {selectedReport && (
                 <>
-                    <Overlay onClick={handleClosePopup} />
+                    <Overlay onClick={handleClosePopup}/>
                     <ReportDetailsPopup>
                         <CloseButton onClick={handleClosePopup}>&times;</CloseButton>
                         <h2>{selectedReport.name}</h2>
@@ -307,6 +323,10 @@ const ReportsList = () => {
                         <p>Description: {selectedReport.description}</p>
                         <p>Sensor Label: {selectedReport.sensorLabel}</p>
                         <p>Included Sensors: {selectedReport.includedSensors}</p>
+                        <div>
+                            <ActionButton onClick={(e) => handleEditClick(e, selectedReport)}>Edit</ActionButton>
+                            <ActionButton onClick={(e) => handleDeleteClick(e, selectedReport)}>Delete</ActionButton>
+                        </div>
                     </ReportDetailsPopup>
                 </>
             )}
