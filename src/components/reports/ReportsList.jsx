@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
+import ReportItemDetails from "./ReportItemDetails";
 
 const ColumnHeaders = styled.div`
     display: grid;
@@ -56,20 +57,6 @@ const Overlay = styled.div`
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 999;
-`;
-
-const ReportDetailsPopup = styled.div`
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #2a2a36;
-    padding: 20px;
-    border-radius: 5px;
-    z-index: 1000;
-    max-width: 80%;
-    max-height: 80%;
-    overflow-y: auto;
 `;
 
 const CloseButton = styled.button`
@@ -316,18 +303,27 @@ const ReportsList = () => {
             {selectedReport && (
                 <>
                     <Overlay onClick={handleClosePopup}/>
-                    <ReportDetailsPopup>
+                    <ReportItemDetails
+                        title={"My favorite report"}
+                        sensorLabel={"Before compressor"}
+                        description={"Lorem ipsum dolor sit amet, " +
+                            "consectetur adipiscing elit, " +
+                            "sed do eiusmod tempor incididunt ut " +
+                            "labore et dolore magna aliqua. Ut " +
+                            "enim ad minim veniam, quis nostrud " +
+                            "exercitation ullamco laboris nisi ut aliquip ex ea " +
+                            "commodo consequat. Duis aute irure dolor in reprehenderit " +
+                            "in voluptate velit esse cillum dolore eu fugiat nulla " +
+                            "pariatur. Excepteur sint occaecat cupidatat non proident, " +
+                            "sunt in culpa qui officia deserunt mollit anim id est " +
+                            "laborum"}
+                    >
                         <CloseButton onClick={handleClosePopup}>&times;</CloseButton>
-                        <h2>{selectedReport.name}</h2>
-                        <p>Date Range: {selectedReport.dateRange}</p>
-                        <p>Description: {selectedReport.description}</p>
-                        <p>Sensor Label: {selectedReport.sensorLabel}</p>
-                        <p>Included Sensors: {selectedReport.includedSensors}</p>
                         <div>
                             <ActionButton onClick={(e) => handleEditClick(e, selectedReport)}>Edit</ActionButton>
                             <ActionButton onClick={(e) => handleDeleteClick(e, selectedReport)}>Delete</ActionButton>
                         </div>
-                    </ReportDetailsPopup>
+                    </ReportItemDetails>
                 </>
             )}
         </>

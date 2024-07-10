@@ -1,38 +1,39 @@
 import React from 'react';
 import styled from 'styled-components';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
+import {Chart} from "../home/Charts";
+import {generateData} from "../data/DataSource";
 
 const DetailsContainer = styled.div`
-  background-color: #1C1C21;
-  color: white;
-  padding: 20px;
+    background-color: #2a2a36;
+    color: white;
+    padding: 20px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 5px;
+    z-index: 1000;
+    max-height: 80%;
+    overflow-y: auto;
 `;
 
 const Title = styled.h2`
-  font-size: 24px;
-  margin-bottom: 20px;
+    font-size: 24px;
+    margin-bottom: 20px;
 `;
 
 const Description = styled.p`
-  margin-bottom: 20px;
-`;
-
-const ChartContainer = styled.div`
-  margin-bottom: 30px;
-`;
-
-const ChartTitle = styled.h3`
-  font-size: 18px;
-  margin-bottom: 10px;
+    margin-bottom: 20px;
 `;
 
 const EditDeleteButtons = styled.div`
-  position: absolute;
-  top: 10px;
-  right: 10px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
 `;
 
-const ReportItemDetails = ({ title, sensorLabel, description, temperatureData, flowRateCO2Data, flowRateNH3Data }) => {
+const ReportItemDetails = ({title, sensorLabel, description}) => {
+
     return (
         <DetailsContainer>
             <EditDeleteButtons>
@@ -42,38 +43,37 @@ const ReportItemDetails = ({ title, sensorLabel, description, temperatureData, f
             <p>Sensor label: {sensorLabel}</p>
             <Description>{description}</Description>
 
-            <ChartContainer>
-                <ChartTitle>Temperature value</ChartTitle>
-                <LineChart width={600} height={300} data={temperatureData}>
-                    <XAxis dataKey="time" />
-                    <YAxis />
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="value" stroke="#8884d8" />
-                </LineChart>
-            </ChartContainer>
+            <Chart
+                data={generateData(15, 25, 1)}
+                title="Temperature value"
+                dataKey="value"
+                stroke="#4fc3f7"
+                domain={[5, 40]}
+                yAxisUnit="K"
+                days={1}
+                numTicks={10} // Set the number of ticks you want to show
+            />
 
-            <ChartContainer>
-                <ChartTitle>Flow rate CO2</ChartTitle>
-                <LineChart width={600} height={300} data={flowRateCO2Data}>
-                    <XAxis dataKey="time" />
-                    <YAxis />
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="value" stroke="#82ca9d" />
-                </LineChart>
-            </ChartContainer>
-
-            <ChartContainer>
-                <ChartTitle>Flow rate NH3</ChartTitle>
-                <LineChart width={600} height={300} data={flowRateNH3Data}>
-                    <XAxis dataKey="time" />
-                    <YAxis />
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="value" stroke="#ffc658" />
-                </LineChart>
-            </ChartContainer>
+            <Chart
+                data={generateData(15, 25, 1)}
+                title="Temperature value"
+                dataKey="value"
+                stroke="#4fc3f7"
+                domain={[5, 40]}
+                yAxisUnit="K"
+                days={1}
+                numTicks={10} // Set the number of ticks you want to show
+            />
+            <Chart
+                data={generateData(15, 25, 1)}
+                title="Temperature value"
+                dataKey="value"
+                stroke="#4fc3f7"
+                domain={[5, 40]}
+                yAxisUnit="K"
+                days={1}
+                numTicks={10} // Set the number of ticks you want to show
+            />
         </DetailsContainer>
     );
 };
