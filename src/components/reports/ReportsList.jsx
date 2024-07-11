@@ -45,17 +45,6 @@ const Overlay = styled.div`
     z-index: 999;
 `;
 
-const CloseButton = styled.button`
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: none;
-    border: none;
-    color: white;
-    font-size: 20px;
-    cursor: pointer;
-`;
-
 const ReportInfo = styled.div`
     font-size: 14px;
 `;
@@ -292,7 +281,6 @@ const ReportsList = () => {
                             "sunt in culpa qui officia deserunt mollit anim id est " +
                             "laborum"}
                     >
-                        <CloseButton onClick={handleClosePopup}>&times;</CloseButton>
                     </ReportItemDetails>
                 </>
             )}
