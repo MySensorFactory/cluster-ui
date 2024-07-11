@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import {Chart} from "../home/Charts";
 import {generateData} from "../data/DataSource";
+import {DeleteButton, EditButton} from "../home/TryRenderEditBox";
 
 const DetailsContainer = styled.div`
     background-color: #2a2a36;
@@ -26,19 +27,29 @@ const Description = styled.p`
     margin-bottom: 20px;
 `;
 
-const EditDeleteButtons = styled.div`
+const ButtonsContainer = styled.div`
     position: absolute;
     top: 10px;
     right: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 `;
 
 const ReportItemDetails = ({title, sensorLabel, description}) => {
 
     return (
         <DetailsContainer>
-            <EditDeleteButtons>
-                {/* Add edit and delete buttons here */}
-            </EditDeleteButtons>
+            <ButtonsContainer>
+                    <EditButton
+                        onEdit={() => {}}
+                        iconSize={40}
+                    />
+                    <DeleteButton
+                        onDelete={() => {}}
+                        iconSize={5}
+                    />
+            </ButtonsContainer>
             <Title>{title}</Title>
             <p>Sensor label: {sensorLabel}</p>
             <Description>{description}</Description>

@@ -30,20 +30,6 @@ const ReportItem = styled.div`
     }
 `;
 
-const ActionButton = styled.button`
-    background-color: #3a3a46;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    margin: 5px;
-    cursor: pointer;
-    border-radius: 3px;
-
-    &:hover {
-        background-color: #4a4a56;
-    }
-`;
-
 const ReportsContainer = styled.div`
     filter: ${props => props.isBlurred ? 'blur(5px)' : 'none'};
     transition: filter 0.3s ease;
@@ -242,18 +228,6 @@ const ReportsList = () => {
         setSelectedReport(null);
     };
 
-    const handleEditClick = (e, report) => {
-        e.stopPropagation();
-        console.log('Edit report:', report);
-        //TODO Implement your edit logic here
-    };
-
-    const handleDeleteClick = (e, report) => {
-        e.stopPropagation();
-        console.log('Delete report:', report);
-        //TODO Implement your delete logic here
-    };
-
     return (
         <>
             <ReportsContainer isBlurred={selectedReport !== null}>
@@ -319,10 +293,6 @@ const ReportsList = () => {
                             "laborum"}
                     >
                         <CloseButton onClick={handleClosePopup}>&times;</CloseButton>
-                        <div>
-                            <ActionButton onClick={(e) => handleEditClick(e, selectedReport)}>Edit</ActionButton>
-                            <ActionButton onClick={(e) => handleDeleteClick(e, selectedReport)}>Delete</ActionButton>
-                        </div>
                     </ReportItemDetails>
                 </>
             )}
