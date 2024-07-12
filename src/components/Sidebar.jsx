@@ -77,8 +77,8 @@ function Sidebar() {
             case 'Reports':
                 return (
                     <SubMenuContainer>
-                        <SubMenuItem>Define report</SubMenuItem>
-                        <SubMenuItem>Reports list</SubMenuItem>
+                        <SubMenuItem onClick={() => setHomeSubMenu('define_report')}>Define report</SubMenuItem>
+                        <SubMenuItem onClick={() => setHomeSubMenu('report_list')}>Reports list</SubMenuItem>
                     </SubMenuContainer>
                 );
             case 'Users Management':

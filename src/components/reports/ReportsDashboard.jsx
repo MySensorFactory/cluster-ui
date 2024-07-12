@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import {ListDashboard} from "./ListDashboard";
+import {useAppState} from "../AppStateContext";
+import DefineReportItem from "./DefineReportItem";
 
 const DashboardContainer = styled.div`
     padding: 20px;
@@ -10,10 +12,12 @@ const DashboardContainer = styled.div`
 `;
 
 const ReportsDashboard = () => {
+    const {homeSubMenu} = useAppState();
 
     return (
         <DashboardContainer>
-            <ListDashboard/>
+            {homeSubMenu === 'define_report' && <DefineReportItem/>}
+            {homeSubMenu === 'report_list' && <ListDashboard/>}
         </DashboardContainer>
     );
 };
