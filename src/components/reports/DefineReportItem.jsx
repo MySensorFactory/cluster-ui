@@ -1,11 +1,14 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import {MultiSelect, SingleSelect} from "../controls/Select";
+import { MultiSelect, SingleSelect } from "../controls/Select";
+import { ButtonWithIcon } from "../controls/ButtonWithIcon";
+import Apply from "../../assets/Apply"; // Assuming you have a Save icon component
 
 const FormContainer = styled.div`
     background-color: #1C1C21;
     color: white;
     padding: 20px;
+    max-width: 1000px; // Adjust this value as needed
 `;
 
 const Title = styled.h2`
@@ -14,7 +17,7 @@ const Title = styled.h2`
 `;
 
 const Input = styled.input`
-    width: 500px; // Fixed width for Title input
+    width: 100%;
     padding: 10px;
     margin-bottom: 15px;
     background-color: #2a2a36;
@@ -24,7 +27,7 @@ const Input = styled.input`
 `;
 
 const TextArea = styled.textarea`
-    width: 500px;
+    width: 100%;
     height: 100px;
     padding: 10px;
     margin-bottom: 15px;
@@ -32,19 +35,25 @@ const TextArea = styled.textarea`
     color: white;
     border: 1px solid #3a3a3a;
     border-radius: 5px;
-    resize: none; // This disables the resize functionality
-`;
-
-const DateInput = styled(Input)`
-    width: auto;
+    resize: none;
 `;
 
 const Header = styled.div`
     display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
 `;
 
 const ControlWrapper = styled.div`
-    margin-bottom: 15px;
+    flex: 1;
+    margin-right: 10px;
+    &:last-child {
+        margin-right: 0;
+    }
+`;
+
+const DateInput = styled(Input)`
+    width: 100%;
 `;
 
 const ControlLabel = styled.label`
@@ -84,7 +93,6 @@ const DefineReportItem = ({onSave, initialData}) => {
 
     return (
         <FormContainer>
-
             <Title>{initialData ? 'Edit Report' : 'Create Report'}</Title>
             <Input
                 type="text"
@@ -133,7 +141,11 @@ const DefineReportItem = ({onSave, initialData}) => {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
             />
-            <button onClick={handleSave}>Save</button>
+            <ButtonWithIcon
+                svgComponent={<Apply />}
+                text={'Save'}
+                onClick={handleSave}
+            />
         </FormContainer>
     );
 };
