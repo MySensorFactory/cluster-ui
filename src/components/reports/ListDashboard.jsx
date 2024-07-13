@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import Select from "react-select";
 import ReportsList from "./ReportsList";
 import styled from "styled-components";
+import {DateInput} from "../controls/DateInput";
 
 const Title = styled.h2`
     font-size: 24px;
@@ -21,19 +22,6 @@ const SearchInput = styled.input`
     padding: 10px;
     border-radius: 5px;
     width: 300px;
-`;
-
-const DateInput = styled.input`
-    background-color: #2a2a36;
-    border: none;
-    color: white;
-    padding: 10px;
-    border-radius: 5px;
-    width: 150px;
-
-    &::-webkit-calendar-picker-indicator {
-        filter: invert(1);
-    }
 `;
 
 const customStyles = {
