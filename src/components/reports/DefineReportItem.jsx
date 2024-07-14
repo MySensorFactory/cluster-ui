@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useLayoutEffect, useRef, useState} from 'react';
 import styled from 'styled-components';
 import {MultiSelect, SingleSelect} from "../controls/Select";
 import {ButtonWithIcon} from "../controls/ButtonWithIcon";
@@ -8,7 +8,8 @@ const FormContainer = styled.div`
     background-color: #1C1C21;
     color: white;
     padding: 20px;
-    max-width: 1000px; // Adjust this value as needed
+    width: 1000px; 
+    border-radius: 10px;
 `;
 
 const Title = styled.h2`
@@ -17,8 +18,8 @@ const Title = styled.h2`
 `;
 
 const Input = styled.input`
-    width: 100%;
-    padding: 10px;
+    width: ${props => props.width}px;
+    padding: 10px 0;
     margin-bottom: 15px;
     background-color: #2a2a36;
     color: white;
@@ -27,9 +28,9 @@ const Input = styled.input`
 `;
 
 const TextArea = styled.textarea`
-    width: 100%;
+    width: ${props => props.width}px;
     height: 100px;
-    padding: 10px;
+    padding: 10px 0;
     margin-bottom: 15px;
     margin-right: 20px;
     background-color: #2a2a36;
@@ -41,6 +42,7 @@ const TextArea = styled.textarea`
 
 const ControlsContainer = styled.div`
     display: flex;
+    width: 95%;
     justify-content: space-between;
     margin-bottom: 15px;
     gap: 20px;
@@ -75,6 +77,18 @@ const DefineReportItem = ({onSave, initialData}) => {
     const [toDate, setToDate] = useState(initialData?.toDate || '');
     const [includedSensors, setIncludedSensors] = useState(initialData?.includedSensors || []);
 
+    const targetRef = useRef();
+    const [dimensions, setDimensions] = useState({ width:0, height: 0 });
+
+    useLayoutEffect(() => {
+        if (targetRef.current) {
+            setDimensions({
+                width: targetRef.current.offsetWidth,
+                height: targetRef.current.offsetHeight
+            });
+        }
+    }, []);
+
     const sensorLabelOptions = [
         {value: 'Temperature before compressor', label: 'Temperature before compressor'},
         {value: 'Pressure after compressor', label: 'Pressure after compressor'},
@@ -100,12 +114,13 @@ const DefineReportItem = ({onSave, initialData}) => {
         <FormContainer>
             <Title>{initialData ? 'Edit Report' : 'Create Report'}</Title>
             <Input
+                width={dimensions.width}
                 type="text"
                 placeholder="Write title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
             />
-            <ControlsContainer>
+            <ControlsContainer ref={targetRef}>
                 <ControlWrapper>
                     <ControlLabel>Sensor Label</ControlLabel>
                     <SingleSelect
@@ -142,6 +157,7 @@ const DefineReportItem = ({onSave, initialData}) => {
                 </ControlWrapper>
             </ControlsContainer>
             <TextArea
+                width={dimensions.width}
                 placeholder="Write description..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
