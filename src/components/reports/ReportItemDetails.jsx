@@ -1,8 +1,9 @@
-import React from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
 import {Chart} from "../home/Charts";
 import {generateData} from "../data/DataSource";
 import {DeleteButton, EditButton} from "../home/TryRenderEditBox";
+import DefineReportItem from "./DefineReportItem";
 
 const DetailsContainer = styled.div`
     background-color: #2a2a36;
@@ -36,19 +37,20 @@ const ButtonsContainer = styled.div`
     align-items: center;
 `;
 
-const ReportItemDetails = ({title, sensorLabel, description}) => {
-
-    return (
-        <DetailsContainer>
+const DetailsViewContent = ({title, sensorLabel, description, setEditReportState}) => {
+    return (<>
             <ButtonsContainer>
-                    <EditButton
-                        onEdit={() => {}}
-                        iconSize={40}
-                    />
-                    <DeleteButton
-                        onDelete={() => {}}
-                        iconSize={5}
-                    />
+                <EditButton
+                    onEdit={() => {
+                        setEditReportState(true);
+                    }}
+                    iconSize={40}
+                />
+                <DeleteButton
+                    onDelete={() => {
+                    }}
+                    iconSize={5}
+                />
             </ButtonsContainer>
             <Title>{title}</Title>
             <p>Sensor label: {sensorLabel}</p>
@@ -85,6 +87,22 @@ const ReportItemDetails = ({title, sensorLabel, description}) => {
                 days={1}
                 numTicks={10} // Set the number of ticks you want to show
             />
+        </>
+    );
+}
+
+const ReportItemDetails = ({title, sensorLabel, description}) => {
+    const [isEditReportState, setEditReportState] = useState(false)
+
+    return (
+        <DetailsContainer>
+            {!isEditReportState && <DetailsViewContent
+            title={title}
+            sensorLabel={sensorLabel}
+            description={description}
+            setEditReportState={setEditReportState}
+            />}
+            {isEditReportState && <DefineReportItem/>}
         </DetailsContainer>
     );
 };

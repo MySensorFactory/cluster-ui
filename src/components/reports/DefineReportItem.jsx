@@ -31,6 +31,7 @@ const TextArea = styled.textarea`
     height: 100px;
     padding: 10px;
     margin-bottom: 15px;
+    margin-right: 20px;
     background-color: #2a2a36;
     color: white;
     border: 1px solid #3a3a3a;
