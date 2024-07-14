@@ -38,10 +38,11 @@ const TextArea = styled.textarea`
     resize: none;
 `;
 
-const Header = styled.div`
+const ControlsContainer = styled.div`
     display: flex;
     justify-content: space-between;
     margin-bottom: 15px;
+    gap: 20px;
 `;
 
 const ControlWrapper = styled.div`
@@ -103,7 +104,7 @@ const DefineReportItem = ({onSave, initialData}) => {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
             />
-            <Header>
+            <ControlsContainer>
                 <ControlWrapper>
                     <ControlLabel>Sensor Label</ControlLabel>
                     <SingleSelect
@@ -135,10 +136,10 @@ const DefineReportItem = ({onSave, initialData}) => {
                         options={includedSensorOptions}
                         value={includedSensors}
                         onChange={setIncludedSensors}
-                        placeholder="Select included sensor types"
+                        placeholder="Select sensor types"
                     />
                 </ControlWrapper>
-            </Header>
+            </ControlsContainer>
             <TextArea
                 placeholder="Write description..."
                 value={description}
