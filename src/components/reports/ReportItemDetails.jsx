@@ -96,13 +96,17 @@ const ReportItemDetails = ({title, sensorLabel, description}) => {
 
     return (
         <DetailsContainer>
-            {!isEditReportState && <DetailsViewContent
-            title={title}
-            sensorLabel={sensorLabel}
-            description={description}
-            setEditReportState={setEditReportState}
-            />}
-            {isEditReportState && <DefineReportItem/>}
+            {!isEditReportState &&
+                <DetailsViewContent
+                    title={title}
+                    sensorLabel={sensorLabel}
+                    description={description}
+                    setEditReportState={setEditReportState}
+                />}
+            {isEditReportState &&
+                <DefineReportItem
+                    onSave={() => setEditReportState(false)}
+                />}
         </DetailsContainer>
     );
 };
