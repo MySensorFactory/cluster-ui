@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import {ButtonWithIcon} from "./controls/ButtonWithIcon";
 import Home from "../assets/Home";
 import Report from "../assets/Reports";
-import Users from "../assets/Users";
 import {UserProfile} from "./UserProfile";
 import {useAppState} from "./AppStateContext";
 
@@ -87,13 +86,6 @@ function Sidebar() {
                         <SubMenuItem onClick={() => setReportsSubMenu('define_report')}>Define report</SubMenuItem>
                     </SubMenuContainer>
                 );
-            case 'Users Management':
-                return (
-                    <SubMenuContainer>
-                        <SubMenuItem>User List</SubMenuItem>
-                        <SubMenuItem>Add User</SubMenuItem>
-                    </SubMenuContainer>
-                );
             default:
                 return null;
         }
@@ -115,12 +107,6 @@ function Sidebar() {
                     onClick={() => handleMenuClick('Reports')}
                 />
                 {activeMenu === 'Reports' && renderSubMenu()}
-                <ButtonWithIcon
-                    svgComponent={<Users/>}
-                    text={'Users Management'}
-                    onClick={() => handleMenuClick('Users Management')}
-                />
-                {activeMenu === 'Users Management' && renderSubMenu()}
             </ButtonContainer>
         </SidebarContainer>
     );
