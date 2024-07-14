@@ -12,12 +12,12 @@ const DashboardContainer = styled.div`
 `;
 
 const ReportsDashboard = () => {
-    const {homeSubMenu} = useAppState();
+    const {reportsSubMenu} = useAppState();
 
     return (
         <DashboardContainer>
-            {homeSubMenu === 'define_report' && <DefineReportItem/>}
-            {homeSubMenu === 'report_list' && <ListDashboard/>}
+            {reportsSubMenu === 'define_report' && <DefineReportItem/>}
+            {reportsSubMenu === 'report_list' && <ListDashboard/>}
         </DashboardContainer>
     );
 };
