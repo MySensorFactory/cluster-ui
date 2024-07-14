@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import styled from 'styled-components';
-import { MultiSelect, SingleSelect } from "../controls/Select";
-import { ButtonWithIcon } from "../controls/ButtonWithIcon";
-import Apply from "../../assets/Apply"; // Assuming you have a Save icon component
+import {MultiSelect, SingleSelect} from "../controls/Select";
+import {ButtonWithIcon} from "../controls/ButtonWithIcon";
+import Apply from "../../assets/Apply";
 
 const FormContainer = styled.div`
     background-color: #1C1C21;
@@ -47,6 +47,7 @@ const Header = styled.div`
 const ControlWrapper = styled.div`
     flex: 1;
     margin-right: 10px;
+
     &:last-child {
         margin-right: 0;
     }
@@ -88,7 +89,9 @@ const DefineReportItem = ({onSave, initialData}) => {
     ];
 
     const handleSave = () => {
-        onSave({title, sensorLabel, description, fromDate, toDate, includedSensors});
+        if (onSave !== undefined) {
+            onSave({title, sensorLabel, description, fromDate, toDate, includedSensors});
+        }
     };
 
     return (
@@ -142,7 +145,7 @@ const DefineReportItem = ({onSave, initialData}) => {
                 onChange={(e) => setDescription(e.target.value)}
             />
             <ButtonWithIcon
-                svgComponent={<Apply />}
+                svgComponent={<Apply/>}
                 text={'Save'}
                 onClick={handleSave}
             />
