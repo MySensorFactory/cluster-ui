@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import {ButtonWithIcon} from "./buttons/ButtonWithIcon";
+import {ButtonWithIcon} from "./controls/ButtonWithIcon";
 import Home from "../assets/Home";
 import Report from "../assets/Reports";
 import Users from "../assets/Users";
@@ -49,12 +49,18 @@ const SubMenuItem = styled.button`
 `;
 
 function Sidebar() {
-    const { activeMenu, setActiveMenu, homeSubMenu, setHomeSubMenu } = useAppState();
+    const {
+        activeMenu, setActiveMenu, homeSubMenu, setHomeSubMenu,
+        setReportsSubMenu
+    } = useAppState();
 
     const handleMenuClick = (menu) => {
         setActiveMenu(menu);
         if (menu === 'Home') {
             setHomeSubMenu('view');
+        }
+        if (menu === 'Reports') {
+            setReportsSubMenu('report_list');
         }
     };
 
@@ -77,8 +83,8 @@ function Sidebar() {
             case 'Reports':
                 return (
                     <SubMenuContainer>
-                        <SubMenuItem>Report 1</SubMenuItem>
-                        <SubMenuItem>Report 2</SubMenuItem>
+                        <SubMenuItem onClick={() => setReportsSubMenu('report_list')}>Reports list</SubMenuItem>
+                        <SubMenuItem onClick={() => setReportsSubMenu('define_report')}>Define report</SubMenuItem>
                     </SubMenuContainer>
                 );
             case 'Users Management':
@@ -95,22 +101,22 @@ function Sidebar() {
 
     return (
         <SidebarContainer>
-            <UserProfile />
+            <UserProfile/>
             <ButtonContainer>
                 <ButtonWithIcon
-                    svgComponent={<Home />}
+                    svgComponent={<Home/>}
                     text={'Home'}
                     onClick={() => handleMenuClick('Home')}
                 />
                 {activeMenu === 'Home' && renderSubMenu()}
                 <ButtonWithIcon
-                    svgComponent={<Report />}
+                    svgComponent={<Report/>}
                     text={'Reports'}
                     onClick={() => handleMenuClick('Reports')}
                 />
                 {activeMenu === 'Reports' && renderSubMenu()}
                 <ButtonWithIcon
-                    svgComponent={<Users />}
+                    svgComponent={<Users/>}
                     text={'Users Management'}
                     onClick={() => handleMenuClick('Users Management')}
                 />

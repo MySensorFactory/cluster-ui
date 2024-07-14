@@ -21,8 +21,7 @@ export const ButtonWithIconContainer = styled.button`
 
 `;
 
-export const ButtonWithIcon = ({ svgComponent, text, onClick }) => {
-    const iconSize = 20;
+export const ButtonWithIcon = ({ svgComponent, text, onClick, iconSize = 20 }) => {
     const marginBetweenTextAndIcon = '7px';
 
     return (
