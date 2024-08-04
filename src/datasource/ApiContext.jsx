@@ -1,9 +1,9 @@
 import React, { createContext, useContext } from 'react';
-import { useApi } from './useApi';
+import { useApi } from './UseApi';
 
-const ApiContext = createContext<ReturnType<typeof useApi> | null>(null);
+const ApiContext = createContext(null);
 
-export const ApiProvider: React.FC = ({ children }) => {
+export const ApiProvider  = ({ children }) => {
     const api = useApi();
 
     return (
