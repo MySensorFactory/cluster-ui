@@ -1,8 +1,9 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import SensorValueItem from './SensorValueItem';
 import {useAppState} from "../AppStateContext";
 import {AddSensorButton} from "./AddSensorButton";
+import {useApiContext} from "../../datasource/ApiContext";
 
 const AverageMetricsContainer = styled.div`
     margin-bottom: 20px;
@@ -23,16 +24,31 @@ const SensorItemWrapper = styled.div`
     }
 `;
 
-const averageMetrics = [
-    {label: 'Pressure after compressor', value: '5.4 MPa'},
-    {label: 'Temperature before compressor', value: '300 K'},
-    {label: 'Temperature in combustion chamber', value: '700 K'},
-    {label: 'Input flow rate', value: '4 m\u00B3/min'},
-    {label: 'Output flow rate', value: '2.3 m\u00B3/min'},
-];
+// const averageMetrics = [
+//     {label: 'Pressure after compressor', value: '5.4 MPa'},
+//     {label: 'Temperature before compressor', value: '300 K'},
+//     {label: 'Temperature in combustion chamber', value: '700 K'},
+//     {label: 'Input flow rate', value: '4 m\u00B3/min'},
+//     {label: 'Output flow rate', value: '2.3 m\u00B3/min'},
+// ];
 
 const AverageSensorValues = ({onAddSensorValueItem, onEditSensorValueItem, onDeleteButtonClicked}) => {
     const {homeSubMenu} = useAppState();
+    const [averageMetrics, setAverageMetrics] = useState([]);
+    const { homeApi } = useApiContext();
+
+    useEffect(() => {
+        const fetchAverageMetrics = async () => {
+            try {
+                const response = await homeApi.averageSensorValuesGet(null);
+                setAverageMetrics(response.data);
+            } catch (error) {
+                console.error('Error fetching average metrics:', error);
+            }
+        };
+
+        fetchAverageMetrics();
+    }, [homeApi]);
 
     return (
         <AverageMetricsContainer>

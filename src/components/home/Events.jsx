@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import EventItem from './EventItem';
+import {useApiContext} from "../../datasource/ApiContext";
 
 
 const EventsContainer = styled.div`
@@ -96,6 +97,25 @@ const Events = () => {
     const [showOnlyAlerts, setShowOnlyAlerts] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [dateRange, setDateRange] = useState({ start: '', end: '' });
+    const { homeApi } = useApiContext();
+
+    useEffect(() => {
+        const fetchEvents = async () => {
+            try {
+                const response = await homeApi.eventsGet({
+                    showOnlyAlerts,
+                    searchTerm,
+                    startDate: dateRange.start,
+                    endDate: dateRange.end
+                }, null);
+                setFilteredEvents(response.data);
+            } catch (error) {
+                console.error('Error fetching events:', error);
+            }
+        };
+
+        fetchEvents();
+    }, [showOnlyAlerts, searchTerm, dateRange, homeApi]);
 
     useEffect(() => {
         let result = events;

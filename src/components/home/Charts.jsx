@@ -5,6 +5,7 @@ import {AddSensorButton} from "./AddSensorButton";
 import {useAppState} from "../AppStateContext";
 import {tryRenderEditBox} from "./TryRenderEditBox";
 import {calculateTicks, formatTime, generateData} from "../data/DataSource";
+import {useApiContext} from "../../datasource/ApiContext";
 
 const ChartsContainer = styled.div`
     background-color: #1C1C21;
@@ -101,35 +102,41 @@ const Charts = ({onAddChartButtonClicked, onEditChartButtonClicked, onDeleteButt
     const [flowData, setFlowData] = useState([]);
     const [days, setDays] = useState(1);
     const { homeSubMenu} = useAppState();
+    const { homeApi } = useApiContext();
 
 
     useEffect(() => {
-        let days;
-        switch (timeRange) {
-            case 'oneLastDay':
-                days = 1;
-                break;
-            case 'twoLastDays':
-                days = 2;
-                break;
-            case 'threeLastDays':
-                days = 3;
-                break;
-            case 'fiveLastDays':
-                days = 5;
-                break;
-            case 'lastWeek':
-                days = 7;
-                break;
-            default:
-                days = 1;
-                break;
+        const fetchChartData = async () => {
+            try {
+                const [tempResponse, pressureResponse, flowResponse] = await Promise.all([
+                    homeApi.chartDataGet({ sensorType: 'temperature', timeRange }),
+                    homeApi.chartDataGet({ sensorType: 'pressure', timeRange }),
+                    homeApi.chartDataGet({ sensorType: 'flow', timeRange })
+                ]);
+
+                setTemperatureData(tempResponse.data);
+                setPressureData(pressureResponse.data);
+                setFlowData(flowResponse.data);
+
+                setDays(getDaysFromTimeRange(timeRange));
+            } catch (error) {
+                console.error('Error fetching chart data:', error);
+            }
+        };
+
+        fetchChartData();
+    }, [timeRange, homeApi]);
+
+    const getDaysFromTimeRange = (range) => {
+        switch (range) {
+            case 'oneLastDay': return 1;
+            case 'twoLastDays': return 2;
+            case 'threeLastDays': return 3;
+            case 'fiveLastDays': return 5;
+            case 'lastWeek': return 7;
+            default: return 1;
         }
-        setDays(days);
-        setTemperatureData(generateData(15, 25, days));
-        setPressureData(generateData(4, 6, days));
-        setFlowData(generateData(100, 200, days));
-    }, [timeRange]);
+    };
 
     return (
         <ChartsContainer>
