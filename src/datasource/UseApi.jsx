@@ -1,6 +1,6 @@
-import {ReportsApi} from './generated/src';
+import {HomeApi} from './generated/src';
 
 export function useApi() {
-    const reportsApi = new ReportsApi();
-    return { reportsApi };
+    const homeApi = new HomeApi();
+    return { homeApi };
 }
