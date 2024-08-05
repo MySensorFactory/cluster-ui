@@ -4,7 +4,7 @@ import {CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAx
 import {AddSensorButton} from "./AddSensorButton";
 import {useAppState} from "../AppStateContext";
 import {tryRenderEditBox} from "./TryRenderEditBox";
-import {calculateTicks, formatTime, generateData} from "../data/DataSource";
+import {calculateTicks, formatTime} from "../data/DataSource";
 import {useApiContext} from "../../datasource/ApiContext";
 
 const ChartsContainer = styled.div`
@@ -41,8 +41,8 @@ const TimeRangeSelector = styled.select`
     margin-bottom: 20px;
 `;
 
-export const Chart = ({ data, title, dataKey, stroke, domain, yAxisUnit, days, numTicks, onEdit, onDelete }) => {
-    const { homeSubMenu } = useAppState();
+export const Chart = ({data, title, dataKey, stroke, domain, yAxisUnit, days, numTicks, onEdit, onDelete}) => {
+    const {homeSubMenu} = useAppState();
     const [isHovered, setIsHovered] = useState(false);
     const ticks = calculateTicks(data, numTicks);
 
@@ -101,40 +101,30 @@ const Charts = ({onAddChartButtonClicked, onEditChartButtonClicked, onDeleteButt
     const [pressureData, setPressureData] = useState([]);
     const [flowData, setFlowData] = useState([]);
     const [days, setDays] = useState(1);
-    const { homeSubMenu} = useAppState();
-    const { homeApi } = useApiContext();
-
+    const {homeSubMenu} = useAppState();
+    const {homeApi} = useApiContext();
 
     useEffect(() => {
-        const fetchChartData = async () => {
-            try {
-                const [tempResponse, pressureResponse, flowResponse] = await Promise.all([
-                    homeApi.chartDataGet({ sensorType: 'temperature', timeRange }),
-                    homeApi.chartDataGet({ sensorType: 'pressure', timeRange }),
-                    homeApi.chartDataGet({ sensorType: 'flow', timeRange })
-                ]);
-
-                setTemperatureData(tempResponse.data);
-                setPressureData(pressureResponse.data);
-                setFlowData(flowResponse.data);
-
-                setDays(getDaysFromTimeRange(timeRange));
-            } catch (error) {
-                console.error('Error fetching chart data:', error);
-            }
-        };
-
-        fetchChartData();
-    }, [timeRange, homeApi]);
+            setDays(getDaysFromTimeRange(timeRange));
+            homeApi.getChartData('temperature', timeRange, setTemperatureData)
+            homeApi.getChartData('pressure', timeRange, setPressureData)
+            homeApi.getChartData('flow', timeRange, setFlowData)
+    }, [timeRange]);
 
     const getDaysFromTimeRange = (range) => {
         switch (range) {
-            case 'oneLastDay': return 1;
-            case 'twoLastDays': return 2;
-            case 'threeLastDays': return 3;
-            case 'fiveLastDays': return 5;
-            case 'lastWeek': return 7;
-            default: return 1;
+            case 'oneLastDay':
+                return 1;
+            case 'twoLastDays':
+                return 2;
+            case 'threeLastDays':
+                return 3;
+            case 'fiveLastDays':
+                return 5;
+            case 'lastWeek':
+                return 7;
+            default:
+                return 1;
         }
     };
 
@@ -185,7 +175,7 @@ const Charts = ({onAddChartButtonClicked, onEditChartButtonClicked, onDeleteButt
                 onDelete={onDeleteButtonClicked}
             />
             {homeSubMenu === 'edit' && (
-                <AddSensorButton onButtonClicked={onAddChartButtonClicked} />
+                <AddSensorButton onButtonClicked={onAddChartButtonClicked}/>
             )}
         </ChartsContainer>
     );

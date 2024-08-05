@@ -18,37 +18,18 @@ const SensorValuesGrid = styled.div`
 
 const SensorItemWrapper = styled.div`
     flex: 0 0 calc(20.0% - 20px);
-    
+
     &.wide {
         flex: 0 0 calc(40.00% - 20px);
     }
 `;
 
-// const averageMetrics = [
-//     {label: 'Pressure after compressor', value: '5.4 MPa'},
-//     {label: 'Temperature before compressor', value: '300 K'},
-//     {label: 'Temperature in combustion chamber', value: '700 K'},
-//     {label: 'Input flow rate', value: '4 m\u00B3/min'},
-//     {label: 'Output flow rate', value: '2.3 m\u00B3/min'},
-// ];
-
 const AverageSensorValues = ({onAddSensorValueItem, onEditSensorValueItem, onDeleteButtonClicked}) => {
     const {homeSubMenu} = useAppState();
     const [averageMetrics, setAverageMetrics] = useState([]);
-    const { homeApi } = useApiContext();
+    const {homeApi} = useApiContext();
 
-    useEffect(() => {
-        const fetchAverageMetrics = async () => {
-            try {
-                const response = await homeApi.averageSensorValuesGet(null);
-                setAverageMetrics(response.data);
-            } catch (error) {
-                console.error('Error fetching average metrics:', error);
-            }
-        };
-
-        fetchAverageMetrics();
-    }, [homeApi]);
+    useEffect(() => homeApi.getAverageSensorValues(setAverageMetrics), [homeSubMenu]);
 
     return (
         <AverageMetricsContainer>
@@ -59,18 +40,18 @@ const AverageSensorValues = ({onAddSensorValueItem, onEditSensorValueItem, onDel
                         key={index}
                         className={sensor.label === 'Input gas composition' ? 'wide' : ''}
                     >
-                    <SensorValueItem
-                        key={index}
-                        label={sensor.label}
-                        value={sensor.value}
-                        onEdit={onEditSensorValueItem}
-                        onDelete={onDeleteButtonClicked}
-                    />
+                        <SensorValueItem
+                            key={index}
+                            label={sensor.label}
+                            value={sensor.value}
+                            onEdit={onEditSensorValueItem}
+                            onDelete={onDeleteButtonClicked}
+                        />
                     </SensorItemWrapper>
                 ))}
                 {homeSubMenu === 'edit' && (
                     <SensorItemWrapper>
-                    <AddSensorButton onButtonClicked={onAddSensorValueItem}/>
+                        <AddSensorButton onButtonClicked={onAddSensorValueItem}/>
                     </SensorItemWrapper>
                 )}
             </SensorValuesGrid>

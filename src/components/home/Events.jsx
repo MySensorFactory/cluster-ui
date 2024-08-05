@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import EventItem from './EventItem';
 import {useApiContext} from "../../datasource/ApiContext";
@@ -80,67 +80,20 @@ const StyledLabel = styled.label`
     font-size: 14px;
 `;
 
-const events = [
-    {title: 'Speed workout at the track', time: new Date('2024-06-27T18:00:00'), isAlert: true},
-    {title: 'Speed workout at the track', time: new Date('2024-06-27T18:00:00'), isAlert: true},
-    {title: 'Long run from the club house', time: new Date('2024-06-30T08:00:00'), isAlert: false},
-    {title: 'Speed workout at the track', time: new Date('2024-06-27T18:00:00'), isAlert: true},
-    {title: 'Long run from the club house', time: new Date('2024-06-30T08:00:00'), isAlert: false},
-    {title: 'Speed workout at the track', time: new Date('2024-06-27T18:00:00'), isAlert: true},
-    {title: 'Hill repeats on 5th Street', time: new Date('2024-07-02T19:00:00'), isAlert: false},
-    {title: 'Hill repeats on 5th Street', time: new Date('2024-07-02T19:00:00'), isAlert: false},
-    {title: 'Hill repeats on 5th Street', time: new Date('2024-07-02T19:00:00'), isAlert: false}
-];
-
 const Events = () => {
-    const [filteredEvents, setFilteredEvents] = useState(events);
+    const [filteredEvents, setFilteredEvents] = useState([]);
     const [showOnlyAlerts, setShowOnlyAlerts] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const [dateRange, setDateRange] = useState({ start: '', end: '' });
-    const { homeApi } = useApiContext();
+    const [dateRange, setDateRange] = useState({start: '', end: ''});
+    const {homeApi} = useApiContext();
 
-    useEffect(() => {
-        const fetchEvents = async () => {
-            try {
-                const response = await homeApi.eventsGet({
-                    showOnlyAlerts,
-                    searchTerm,
-                    startDate: dateRange.start,
-                    endDate: dateRange.end
-                }, null);
-                setFilteredEvents(response.data);
-            } catch (error) {
-                console.error('Error fetching events:', error);
-            }
-        };
-
-        fetchEvents();
-    }, [showOnlyAlerts, searchTerm, dateRange, homeApi]);
-
-    useEffect(() => {
-        let result = events;
-
-        if (showOnlyAlerts) {
-            result = result.filter(event => event.isAlert);
-        }
-
-        if (searchTerm) {
-            result = result.filter(event =>
-                event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                event.time.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-        }
-
-        if (dateRange.start && dateRange.end) {
-            const start = new Date(dateRange.start);
-            const end = new Date(dateRange.end);
-            result = result.filter(event =>
-                event.time >= start && event.time <= end
-            );
-        }
-
-        setFilteredEvents(result);
-    }, [showOnlyAlerts, searchTerm, dateRange]);
+    useEffect(() =>
+        homeApi.getEvents({
+            showOnlyAlerts,
+            searchTerm,
+            startDate: dateRange.start,
+            endDate: dateRange.end
+        }, setFilteredEvents), [showOnlyAlerts, searchTerm, dateRange]);
 
     return (
         <EventsContainer>

@@ -24,32 +24,12 @@ const SensorItemWrapper = styled.div`
     }
 `;
 
-// const sensorValues = [
-//     {label: 'Pressure after compressor', value: '5.4 MPa'},
-//     {label: 'Temperature before compressor', value: '300 K'},
-//     {label: 'Temperature in combustion chamber', value: '700 K'},
-//     {label: 'Input flow rate', value: '4 m\u00B3/min'},
-//     {label: 'Output flow rate', value: '2.3 m\u00B3/min'},
-//     {label: 'Input gas composition', value: '42 % CO₂, 18 % H₂, 10 % NH₃, 15 % O₂, 15% N₂'},
-// ];
-
 const CurrentSensorValues = ({onAddSensorValueItem, onEditSensorValueItem}) => {
     const {homeSubMenu} = useAppState();
     const [sensorValues, setSensorValues] = useState([]);
     const { homeApi } = useApiContext();
 
-    useEffect(() => {
-        const fetchSensorValues = async () => {
-            try {
-                const response = await homeApi.sensorValuesGet(null);
-                setSensorValues(response.data);
-            } catch (error) {
-                console.error('Error fetching sensor values:', error);
-            }
-        };
-
-        fetchSensorValues();
-    }, [homeApi]);
+    useEffect(() => homeApi.getCurrentSensorValues(setSensorValues), [homeSubMenu]);
 
     const handleDeleteSensor = (index) => {
         // Implement logic to delete a sensor
