@@ -1,13 +1,12 @@
-import React, { createContext, useContext } from 'react';
-import { useApi } from './UseApi';
+import React, {createContext, useContext} from 'react';
+import {useApi} from './ApiClient';
 
 const ApiContext = createContext(null);
 
-export const ApiProvider  = ({ children }) => {
-    const api = useApi();
-
+export const ApiProvider = ({children}) => {
+    const homeApi = useApi()
     return (
-        <ApiContext.Provider value={api}>
+        <ApiContext.Provider value={{homeApi}}>
             {children}
         </ApiContext.Provider>
     );
