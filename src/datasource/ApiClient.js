@@ -41,7 +41,7 @@ export function useApi() {
         },
 
         getChartData: (sensorType, timeRange, onComplete) => {
-            api.get('/chart-data', {params: {sensorType, timeRange},}
+            api.get('/chart-data', {params: {sensorType: sensorType, timeRange: timeRange},}
             )
                 .then(r => nullSafeOnComplete(r, onComplete))
                 .catch(handleError);
@@ -67,26 +67,32 @@ export function useApi() {
 
         addChartConfig: (chartConfig, onComplete) => {
             api.post('/chart-configs', chartConfig)
-                .then(r => nullSafeOnComplete(r, onComplete))
-                .catch(handleError)
-        },
-
-        updateChartConfig: (index, chartConfig, onComplete) => {
-            api.put(`/chart-configs/${index}`, chartConfig)
-                .then(r => nullSafeOnComplete(r, onComplete))
+                .then((r) => nullSafeOnComplete(r, onComplete))
                 .catch(handleError);
-        },
-
-        deleteChartConfig: (index, onComplete) => {
-            api.delete(`/chart-configs/${index}`)
-                .then(r => nullSafeOnComplete(r, onComplete))
-                .catch(handleError)
         },
 
         getChartConfigs: (onComplete) => {
             api.get('/chart-configs')
-                .then(r => nullSafeOnComplete(r, onComplete))
-                .catch(handleError)
+                .then((r) => nullSafeOnComplete(r, onComplete))
+                .catch(handleError);
+        },
+
+        getChartConfig: (id, onComplete) => {
+            api.get(`/chart-configs/${id}`)
+                .then((r) => nullSafeOnComplete(r, onComplete))
+                .catch(handleError);
+        },
+
+        updateChartConfig: (id, chartConfig, onComplete) => {
+            api.put(`/chart-configs/${id}`, chartConfig)
+                .then((r) => nullSafeOnComplete(r, onComplete))
+                .catch(handleError);
+        },
+
+        deleteChartConfig: (id, onComplete) => {
+            api.delete(`/chart-configs/${id}`)
+                .then((r) => nullSafeOnComplete(r, onComplete))
+                .catch(handleError);
         },
 
     }
