@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import {CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from 'recharts';
-import {AddSensorButton} from "./AddSensorButton";
-import {useAppState} from "../AppStateContext";
-import {tryRenderEditBox} from "./TryRenderEditBox";
-import {calculateTicks, formatTime} from "../data/DataSource";
-import {useApiContext} from "../../datasource/ApiContext";
+import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { AddSensorButton } from './AddSensorButton';
+import { useAppState } from '../AppStateContext';
+import { tryRenderEditBox } from './TryRenderEditBox';
+import { calculateTicks, formatTime } from '../data/DataSource';
+import { useApiContext } from '../../datasource/ApiContext';
 
 const ChartsContainer = styled.div`
     background-color: #1C1C21;
@@ -41,75 +41,112 @@ const TimeRangeSelector = styled.select`
     margin-bottom: 20px;
 `;
 
-export const Chart = ({data, title, dataKey, stroke, domain, yAxisUnit, days, numTicks, onEdit, onDelete}) => {
-    const {homeSubMenu} = useAppState();
+export const Chart = ({ data, title, dataKey, stroke, domain, yAxisUnit, days, numTicks, onEdit, onDelete }) => {
+    const { homeSubMenu } = useAppState();
     const [isHovered, setIsHovered] = useState(false);
     const ticks = calculateTicks(data, numTicks);
 
-    const chartClassName = "chart-wrapper"
-    const parentSelector = ".".concat(chartClassName)
+    const chartClassName = 'chart-wrapper';
+    const parentSelector = '.' + chartClassName;
 
-    return <ChartWrapper
-        className={chartClassName}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-    >
-        <ChartTitle>{title}</ChartTitle>
-        <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={data} margin={{top: 20, right: 30, left: 20, bottom: 25}}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#333"/>
-                <XAxis
-                    dataKey="time"
-                    stroke="#888"
-                    tickFormatter={(time) => formatTime(time, days)}
-                    domain={['auto', 'auto']}
-                    scale="time"
-                    type="number"
-                    ticks={ticks}
-                    label={{value: 'Time', position: 'insideBottom', offset: -21, fill: '#888'}}
-                    tick={{dy: 15}}
-                />
-                <YAxis
-                    stroke="#888"
-                    domain={domain}
-                    label={{value: yAxisUnit, position: 'insideLeft', offset: -15, fill: '#888'}}
-                    tickFormatter={(value) => `${value}`}
-                />
-                <Tooltip
-                    contentStyle={{backgroundColor: '#333', border: 'none'}}
-                    labelStyle={{color: 'white'}}
-                    itemStyle={{color: stroke}}
-                    formatter={(value) => [`${value.toFixed(2)} ${yAxisUnit}`, '']}
-                    labelFormatter={(time) => formatTime(time, days)}
-                />
-                <Line
-                    type="monotone"
-                    dataKey={dataKey}
-                    stroke={stroke}
-                    strokeWidth={2}
-                    dot={false}
-                />
-            </LineChart>
-        </ResponsiveContainer>
-        {tryRenderEditBox(homeSubMenu, isHovered, onEdit, onDelete, parentSelector)}
-    </ChartWrapper>;
+    return (
+        <ChartWrapper
+            className={chartClassName}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+        >
+            <ChartTitle>{title}</ChartTitle>
+            <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 25 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                    <XAxis
+                        dataKey="time"
+                        stroke="#888"
+                        tickFormatter={(time) => formatTime(time, days)}
+                        domain={['auto', 'auto']}
+                        scale="time"
+                        type="number"
+                        ticks={ticks}
+                        label={{ value: 'Time', position: 'insideBottom', offset: -21, fill: '#888' }}
+                        tick={{ dy: 15 }}
+                    />
+                    <YAxis
+                        stroke="#888"
+                        domain={domain}
+                        label={{ value: yAxisUnit, position: 'insideLeft', offset: -15, fill: '#888' }}
+                        tickFormatter={(value) => `${value}`}
+                    />
+                    <Tooltip
+                        contentStyle={{ backgroundColor: '#333', border: 'none' }}
+                        labelStyle={{ color: 'white' }}
+                        itemStyle={{ color: stroke }}
+                        formatter={(value) => [`${value.toFixed(2)} ${yAxisUnit}`, '']}
+                        labelFormatter={(time) => formatTime(time, days)}
+                    />
+                    <Line type="monotone" dataKey={dataKey} stroke={stroke} strokeWidth={2} dot={false} />
+                </LineChart>
+            </ResponsiveContainer>
+            {tryRenderEditBox(homeSubMenu, isHovered, onEdit, onDelete, parentSelector)}
+        </ChartWrapper>
+    );
 };
 
-const Charts = ({onAddChartButtonClicked, onEditChartButtonClicked, onDeleteButtonClicked}) => {
+const Charts = ({ onDataModificationConfirmed }) => {
     const [timeRange, setTimeRange] = useState('oneLastDay');
-    const [temperatureData, setTemperatureData] = useState([]);
-    const [pressureData, setPressureData] = useState([]);
-    const [flowData, setFlowData] = useState([]);
-    const [days, setDays] = useState(1);
-    const {homeSubMenu} = useAppState();
-    const {homeApi} = useApiContext();
+    const [chartConfigs, setChartConfigs] = useState([]);
+    const [chartData, setChartData] = useState({});
+    const { homeSubMenu } = useAppState();
+    const { homeApi } = useApiContext();
+
+    const fetchChartsData = () => {
+        setChartData({});
+        chartConfigs.forEach((config) => {
+            homeApi.getChartData(config.sensorType, timeRange, (result) => {
+                setChartData((prevData) => ({
+                    ...prevData,
+                    [config.id]: result,
+                }));
+            });
+        });
+    };
 
     useEffect(() => {
-            setDays(getDaysFromTimeRange(timeRange));
-            homeApi.getChartData('temperature', timeRange, setTemperatureData)
-            homeApi.getChartData('pressure', timeRange, setPressureData)
-            homeApi.getChartData('flow', timeRange, setFlowData)
+        homeApi.getChartConfigs((configs) => {
+            setChartConfigs(configs);
+        });
     }, [timeRange]);
+
+    useEffect(() => {
+        fetchChartsData();
+    }, [chartConfigs, timeRange]);
+
+    const handleAddChart = (_) => {
+        onDataModificationConfirmed((config) => {
+            homeApi.addChartConfig(config, (addedChart) => {
+                setChartConfigs([...chartConfigs, addedChart]);
+            });
+        });
+    };
+
+    const handleEditChart = (id, updatedChart) => {
+        homeApi.updateChartConfig(id, updatedChart, (updatedChart) => {
+            const newChartConfigs = chartConfigs.map((config) =>
+                config.id === id ? updatedChart : config
+            );
+            setChartConfigs(newChartConfigs);
+        });
+    };
+
+    const handleDeleteChart = (id) => {
+        homeApi.deleteChartConfig(id, () => {
+            const newChartConfigs = chartConfigs.filter((config) => config.id !== id);
+            setChartConfigs(newChartConfigs);
+            setChartData((prevData) => {
+                const { [id]: _, ...rest } = prevData;
+                return rest;
+            });
+        });
+    };
 
     const getDaysFromTimeRange = (range) => {
         switch (range) {
@@ -138,44 +175,23 @@ const Charts = ({onAddChartButtonClicked, onEditChartButtonClicked, onDeleteButt
                 <option value="fiveLastDays">Five last days</option>
                 <option value="lastWeek">Last week</option>
             </TimeRangeSelector>
-            <Chart
-                data={temperatureData}
-                title="Temperature before compressor"
-                dataKey="value"
-                stroke="#4fc3f7"
-                domain={[5, 40]}
-                yAxisUnit="K"
-                days={days}
-                numTicks={10} // Set the number of ticks you want to show
-                onEdit={onEditChartButtonClicked}
-                onDelete={onDeleteButtonClicked}
-            />
-            <Chart
-                data={pressureData}
-                title="Pressure after compressor"
-                dataKey="value"
-                stroke="#ff9800"
-                domain={[2, 8]}
-                yAxisUnit="MPa"
-                days={days}
-                numTicks={10} // Set the number of ticks you want to show
-                onEdit={onEditChartButtonClicked}
-                onDelete={onDeleteButtonClicked}
-            />
-            <Chart
-                data={flowData}
-                title="Flow rate"
-                dataKey="value"
-                stroke="#4caf50"
-                domain={[0, 300]}
-                yAxisUnit="m³/h"
-                days={days}
-                numTicks={10} // Set the number of ticks you want to show
-                onEdit={onEditChartButtonClicked}
-                onDelete={onDeleteButtonClicked}
-            />
+            {chartConfigs.map((config) => (
+                <Chart
+                    key={config.id}
+                    data={chartData[config.id] || []}
+                    title={config.title}
+                    dataKey="value"
+                    stroke="#4fc3f7"
+                    domain={[config.minDomain, config.maxDomain]}
+                    yAxisUnit={config.unit}
+                    days={getDaysFromTimeRange(timeRange)}
+                    numTicks={10}
+                    onEdit={() => handleEditChart(config.id, config)}
+                    onDelete={() => handleDeleteChart(config.id)}
+                />
+            ))}
             {homeSubMenu === 'edit' && (
-                <AddSensorButton onButtonClicked={onAddChartButtonClicked}/>
+                <AddSensorButton onButtonClicked={handleAddChart} />
             )}
         </ChartsContainer>
     );
