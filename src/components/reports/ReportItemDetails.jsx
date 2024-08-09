@@ -1,9 +1,9 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
-import {Chart} from "../home/Charts";
 import {generateData} from "../data/DataSource";
 import {DeleteButton, EditButton} from "../home/TryRenderEditBox";
 import DefineReportItem from "./DefineReportItem";
+import {Chart} from "../controls/Chart";
 
 const DetailsContainer = styled.div`
     background-color: #2a2a36;
