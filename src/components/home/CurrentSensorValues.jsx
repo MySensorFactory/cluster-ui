@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import styled from 'styled-components';
 import SensorValueItem from './SensorValueItem';
-import {useAppState} from '../AppStateContext';
-import {AddSensorButton} from "./AddSensorButton";
-import {useApiContext} from "../../datasource/ApiContext";
+import { useAppState } from '../AppStateContext';
+import { AddSensorButton } from "./AddSensorButton";
+import { useApiContext } from "../../datasource/ApiContext";
 
 const SensorValuesContainer = styled.div`
     margin-bottom: 20px;
@@ -18,23 +18,46 @@ const SensorValuesGrid = styled.div`
 
 const SensorItemWrapper = styled.div`
     flex: 0 0 calc(20.0% - 20px);
-    
+
     &.wide {
         flex: 0 0 calc(40.00% - 20px);
     }
 `;
 
-const CurrentSensorValues = ({onAddSensorValueItem, onEditSensorValueItem}) => {
-    const {homeSubMenu} = useAppState();
+const CurrentSensorValues = ({ onDataModificationConfirmed }) => {
+    const { homeSubMenu } = useAppState();
     const [sensorValues, setSensorValues] = useState([]);
     const { homeApi } = useApiContext();
 
-    useEffect(() => homeApi.getCurrentSensorValues(setSensorValues), [homeSubMenu]);
+    const fetchSensorValues = useCallback(() => {
+        homeApi.getCurrentSensorValues(setSensorValues);
+    }, [homeApi]);
 
-    const handleDeleteSensor = (index) => {
-        // Implement logic to delete a sensor
-        console.log('Delete sensor at index', index);
-    };
+    useEffect(() => {
+        fetchSensorValues();
+    }, [fetchSensorValues]);
+
+    const handleAddSensor = useCallback(() => {
+        onDataModificationConfirmed((newSensor) => {
+            homeApi.addSensorValue(newSensor, (addedSensor) => {
+                setSensorValues(prevValues => [...prevValues, addedSensor]);
+            });
+        });
+    }, [homeApi, onDataModificationConfirmed]);
+
+    const handleEditSensor = useCallback((index, updatedSensor) => {
+        homeApi.updateSensorValue(index, updatedSensor, (editedSensor) => {
+            setSensorValues(prevValues =>
+                prevValues.map((sensor, i) => i === index ? editedSensor : sensor)
+            );
+        });
+    }, [homeApi]);
+
+    const handleDeleteSensor = useCallback((index) => {
+        homeApi.deleteSensorValue(index, () => {
+            setSensorValues(prevValues => prevValues.filter((_, i) => i !== index));
+        });
+    }, [homeApi]);
 
     return (
         <SensorValuesContainer>
@@ -48,14 +71,14 @@ const CurrentSensorValues = ({onAddSensorValueItem, onEditSensorValueItem}) => {
                         <SensorValueItem
                             label={sensor.label}
                             value={sensor.value}
-                            onEdit={onEditSensorValueItem}
+                            onEdit={() => handleEditSensor(index, sensor)}
                             onDelete={() => handleDeleteSensor(index)}
                         />
                     </SensorItemWrapper>
                 ))}
                 {homeSubMenu === 'edit' && (
                     <SensorItemWrapper>
-                        <AddSensorButton onButtonClicked={onAddSensorValueItem}/>
+                        <AddSensorButton onButtonClicked={handleAddSensor} />
                     </SensorItemWrapper>
                 )}
             </SensorValuesGrid>
