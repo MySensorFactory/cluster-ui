@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import styled from 'styled-components';
-import { AddSensorButton } from './AddSensorButton';
-import { useAppState } from '../AppStateContext';
-import { useApiContext } from '../../datasource/ApiContext';
+import {AddSensorButton} from './AddSensorButton';
+import {useAppState} from '../AppStateContext';
+import {useApiContext} from '../../datasource/ApiContext';
 import {Chart} from "../controls/Chart";
 
 const ChartsContainer = styled.div`
@@ -27,19 +27,18 @@ const TimeRangeSelector = styled.select`
 `;
 
 const TIME_RANGE_OPTIONS = [
-    { value: 'oneLastDay', label: 'One last day', days: 1 },
-    { value: 'twoLastDays', label: 'Two last days', days: 2 },
-    { value: 'threeLastDays', label: 'Three last days', days: 3 },
-    { value: 'fiveLastDays', label: 'Five last days', days: 5 },
-    { value: 'lastWeek', label: 'Last week', days: 7 },
+    {value: 'oneLastDay', label: 'One last day', days: 1},
+    {value: 'twoLastDays', label: 'Two last days', days: 2},
+    {value: 'threeLastDays', label: 'Three last days', days: 3},
+    {value: 'fiveLastDays', label: 'Five last days', days: 5},
+    {value: 'lastWeek', label: 'Last week', days: 7},
 ];
 
-const Charts = ({ onDataModificationConfirmed }) => {
+const Charts = ({chartConfigs, setChartConfigs, onDataModificationConfirmed}) => {
     const [timeRange, setTimeRange] = useState(TIME_RANGE_OPTIONS[0].value);
-    const [chartConfigs, setChartConfigs] = useState([]);
     const [chartData, setChartData] = useState({});
-    const { homeSubMenu } = useAppState();
-    const { homeApi } = useApiContext();
+    const {homeSubMenu} = useAppState();
+    const {homeApi} = useApiContext();
 
     const fetchChartsData = useCallback(() => {
         chartConfigs.forEach((config) => {
@@ -47,38 +46,46 @@ const Charts = ({ onDataModificationConfirmed }) => {
                 setChartData(prevData => ({ ...prevData, [config.id]: result }));
             });
         });
-    }, [chartConfigs, timeRange, homeApi]);
-
-    useEffect(() => {
-        homeApi.getChartConfigs(setChartConfigs);
-    }, [homeApi]);
+    }, [chartConfigs, timeRange]);
 
     useEffect(() => {
         fetchChartsData();
-    }, [fetchChartsData]);
+    }, [timeRange]);
 
     const handleAddChart = useCallback(() => {
-        onDataModificationConfirmed((config) => {
-            homeApi.addChartConfig(config, (addedChart) => {
-                setChartConfigs(prevConfigs => [...prevConfigs, addedChart]);
-            });
+        onDataModificationConfirmed((newConfig) => {
+            const newChartConfigs: Array = chartConfigs
+            newChartConfigs.push(newConfig)
+            setChartConfigs(newChartConfigs)
         });
-    }, [homeApi, onDataModificationConfirmed]);
+    }, [chartConfigs]);
 
-    const handleEditChart = useCallback((id, updatedChart) => {
-        homeApi.updateChartConfig(id, updatedChart, (updatedChart) => {
-            setChartConfigs(prevConfigs =>
-                prevConfigs.map(config => config.id === id ? updatedChart : config)
-            );
-        });
-    }, [homeApi]);
+    const handleEditChart = useCallback((updatedChartConfig) => {
+        onDataModificationConfirmed((newChartConfig) => {
+            const index = chartConfigs.indexOf(updatedChartConfig)
+            if (index > -1) {
+                const newChartConfigs: Array = chartConfigs
+                newChartConfigs[index] = newChartConfig;
+                setChartConfigs(newChartConfigs);
+            }
+        })}, [chartConfigs]);
 
-    const handleDeleteChart = useCallback((id) => {
-        homeApi.deleteChartConfig(id, () => {
-            setChartConfigs(prevConfigs => prevConfigs.filter(config => config.id !== id));
-            setChartData(({ [id]: _, ...rest }) => rest);
-        });
-    }, [homeApi]);
+    const handleDeleteChart = useCallback((deletedChartConfig) => {
+        const index = chartConfigs.indexOf(deletedChartConfig)
+        if (index > -1) {
+            const newChartConfigs: Array = chartConfigs
+            newChartConfigs.splice(index,1)
+            setChartConfigs(newChartConfigs);
+        }
+    }, [chartConfigs]);
+
+    const unitMap = {
+        temperature: '°C',
+        humidity: '%',
+        pressure: 'hPa',
+        flowRate: 'm3/s',
+        windDirection: '°'
+    }
 
     return (
         <ChartsContainer>
@@ -90,20 +97,19 @@ const Charts = ({ onDataModificationConfirmed }) => {
             </TimeRangeSelector>
             {chartConfigs.map((config) => (
                 <Chart
-                    key={config.id}
+                    key={chartConfigs.indexOf(config)}
                     data={chartData[config.id] || []}
-                    title={config.title}
+                    title={config.label}
                     dataKey="value"
                     stroke="#4fc3f7"
-                    domain={[config.minDomain, config.maxDomain]}
-                    yAxisUnit={config.unit}
+                    yAxisUnit={unitMap[config.sensorType]}
                     days={TIME_RANGE_OPTIONS.find(option => option.value === timeRange).days}
                     numTicks={10}
-                    onEdit={() => handleEditChart(config.id, config)}
-                    onDelete={() => handleDeleteChart(config.id)}
+                    onEdit={() => handleEditChart(config)}
+                    onDelete={() => handleDeleteChart(config)}
                 />
             ))}
-            {homeSubMenu === 'edit' && <AddSensorButton onButtonClicked={handleAddChart} />}
+            {homeSubMenu === 'edit' && <AddSensorButton onButtonClicked={handleAddChart}/>}
         </ChartsContainer>
     );
 };

@@ -18,7 +18,7 @@ const ChartTitle = styled.h3`
     font-size: 18px;
 `;
 
-export const Chart = ({data, title, dataKey, stroke, domain, yAxisUnit, days, numTicks, onEdit, onDelete}) => {
+export const Chart = ({data, title, dataKey, stroke, yAxisUnit, days, numTicks, onEdit, onDelete}) => {
     const {homeSubMenu} = useAppState();
     const [isHovered, setIsHovered] = useState(false);
     const ticks = calculateTicks(data, numTicks);
@@ -49,7 +49,7 @@ export const Chart = ({data, title, dataKey, stroke, domain, yAxisUnit, days, nu
                     />
                     <YAxis
                         stroke="#888"
-                        domain={domain}
+                        domain={['auto', 'auto']}
                         label={{value: yAxisUnit, position: 'insideLeft', offset: -15, fill: '#888'}}
                         tickFormatter={(value) => `${value}`}
                     />
