@@ -28,14 +28,14 @@ export function useApi() {
                 .catch(handleError);
         },
 
-        getCurrentSensorValues: (onComplete) => {
-            api.get('/sensor-values')
+        getCurrentSensorValues: (dashboardId, onComplete) => {
+            api.get(`/sensor-values/${dashboardId}`)
                 .then(r => nullSafeOnComplete(r, onComplete))
                 .catch(handleError);
         },
 
-        getAverageSensorValues: (onComplete) => {
-            api.get('/average-sensor-values')
+        getAverageSensorValues: (dashboardId, onComplete) => {
+            api.get(`/average-sensor-values/${dashboardId}`)
                 .then(r => nullSafeOnComplete(r, onComplete))
                 .catch(handleError);
         },
@@ -47,51 +47,15 @@ export function useApi() {
                 .catch(handleError);
         },
 
-        addSensorValue: (sensorValue, onComplete) => {
-            api.post('/sensor-values', sensorValue)
-                .then(r => nullSafeOnComplete(r, onComplete))
-                .catch(handleError)
-        },
-
-        updateSensorValue: (index, sensorValue, onComplete) => {
-            api.put(`/sensor-values/${index}`, sensorValue)
-                .then(r => nullSafeOnComplete(r, onComplete))
-                .catch(handleError)
-        },
-
-        deleteSensorValue: (index, onComplete) => {
-            api.delete(`/sensor-values/${index}`)
+        getDashboardConfig: (dashboardId, onComplete) => {
+            return api.get(`/dashboard-config/${dashboardId}`)
                 .then(r => nullSafeOnComplete(r, onComplete))
                 .catch(handleError);
         },
 
-        addChartConfig: (chartConfig, onComplete) => {
-            api.post('/chart-configs', chartConfig)
-                .then((r) => nullSafeOnComplete(r, onComplete))
-                .catch(handleError);
-        },
-
-        getChartConfigs: (onComplete) => {
-            api.get('/chart-configs')
-                .then((r) => nullSafeOnComplete(r, onComplete))
-                .catch(handleError);
-        },
-
-        getChartConfig: (id, onComplete) => {
-            api.get(`/chart-configs/${id}`)
-                .then((r) => nullSafeOnComplete(r, onComplete))
-                .catch(handleError);
-        },
-
-        updateChartConfig: (id, chartConfig, onComplete) => {
-            api.put(`/chart-configs/${id}`, chartConfig)
-                .then((r) => nullSafeOnComplete(r, onComplete))
-                .catch(handleError);
-        },
-
-        deleteChartConfig: (id, onComplete) => {
-            api.delete(`/chart-configs/${id}`)
-                .then((r) => nullSafeOnComplete(r, onComplete))
+        updateDashboardConfig: (dashboardId, config, onComplete) => {
+            api.put(`/dashboard-config/${dashboardId}`, config)
+                .then(r => nullSafeOnComplete(r, onComplete))
                 .catch(handleError);
         },
 
