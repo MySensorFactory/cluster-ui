@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, {useEffect, useCallback, useState} from 'react';
 import styled from 'styled-components';
 import SensorValueItem from './SensorValueItem';
-import { useAppState } from '../AppStateContext';
-import { AddSensorButton } from "./AddSensorButton";
-import { useApiContext } from "../../datasource/ApiContext";
+import {useAppState} from '../AppStateContext';
+import {AddSensorButton} from "./AddSensorButton";
+import {useApiContext} from "../../datasource/ApiContext";
 
 const SensorValuesContainer = styled.div`
     margin-bottom: 20px;
@@ -24,46 +24,52 @@ const SensorItemWrapper = styled.div`
     }
 `;
 
-const CurrentSensorValues = ({ onDataModificationConfirmed }) => {
-    const { homeSubMenu } = useAppState();
-    const [sensorValues, setSensorValues] = useState([]);
-    const { homeApi } = useApiContext();
+const CurrentSensorValues = ({sensorValuesConfig, setSensorValuesConfig, onDataModificationConfirmed}) => {
+    const {homeSubMenu} = useAppState();
+    const [currentSensorValues, setCurrentSensorValues] = useState([]);
+    const {homeApi} = useApiContext();
 
     const fetchSensorValues = useCallback(() => {
-        homeApi.getCurrentSensorValues(setSensorValues);
+        homeApi.getCurrentSensorValues('038833bf-9efb-40a2-945f-4b7ea29354d4', setCurrentSensorValues);
     }, [homeApi]);
 
     useEffect(() => {
         fetchSensorValues();
-    }, [fetchSensorValues]);
+    }, [sensorValuesConfig, homeSubMenu]);
 
     const handleAddSensor = useCallback(() => {
         onDataModificationConfirmed((newSensor) => {
-            homeApi.addSensorValue(newSensor, (addedSensor) => {
-                setSensorValues(prevValues => [...prevValues, addedSensor]);
-            });
+            const newConfig: Array = sensorValuesConfig
+            newConfig.push(newSensor)
+            setSensorValuesConfig(newConfig)
         });
-    }, [homeApi, onDataModificationConfirmed]);
+    }, [sensorValuesConfig]);
 
-    const handleEditSensor = useCallback((index, updatedSensor) => {
-        homeApi.updateSensorValue(index, updatedSensor, (editedSensor) => {
-            setSensorValues(prevValues =>
-                prevValues.map((sensor, i) => i === index ? editedSensor : sensor)
-            );
-        });
-    }, [homeApi]);
+    const handleEditSensor = useCallback((id) => {
+        onDataModificationConfirmed((newSensorConfig) => {
+            const index = sensorValuesConfig.indexOf(sensorValuesConfig.find(s => s.id === id));
+            if (index > -1) {
+                const newConfig: Array = sensorValuesConfig
+                newConfig[index] = newSensorConfig;
+                setSensorValuesConfig(newConfig);
+            }
+        })
+    }, [sensorValuesConfig]);
 
-    const handleDeleteSensor = useCallback((index) => {
-        homeApi.deleteSensorValue(index, () => {
-            setSensorValues(prevValues => prevValues.filter((_, i) => i !== index));
-        });
-    }, [homeApi]);
+    const handleDeleteSensor = useCallback((id) => {
+        const index = sensorValuesConfig.indexOf(sensorValuesConfig.find(s => s.id === id));
+        if (index > -1) {
+            const newConfig: Array = sensorValuesConfig
+            newConfig.splice(index, 1)
+            setSensorValuesConfig(newConfig);
+        }
+    }, [sensorValuesConfig]);
 
     return (
         <SensorValuesContainer>
             <h2>Current sensors values</h2>
             <SensorValuesGrid>
-                {sensorValues.map((sensor, index) => (
+                {currentSensorValues != null && currentSensorValues.map((sensor, index) => (
                     <SensorItemWrapper
                         key={index}
                         className={sensor.label === 'Input gas composition' ? 'wide' : ''}
@@ -71,14 +77,14 @@ const CurrentSensorValues = ({ onDataModificationConfirmed }) => {
                         <SensorValueItem
                             label={sensor.label}
                             value={sensor.value}
-                            onEdit={() => handleEditSensor(index, sensor)}
-                            onDelete={() => handleDeleteSensor(index)}
+                            onEdit={() => handleEditSensor(sensor.id)}
+                            onDelete={() => handleDeleteSensor(sensor.id)}
                         />
                     </SensorItemWrapper>
                 ))}
                 {homeSubMenu === 'edit' && (
                     <SensorItemWrapper>
-                        <AddSensorButton onButtonClicked={handleAddSensor} />
+                        <AddSensorButton onButtonClicked={handleAddSensor}/>
                     </SensorItemWrapper>
                 )}
             </SensorValuesGrid>
