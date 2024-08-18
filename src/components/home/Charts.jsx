@@ -34,7 +34,7 @@ const TIME_RANGE_OPTIONS = [
     {value: 'lastWeek', label: 'Last week', days: 7},
 ];
 
-const Charts = ({chartConfigs, setChartConfigs, onDataModificationConfirmed}) => {
+export const Charts = ({chartConfigs, setChartConfigs, onDataModificationConfirmed}) => {
     const [timeRange, setTimeRange] = useState(TIME_RANGE_OPTIONS[0].value);
     const [chartData, setChartData] = useState({});
     const {homeSubMenu} = useAppState();
@@ -43,14 +43,14 @@ const Charts = ({chartConfigs, setChartConfigs, onDataModificationConfirmed}) =>
     const fetchChartsData = useCallback(() => {
         chartConfigs.forEach((config) => {
             homeApi.getChartData(config.sensorType, timeRange, (result) => {
-                setChartData(prevData => ({ ...prevData, [config.id]: result }));
+                setChartData(prevData => ({...prevData, [config.id]: result}));
             });
         });
     }, [chartConfigs, timeRange]);
 
     useEffect(() => {
         fetchChartsData();
-    }, [timeRange]);
+    }, [timeRange, chartConfigs]);
 
     const handleAddChart = useCallback(() => {
         onDataModificationConfirmed((newConfig) => {
@@ -60,21 +60,22 @@ const Charts = ({chartConfigs, setChartConfigs, onDataModificationConfirmed}) =>
         });
     }, [chartConfigs]);
 
-    const handleEditChart = useCallback((updatedChartConfig) => {
+    const handleEditChart = useCallback((id) => {
         onDataModificationConfirmed((newChartConfig) => {
-            const index = chartConfigs.indexOf(updatedChartConfig)
+            const index = chartConfigs.indexOf(chartConfigs.find(s => s.id === id));
             if (index > -1) {
                 const newChartConfigs: Array = chartConfigs
                 newChartConfigs[index] = newChartConfig;
                 setChartConfigs(newChartConfigs);
             }
-        })}, [chartConfigs]);
+        })
+    }, [chartConfigs]);
 
-    const handleDeleteChart = useCallback((deletedChartConfig) => {
-        const index = chartConfigs.indexOf(deletedChartConfig)
+    const handleDeleteChart = useCallback((id) => {
+        const index = chartConfigs.indexOf(chartConfigs.find(s => s.id === id));
         if (index > -1) {
             const newChartConfigs: Array = chartConfigs
-            newChartConfigs.splice(index,1)
+            newChartConfigs.splice(index, 1)
             setChartConfigs(newChartConfigs);
         }
     }, [chartConfigs]);
@@ -105,13 +106,11 @@ const Charts = ({chartConfigs, setChartConfigs, onDataModificationConfirmed}) =>
                     yAxisUnit={unitMap[config.sensorType]}
                     days={TIME_RANGE_OPTIONS.find(option => option.value === timeRange).days}
                     numTicks={10}
-                    onEdit={() => handleEditChart(config)}
-                    onDelete={() => handleDeleteChart(config)}
+                    onEdit={() => handleEditChart(config.id)}
+                    onDelete={() => handleDeleteChart(config.id)}
                 />
             ))}
             {homeSubMenu === 'edit' && <AddSensorButton onButtonClicked={handleAddChart}/>}
         </ChartsContainer>
     );
 };
-
-export default Charts;

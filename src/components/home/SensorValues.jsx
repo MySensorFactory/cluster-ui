@@ -33,7 +33,7 @@ export const SensorValues = ({
     return <SensorValuesContainer>
         <h2>{title}</h2>
         <SensorValuesGrid>
-            {data.map((sensor, index) => (
+            {data.map((sensor, _) => (
                 <SensorItemWrapper
                     key={sensor.id}
                     className={sensor.label === 'composition' ? 'wide' : ''}
