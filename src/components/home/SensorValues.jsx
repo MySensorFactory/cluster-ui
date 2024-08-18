@@ -35,14 +35,14 @@ export const SensorValues = ({
         <SensorValuesGrid>
             {data.map((sensor, index) => (
                 <SensorItemWrapper
-                    key={index}
+                    key={sensor.id}
                     className={sensor.label === 'composition' ? 'wide' : ''}
                 >
                     <SensorValueItem
                         label={sensor.label}
                         value={sensor.value}
-                        onEdit={() => handleEditSensor(index, sensor)}
-                        onDelete={() => handleDeleteSensor(index)}
+                        onEdit={() => handleEditSensor(sensor.id)}
+                        onDelete={() => handleDeleteSensor(sensor.id)}
                     />
                 </SensorItemWrapper>
             ))}
