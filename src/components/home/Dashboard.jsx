@@ -1,11 +1,12 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import styled from 'styled-components';
 import Header from './Header';
 import Events from './Events';
-import CurrentSensorValues from './CurrentSensorValues';
-import AverageSensorValues from './AverageSensorValues';
-import Charts from "./Charts";
-import AddSensorPopup from './AddSensorPopup';
+import {CurrentSensorValues} from './CurrentSensorValues';
+import {AverageSensorValues} from './AverageSensorValues';
+import {Charts} from "./Charts";
+import UpsertSensorPopup from './UpsertSensorPopup';
+import {useApiContext} from "../../datasource/ApiContext";
 
 const DashboardContainer = styled.div`
     padding: 20px;
@@ -28,56 +29,88 @@ const Overlay = styled.div`
 `;
 
 const Dashboard = () => {
-    const [isAddingSensor, setIsAddingSensor] = useState(false);
-    const [isEditingSensor, setIsEditingSensor] = useState(false);
+    const [isUpsertPopupActive, setIsUpsertPopupActive] = useState(false);
+    const [postprocessor, setPostprocessor] = useState((_) => {
+    })
+    const [dashboardConfig, setDashboardConfig] = useState(null)
+    const {homeApi} = useApiContext();
 
-    const handleAddButtonClicked = () => {
-        setIsAddingSensor(true);
-    };
-
-    const handleEditButtonClicked = () => {
-        setIsEditingSensor(true);
-    };
-
-    const handleDeleteButtonClicked = (newSensor) => {
-        // TODO Implement logic to delete the sensor
-        console.log('Delete sensor:', newSensor);
+    const fetchDashboardConfig = () => {
+        homeApi.getDashboardConfig('038833bf-9efb-40a2-945f-4b7ea29354d4', setDashboardConfig);
     }
 
-    const handleClosePopup = () => {
-        setIsAddingSensor(false);
-        setIsEditingSensor(false);
+    useEffect(() => {
+        fetchDashboardConfig();
+    }, [homeApi]);
+
+    const activateUpsertPopup = (postprocessor) => {
+        setPostprocessor(() => postprocessor)
+        setIsUpsertPopupActive(true);
     };
 
-    const handleAddNewSensor = (newSensor) => {
-        //TODO Implement logic to add the new sensor
+    const handleClosePopup = () => {
+        setIsUpsertPopupActive(false);
     };
+
+    const handleOnSaveButtonClicked = (data) => {
+        postprocessor(data)
+        handleClosePopup()
+    }
+
+    const setChartConfigs = (newChartConfigs) => {
+        const newConfig = dashboardConfig
+        newConfig.chartConfigs = newChartConfigs
+        homeApi.updateDashboardConfig('038833bf-9efb-40a2-945f-4b7ea29354d4', newConfig, (updatedDashboardConfig) => {
+            setDashboardConfig(updatedDashboardConfig)
+        })
+        fetchDashboardConfig()
+    }
+
+    const setCurrentSensorValuesConfig = (newCurrentSensorValuesConfig) => {
+        const newConfig = dashboardConfig
+        newConfig.currentSensorValuesConfig = newCurrentSensorValuesConfig
+        homeApi.updateDashboardConfig('038833bf-9efb-40a2-945f-4b7ea29354d4', newConfig, (_) => {
+            fetchDashboardConfig()
+        })
+    }
+
+    const setAverageSensorValuesConfig = (newAverageSensorValuesConfig) => {
+        const newConfig = dashboardConfig
+        newConfig.averageSensorValuesConfig = newAverageSensorValuesConfig
+        homeApi.updateDashboardConfig('038833bf-9efb-40a2-945f-4b7ea29354d4', newConfig, (_) => {
+            fetchDashboardConfig()
+        })
+    }
 
     return (
+        dashboardConfig != null &&
         <>
-            <DashboardContainer isBlurred={isAddingSensor || isEditingSensor}>
+            <DashboardContainer isBlurred={isUpsertPopupActive}>
                 <Header/>
                 <Events/>
-                <Charts
-                    onAddChartButtonClicked={handleAddButtonClicked}
-                    onEditChartButtonClicked={handleEditButtonClicked}
-                    onDeleteButtonClicked={handleDeleteButtonClicked}
-                />
                 <CurrentSensorValues
-                    onAddSensorValueItem={handleAddButtonClicked}
-                    onEditSensorValueItem={handleEditButtonClicked}
-                    onDeleteButtonClicked={handleDeleteButtonClicked}
+                    sensorValuesConfig={dashboardConfig.currentSensorValuesConfig}
+                    setSensorValuesConfig={setCurrentSensorValuesConfig}
+                    onDataModificationConfirmed={activateUpsertPopup}
                 />
                 <AverageSensorValues
-                    onAddSensorValueItem={handleAddButtonClicked}
-                    onEditSensorValueItem={handleEditButtonClicked}
-                    onDeleteButtonClicked={handleDeleteButtonClicked}
+                    averageSensorValuesConfig={dashboardConfig.averageSensorValuesConfig}
+                    setAverageSensorValuesConfig={setAverageSensorValuesConfig}
+                    onDataModificationConfirmed={activateUpsertPopup}
+                />
+                <Charts
+                    chartConfigs={dashboardConfig.chartConfigs}
+                    setChartConfigs={setChartConfigs}
+                    onDataModificationConfirmed={activateUpsertPopup}
                 />
             </DashboardContainer>
-            {(isAddingSensor || isEditingSensor) && (
+            {isUpsertPopupActive && (
                 <>
                     <Overlay onClick={handleClosePopup}/>
-                    <AddSensorPopup onClose={handleClosePopup} onAdd={handleAddNewSensor}/>
+                    <UpsertSensorPopup
+                        onPopupClose={handleClosePopup}
+                        onSaveButtonClicked={handleOnSaveButtonClicked}
+                    />
                 </>
             )}
         </>
