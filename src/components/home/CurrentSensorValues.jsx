@@ -1,30 +1,9 @@
-import React, {useEffect, useCallback, useState} from 'react';
-import styled from 'styled-components';
-import SensorValueItem from './SensorValueItem';
+import React, {useCallback, useEffect, useState} from 'react';
 import {useAppState} from '../AppStateContext';
-import {AddSensorButton} from "./AddSensorButton";
 import {useApiContext} from "../../datasource/ApiContext";
+import {SensorValues} from "./SensorValues";
 
-const SensorValuesContainer = styled.div`
-    margin-bottom: 20px;
-    padding: 20px;
-`;
-
-const SensorValuesGrid = styled.div`
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-`;
-
-const SensorItemWrapper = styled.div`
-    flex: 0 0 calc(20.0% - 20px);
-
-    &.wide {
-        flex: 0 0 calc(40.00% - 20px);
-    }
-`;
-
-const CurrentSensorValues = ({sensorValuesConfig, setSensorValuesConfig, onDataModificationConfirmed}) => {
+export const CurrentSensorValues = ({sensorValuesConfig, setSensorValuesConfig, onDataModificationConfirmed}) => {
     const {homeSubMenu} = useAppState();
     const [currentSensorValues, setCurrentSensorValues] = useState([]);
     const {homeApi} = useApiContext();
@@ -65,31 +44,13 @@ const CurrentSensorValues = ({sensorValuesConfig, setSensorValuesConfig, onDataM
         }
     }, [sensorValuesConfig]);
 
-    return (
-        <SensorValuesContainer>
-            <h2>Current sensors values</h2>
-            <SensorValuesGrid>
-                {currentSensorValues != null && currentSensorValues.map((sensor, index) => (
-                    <SensorItemWrapper
-                        key={index}
-                        className={sensor.label === 'Input gas composition' ? 'wide' : ''}
-                    >
-                        <SensorValueItem
-                            label={sensor.label}
-                            value={sensor.value}
-                            onEdit={() => handleEditSensor(sensor.id)}
-                            onDelete={() => handleDeleteSensor(sensor.id)}
-                        />
-                    </SensorItemWrapper>
-                ))}
-                {homeSubMenu === 'edit' && (
-                    <SensorItemWrapper>
-                        <AddSensorButton onButtonClicked={handleAddSensor}/>
-                    </SensorItemWrapper>
-                )}
-            </SensorValuesGrid>
-        </SensorValuesContainer>
-    );
-};
 
-export default CurrentSensorValues;
+    return (<SensorValues
+        title={"Current sensor values"}
+        data={currentSensorValues}
+        handleEditSensor={handleEditSensor}
+        handleDeleteSensor={handleDeleteSensor}
+        handleAddSensor={handleAddSensor}
+        isAddSensorButtonVisible={homeSubMenu === 'edit'}
+    />);
+};

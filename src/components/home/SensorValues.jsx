@@ -1,4 +1,3 @@
-import {SensorItemWrapper, SensorValuesContainer, SensorValuesGrid} from "./Styles";
 import SensorValueItem from "./SensorValueItem";
 import {AddSensorButton} from "./AddSensorButton";
 import React from "react";
