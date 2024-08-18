@@ -71,15 +71,15 @@ const Button = styled.button`
     }
 `;
 
-const AddSensorPopup = ({ onClose, onAdd }) => {
+const UpsertSensorPopup = ({ onPopupClose, onSaveButtonClicked }) => {
     const [label, setLabel] = useState('');
     const [customLabel, setCustomLabel] = useState('');
     const [sensorType, setSensorType] = useState('');
 
-    const handleAdd = () => {
+    const handleSave = () => {
         const finalLabel = label === 'custom' ? customLabel : label;
-        onAdd({ label: finalLabel, sensorType });
-        onClose();
+        onSaveButtonClicked({ label: finalLabel, sensorType });
+        onPopupClose();
     };
 
     const predefinedLabels = [
@@ -92,7 +92,7 @@ const AddSensorPopup = ({ onClose, onAdd }) => {
 
     return (
         <PopupContainer>
-            <Title>Add New Sensor</Title>
+            <Title>Modify data</Title>
             <Select
                 value={label}
                 onChange={(e) => setLabel(e.target.value)}
@@ -121,9 +121,9 @@ const AddSensorPopup = ({ onClose, onAdd }) => {
                 <option value="flow">Flow Rate</option>
                 <option value="composition">Gas Composition</option>
             </Select>
-            <Button onClick={handleAdd}>Add Sensor</Button>
+            <Button onClick={handleSave}>Ok</Button>
         </PopupContainer>
     );
 };
 
-export default AddSensorPopup;
+export default UpsertSensorPopup;
