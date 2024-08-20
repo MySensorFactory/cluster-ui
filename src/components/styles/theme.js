@@ -9,7 +9,9 @@ export const theme = {
         textMuted: '#9a9ab0',
         border: '#3a3a3a',
         negative: '#5f2424',
-        hoverNegative: '#5f2424cc',},
+        hoverNegative: '#5f2424cc',
+        chartStroke: '"#4fc3f7"'
+    },
     sizes: {
         borderRadius: '10px',
         padding: {

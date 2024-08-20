@@ -64,7 +64,7 @@ export const TimeChart = ({
                     <Tooltip
                         contentStyle={{backgroundColor: theme.colors.secondaryHover, border: "none"}}
                         labelStyle={{color: "white"}}
-                        itemStyle={{color: stroke}}
+                        itemStyle={{color: theme.colors.chartStroke}}
                         formatter={(value) => [`${value.toFixed(2)} ${yAxisUnit}`, ""]}
                         labelFormatter={(time) => formatTime(time, days)}
                     />

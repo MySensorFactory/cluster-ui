@@ -87,7 +87,6 @@ export const Charts = ({
                     data={chartData[config.id] || []}
                     title={config.label}
                     dataKey="value"
-                    stroke="#4fc3f7"
                     yAxisUnit={unitMap[config.sensorType]}
                     days={TIME_RANGE_OPTIONS.find((option) => option.value === timeRange).days}
                     numTicks={10}
