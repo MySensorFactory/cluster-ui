@@ -1,46 +1,28 @@
 import React, {useState} from 'react';
-import styled from 'styled-components';
+import {Container, Text} from '../styles/CommonStyles';
 import {useAppState} from '../AppStateContext';
 import {tryRenderEditBox} from "./TryRenderEditBox";
+import {theme} from '../styles/theme';
 
-const ItemContainer = styled.div`
-    background: #2a2a36;
-    padding: 20px;
-    border-radius: 10px;
-    position: relative;
-    overflow: hidden;
-`;
-
-const SensorLabel = styled.div`
-    font-size: 14px;
-    color: #9a9ab0;
-    margin-bottom: 5px;
-`;
-
-const SensorValue = styled.div`
-    font-size: 24px;
-    font-weight: bold;
-    color: white;
-`;
-
-const SensorValueItem = ({label, value, onEdit, onDelete}) => {
+export const SensorValueItem = ({label, value, onEdit, onDelete}) => {
     const {homeSubMenu} = useAppState();
     const [isHovered, setIsHovered] = useState(false);
 
-    const sensorValueItemContainerClassName = "sensor-value-item-container"
-    const parentSelector = ".".concat(sensorValueItemContainerClassName)
+    const sensorValueItemContainerClassName = "sensor-value-item-container";
+    const parentSelector = ".".concat(sensorValueItemContainerClassName);
 
     return (
-        <ItemContainer
+        <Container
+            background={theme.colors.secondary}
             className={sensorValueItemContainerClassName}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
+            position={'relative'}
+            overflow={'hidden'}
         >
-            <SensorLabel>{label}</SensorLabel>
-            <SensorValue dangerouslySetInnerHTML={{__html: value}}/>
+            <Text color={theme.colors.textMuted}>{label}</Text>
+            <Text size={theme.fonts.sizes.large} dangerouslySetInnerHTML={{__html: value}}/>
             {tryRenderEditBox(homeSubMenu, isHovered, onEdit, onDelete, parentSelector)}
-        </ItemContainer>
+        </Container>
     );
 };
-
-export default SensorValueItem;

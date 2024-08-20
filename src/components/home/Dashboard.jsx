@@ -1,32 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import styled from 'styled-components';
-import Header from './Header';
-import Events from './Events';
+import {Header} from './Header';
+import {Events} from './Events';
 import {CurrentSensorValues} from './CurrentSensorValues';
 import {AverageSensorValues} from './AverageSensorValues';
 import {Charts} from "./Charts";
 import UpsertSensorPopup from './UpsertSensorPopup';
 import {useApiContext} from "../../datasource/ApiContext";
-
-const DashboardContainer = styled.div`
-    padding: 20px;
-    background-color: #1C1C21;
-    padding-bottom: 150px;
-    color: white;
-    min-height: 100vh;
-    filter: ${props => props.isBlurred ? 'blur(5px)' : 'none'};
-    transition: filter 0.3s ease;
-`;
-
-const Overlay = styled.div`
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 999;
-`;
+import {Container, Overlay} from "../styles/CommonStyles";
 
 const Dashboard = () => {
     const [isUpsertPopupActive, setIsUpsertPopupActive] = useState(false);
@@ -85,7 +65,10 @@ const Dashboard = () => {
     return (
         dashboardConfig != null &&
         <>
-            <DashboardContainer isBlurred={isUpsertPopupActive}>
+            <Container
+                isInfinitelyHigh={true}
+                isBlurEnabled={isUpsertPopupActive}
+            >
                 <Header/>
                 <Events/>
                 <CurrentSensorValues
@@ -103,18 +86,21 @@ const Dashboard = () => {
                     setChartConfigs={setChartConfigs}
                     onDataModificationConfirmed={activateUpsertPopup}
                 />
-            </DashboardContainer>
-            {isUpsertPopupActive && (
-                <>
-                    <Overlay onClick={handleClosePopup}/>
-                    <UpsertSensorPopup
-                        onPopupClose={handleClosePopup}
-                        onSaveButtonClicked={handleOnSaveButtonClicked}
-                    />
-                </>
-            )}
+            </Container>
+            {
+                isUpsertPopupActive && (
+                    <>
+                        <Overlay onClick={handleClosePopup}/>
+                        <UpsertSensorPopup
+                            onPopupClose={handleClosePopup}
+                            onSaveButtonClicked={handleOnSaveButtonClicked}
+                        />
+                    </>
+                )
+            }
         </>
-    );
+    )
+        ;
 };
 
 export default Dashboard;

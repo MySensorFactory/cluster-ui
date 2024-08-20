@@ -1,26 +1,8 @@
-import SensorValueItem from "./SensorValueItem";
-import {AddSensorButton} from "./AddSensorButton";
+import {SensorValueItem} from "./SensorValueItem";
+import {AddButton} from "../controls/Buttons";
 import React from "react";
-import styled from "styled-components";
-
-const SensorValuesContainer = styled.div`
-    margin-bottom: 20px;
-    padding: 20px;
-`;
-
-const SensorValuesGrid = styled.div`
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-`;
-
-const SensorItemWrapper = styled.div`
-    flex: 0 0 calc(20.0% - 20px);
-
-    &.wide {
-        flex: 0 0 calc(40.00% - 20px);
-    }
-`;
+import {Container, FlexContainer, GridFlexItemWrapper, Title} from "../styles/CommonStyles";
+import {theme} from "../styles/theme"
 
 export const SensorValues = ({
                                  title,
@@ -30,28 +12,32 @@ export const SensorValues = ({
                                  handleAddSensor,
                                  isAddSensorButtonVisible
                              }) => {
-    return <SensorValuesContainer>
-        <h2>{title}</h2>
-        <SensorValuesGrid>
-            {data.map((sensor, _) => (
-                <SensorItemWrapper
-                    key={sensor.id}
-                    className={sensor.label === 'composition' ? 'wide' : ''}
-                >
-                    <SensorValueItem
-                        label={sensor.label}
-                        value={sensor.value}
-                        onEdit={() => handleEditSensor(sensor.id)}
-                        onDelete={() => handleDeleteSensor(sensor.id)}
-                    />
-                </SensorItemWrapper>
-            ))}
-            {isAddSensorButtonVisible && (
-                <SensorItemWrapper>
-                    <AddSensorButton onButtonClicked={handleAddSensor}/>
-                </SensorItemWrapper>
-            )}
-        </SensorValuesGrid>
-    </SensorValuesContainer>
-
+    return (
+        <Container>
+            <Title>{title}</Title>
+            <FlexContainer
+                wrap="wrap"
+                gap={theme.sizes.gap.large}
+            >
+                {data.map((sensor, _) => (
+                    <GridFlexItemWrapper
+                        key={sensor.id}
+                        className={sensor.label === 'composition' ? 'wide' : ''}
+                    >
+                        <SensorValueItem
+                            label={sensor.label}
+                            value={sensor.value}
+                            onEdit={() => handleEditSensor(sensor.id)}
+                            onDelete={() => handleDeleteSensor(sensor.id)}
+                        />
+                    </GridFlexItemWrapper>
+                ))}
+                {isAddSensorButtonVisible && (
+                    <GridFlexItemWrapper>
+                        <AddButton onButtonClicked={handleAddSensor}/>
+                    </GridFlexItemWrapper>
+                )}
+            </FlexContainer>
+        </Container>
+    );
 }

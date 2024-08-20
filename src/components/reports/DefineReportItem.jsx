@@ -1,7 +1,7 @@
 import React, {useLayoutEffect, useRef, useState} from 'react';
 import styled from 'styled-components';
 import {MultiSelect, SingleSelect} from "../controls/Select";
-import {ButtonWithIcon} from "../controls/ButtonWithIcon";
+import {ButtonWithIcon} from "../controls/Buttons";
 import Apply from "../../assets/Apply";
 
 const FormContainer = styled.div`

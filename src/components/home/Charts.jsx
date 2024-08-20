@@ -1,30 +1,9 @@
-import React, {useEffect, useState, useCallback} from 'react';
-import styled from 'styled-components';
-import {AddSensorButton} from './AddSensorButton';
+import React, {useCallback, useEffect, useState} from 'react';
+import {AddButton} from '../controls/Buttons';
 import {useAppState} from '../AppStateContext';
 import {useApiContext} from '../../datasource/ApiContext';
 import {Chart} from "../controls/Chart";
-
-const ChartsContainer = styled.div`
-    background-color: #1C1C21;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 30px;
-`;
-
-const ChartsTitle = styled.h2`
-    color: white;
-    margin-bottom: 20px;
-    font-size: 24px;
-`;
-
-const TimeRangeSelector = styled.select`
-    background-color: #1C1C21;
-    color: white;
-    border: 1px solid #555;
-    padding: 5px;
-    margin-bottom: 20px;
-`;
+import {Container, Select, Title} from "../styles/CommonStyles";
 
 const TIME_RANGE_OPTIONS = [
     {value: 'oneLastDay', label: 'One last day', days: 1},
@@ -89,13 +68,13 @@ export const Charts = ({chartConfigs, setChartConfigs, onDataModificationConfirm
     }
 
     return (
-        <ChartsContainer>
-            <ChartsTitle>Realtime data charts</ChartsTitle>
-            <TimeRangeSelector onChange={(e) => setTimeRange(e.target.value)} value={timeRange}>
+        <Container>
+            <Title>Realtime data charts</Title>
+            <Select onChange={(e) => setTimeRange(e.target.value)} value={timeRange}>
                 {TIME_RANGE_OPTIONS.map(option => (
                     <option key={option.value} value={option.value}>{option.label}</option>
                 ))}
-            </TimeRangeSelector>
+            </Select>
             {chartConfigs.map((config) => (
                 <Chart
                     key={chartConfigs.indexOf(config)}
@@ -110,7 +89,7 @@ export const Charts = ({chartConfigs, setChartConfigs, onDataModificationConfirm
                     onDelete={() => handleDeleteChart(config.id)}
                 />
             ))}
-            {homeSubMenu === 'edit' && <AddSensorButton onButtonClicked={handleAddChart}/>}
-        </ChartsContainer>
+            {homeSubMenu === 'edit' && <AddButton onButtonClicked={handleAddChart}/>}
+        </Container>
     );
 };

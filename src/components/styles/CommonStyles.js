@@ -10,6 +10,9 @@ export const Container = styled.div`
     position: ${props => props.position || 'static'};
     overflow: ${props => props.overflow || 'visible'};
     font-family: Inter, monospace;
+    transition: filter 0.3s ease;
+    filter: ${props => props.isBlurEnabled ? 'blur(5px)' : 'none'}
+    min-height: ${props => props.isInfinitelyHigh ? '100vh' : 'auto'};
 `;
 
 export const FlexContainer = styled(Container)`
@@ -19,6 +22,17 @@ export const FlexContainer = styled(Container)`
     align-items: ${props => props.align || 'stretch'};
     flex-wrap: ${props => props.wrap || 'nowrap'};
     gap: ${props => props.gap || '5px'};
+`;
+
+
+export const PopupContainer = styled(FlexContainer)`
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    width: 300px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 `;
 
 export const Title = styled.h2`
@@ -96,7 +110,7 @@ export const GridFlexItemWrapper = styled.div`
     }
 `;
 
-const InputStyle =  `
+const InputStyle = `
     width: 100%;
     padding: ${theme.sizes.padding.small};
     background-color: ${theme.colors.background};
@@ -150,6 +164,9 @@ export const ScrollContainer = styled.div`
 `;
 
 export const StyledCheckbox = styled.input`
+    ${InputStyle};
+    
+    width: auto;
     margin-right: 5px;
     accent-color: ${theme.colors.secondary};
 `;

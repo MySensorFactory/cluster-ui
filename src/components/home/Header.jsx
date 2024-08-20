@@ -1,17 +1,13 @@
 import React from 'react';
-import styled from 'styled-components';
+import {Text} from '../styles/CommonStyles';
+import {theme} from '../styles/theme';
 
-const HeaderContainer = styled.div`
-  font-size: 24px;
-  margin-bottom: 20px;
-`;
-
-const Header = () => {
-  return (
-    <HeaderContainer>
-      Welcome back, Julie
-    </HeaderContainer>
-  );
+export const Header = () => {
+    return (
+        <Text
+            size={theme.fonts.sizes.large}
+            marginBottom={theme.sizes.padding.medium}>
+            Welcome back, Julie
+        </Text>
+    );
 };
-
-export default Header;

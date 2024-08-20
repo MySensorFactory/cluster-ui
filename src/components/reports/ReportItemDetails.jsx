@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
 import {generateData} from "../data/DataSource";
-import {DeleteButton, EditButton} from "../home/TryRenderEditBox";
+import {DeleteButton, EditButton} from "../controls/Buttons";
 import DefineReportItem from "./DefineReportItem";
 import {Chart} from "../controls/Chart";
 

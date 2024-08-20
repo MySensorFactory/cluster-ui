@@ -8,7 +8,7 @@ export const theme = {
         text: '#ffffff',
         textMuted: '#9a9ab0',
         border: '#3a3a3a',
-        alert: '#5f2424',
+        negative: '#5f2424',
         hoverNegative: '#5f2424cc',},
     sizes: {
         borderRadius: '10px',
