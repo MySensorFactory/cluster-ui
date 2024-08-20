@@ -24,7 +24,6 @@ export const FlexContainer = styled(Container)`
     gap: ${props => props.gap || '5px'};
 `;
 
-
 export const PopupContainer = styled(FlexContainer)`
     position: fixed;
     top: 50%;
@@ -128,10 +127,6 @@ const InputStyle = `
 `
 
 export const Input = styled.input`
-    ${InputStyle}
-`;
-
-export const Select = styled.select`
     ${InputStyle}
 `;
 

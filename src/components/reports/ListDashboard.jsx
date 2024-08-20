@@ -1,8 +1,8 @@
 import React, {useState} from "react";
 import ReportsList from "./ReportsList";
 import styled from "styled-components";
-import {DateInput} from "../controls/DateInput";
 import {MultiSelect, SingleSelect} from "../controls/Select";
+import {DateInput} from "../styles/DateInputStyles";
 
 const Title = styled.h2`
     font-size: 24px;

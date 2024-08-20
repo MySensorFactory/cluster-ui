@@ -1,38 +1,43 @@
-import React, {useState} from 'react';
-import {Button, Input, PopupContainer, Select, Title} from '../styles/CommonStyles';
+import React, { useState } from 'react';
+import { Button, Input, PopupContainer, Title } from '../styles/CommonStyles';
+import {SingleSelect} from "../controls/Select";
 
-const UpsertSensorPopup = ({onPopupClose, onSaveButtonClicked}) => {
+const UpsertSensorPopup = ({ onPopupClose, onSaveButtonClicked }) => {
     const [label, setLabel] = useState('');
     const [customLabel, setCustomLabel] = useState('');
     const [sensorType, setSensorType] = useState('');
 
     const handleSave = () => {
         const finalLabel = label === 'custom' ? customLabel : label;
-        onSaveButtonClicked({label: finalLabel, sensorType});
+        onSaveButtonClicked({ label: finalLabel, sensorType });
         onPopupClose();
     };
 
     const predefinedLabels = [
-        "Temperature before compressor",
-        "Pressure after compressor",
-        "Input flow rate",
-        "Output flow rate",
-        "Gas composition"
+        { value: "Temperature before compressor", label: "Temperature before compressor" },
+        { value: "Pressure after compressor", label: "Pressure after compressor" },
+        { value: "Input flow rate", label: "Input flow rate" },
+        { value: "Output flow rate", label: "Output flow rate" },
+        { value: "Gas composition", label: "Gas composition" },
+        { value: "custom", label: "Custom Label" },
+    ];
+
+    const sensorTypes = [
+        { value: 'temperature', label: 'Temperature' },
+        { value: 'pressure', label: 'Pressure' },
+        { value: 'flow', label: 'Flow Rate' },
+        { value: 'composition', label: 'Gas Composition' },
     ];
 
     return (
         <PopupContainer direction='column'>
             <Title>Modify data</Title>
-            <Select
+            <SingleSelect
+                options={predefinedLabels}
                 value={label}
-                onChange={(e) => setLabel(e.target.value)}
-            >
-                <option value="">Select Sensor Label</option>
-                {predefinedLabels.map((l, index) => (
-                    <option key={index} value={l}>{l}</option>
-                ))}
-                <option value="custom">Custom Label</option>
-            </Select>
+                onChange={setLabel}
+                placeholder="Select Sensor Label"
+            />
             {label === 'custom' && (
                 <Input
                     type="text"
@@ -41,16 +46,12 @@ const UpsertSensorPopup = ({onPopupClose, onSaveButtonClicked}) => {
                     onChange={(e) => setCustomLabel(e.target.value)}
                 />
             )}
-            <Select
+            <SingleSelect
+                options={sensorTypes}
                 value={sensorType}
-                onChange={(e) => setSensorType(e.target.value)}
-            >
-                <option value="">Select Sensor Type</option>
-                <option value="temperature">Temperature</option>
-                <option value="pressure">Pressure</option>
-                <option value="flow">Flow Rate</option>
-                <option value="composition">Gas Composition</option>
-            </Select>
+                onChange={setSensorType}
+                placeholder="Select Sensor Type"
+            />
             <Button onClick={handleSave}>Ok</Button>
         </PopupContainer>
     );

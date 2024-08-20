@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import {generateData} from "../data/DataSource";
 import {DeleteButton, EditButton} from "../controls/Buttons";
 import DefineReportItem from "./DefineReportItem";
-import {Chart} from "../controls/Chart";
+import {TimeChart} from "../controls/TimeChart";
 
 const DetailsContainer = styled.div`
     background-color: #2a2a36;
@@ -56,7 +56,7 @@ const DetailsViewContent = ({title, sensorLabel, description, setEditReportState
             <p>Sensor label: {sensorLabel}</p>
             <Description>{description}</Description>
 
-            <Chart
+            <TimeChart
                 data={generateData(15, 25, 1)}
                 title="Temperature value"
                 dataKey="value"
@@ -67,7 +67,7 @@ const DetailsViewContent = ({title, sensorLabel, description, setEditReportState
                 numTicks={10} // Set the number of ticks you want to show
             />
 
-            <Chart
+            <TimeChart
                 data={generateData(15, 25, 1)}
                 title="Temperature value"
                 dataKey="value"
@@ -77,7 +77,7 @@ const DetailsViewContent = ({title, sensorLabel, description, setEditReportState
                 days={1}
                 numTicks={10} // Set the number of ticks you want to show
             />
-            <Chart
+            <TimeChart
                 data={generateData(15, 25, 1)}
                 title="Temperature value"
                 dataKey="value"
