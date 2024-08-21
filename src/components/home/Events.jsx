@@ -3,6 +3,7 @@ import {Container, FlexContainer, Input, ScrollContainer, StyledCheckbox, Text, 
 import {EventItem} from './EventItem';
 import {useApiContext} from "../../datasource/ApiContext";
 import {theme} from '../styles/theme';
+import {LabeledDateInput} from "../controls/Inputs";
 
 export const Events = () => {
     const [filteredEvents, setFilteredEvents] = useState([]);
@@ -38,22 +39,23 @@ export const Events = () => {
                         <Text>Show only alerts</Text>
                     </FlexContainer>
                 </label>
-                <FlexContainer gap={theme.sizes.padding.small}>
+                <FlexContainer gap={theme.sizes.padding.small}
+                               align={'center'}>
                     <Input
                         type="text"
                         placeholder="Search events..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
-                    <Input
-                        type="date"
-                        value={dateRange.start}
+                    <LabeledDateInput
+                        label={'Start date'}
                         onChange={(e) => setDateRange({...dateRange, start: e.target.value})}
+                        value={dateRange.start}
                     />
-                    <Input
-                        type="date"
-                        value={dateRange.end}
+                    <LabeledDateInput
+                        label={'End date'}
                         onChange={(e) => setDateRange({...dateRange, end: e.target.value})}
+                        value={dateRange.end}
                     />
                 </FlexContainer>
             </FlexContainer>

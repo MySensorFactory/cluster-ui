@@ -33,10 +33,10 @@ export const DeleteButton = ({onDelete, iconSize}) => (
     </OverlayButton>
 );
 
-export const AddButton = ({onButtonClicked}) => {
+export const AddButton = ({onButtonClicked, iconSize = 45}) => {
     return (
         <AddButtonContainer onClick={onButtonClicked}>
-            <SvgResizer size={45}>
+            <SvgResizer size={iconSize}>
                 <Add/>
             </SvgResizer>
         </AddButtonContainer>
