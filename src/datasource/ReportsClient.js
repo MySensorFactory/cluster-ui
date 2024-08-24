@@ -71,7 +71,7 @@ export function createGetSingleReportRequest({
 }
 
 export function useReportsApi() {
-    const baseURL = 'http://localhost:8080/api/v1';
+    const baseURL = 'http://localhost:8080';
 
     const api = axios.create({
         baseURL,
@@ -81,6 +81,10 @@ export function useReportsApi() {
     });
 
     const nullSafeOnComplete = (result, onComplete) => {
+        if (!onComplete){
+            return;
+        }
+
         if (result.data != null) {
             onComplete(result.data);
         }
