@@ -1,70 +1,56 @@
-import React from 'react';
-import styled from 'styled-components';
-import SensorValueItem from './SensorValueItem';
+import React, {useCallback, useEffect, useState} from 'react';
 import {useAppState} from '../AppStateContext';
-import {AddSensorButton} from "./AddSensorButton";
+import {useApiContext} from "../../datasource/ApiContext";
+import {SensorValues} from "./SensorValues";
 
-const SensorValuesContainer = styled.div`
-    margin-bottom: 20px;
-    padding: 20px;
-`;
-
-const SensorValuesGrid = styled.div`
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-`;
-
-const SensorItemWrapper = styled.div`
-    flex: 0 0 calc(20.0% - 20px);
-    
-    &.wide {
-        flex: 0 0 calc(40.00% - 20px);
-    }
-`;
-
-const sensorValues = [
-    {label: 'Pressure after compressor', value: '5.4 MPa'},
-    {label: 'Temperature before compressor', value: '300 K'},
-    {label: 'Temperature in combustion chamber', value: '700 K'},
-    {label: 'Input flow rate', value: '4 m\u00B3/min'},
-    {label: 'Output flow rate', value: '2.3 m\u00B3/min'},
-    {label: 'Input gas composition', value: '42 % CO₂, 18 % H₂, 10 % NH₃, 15 % O₂, 15% N₂'},
-];
-
-const CurrentSensorValues = ({onAddSensorValueItem, onEditSensorValueItem}) => {
+export const CurrentSensorValues = ({sensorValuesConfig, setSensorValuesConfig, onDataModificationConfirmed}) => {
     const {homeSubMenu} = useAppState();
+    const [currentSensorValues, setCurrentSensorValues] = useState([]);
+    const {homeApi} = useApiContext();
 
-    const handleDeleteSensor = (index) => {
-        // Implement logic to delete a sensor
-        console.log('Delete sensor at index', index);
-    };
+    const fetchSensorValues = useCallback(() => {
+        homeApi.getCurrentSensorValues('038833bf-9efb-40a2-945f-4b7ea29354d4', setCurrentSensorValues);
+    }, [homeApi]);
 
-    return (
-        <SensorValuesContainer>
-            <h2>Current sensors values</h2>
-            <SensorValuesGrid>
-                {sensorValues.map((sensor, index) => (
-                    <SensorItemWrapper
-                        key={index}
-                        className={sensor.label === 'Input gas composition' ? 'wide' : ''}
-                    >
-                        <SensorValueItem
-                            label={sensor.label}
-                            value={sensor.value}
-                            onEdit={onEditSensorValueItem}
-                            onDelete={() => handleDeleteSensor(index)}
-                        />
-                    </SensorItemWrapper>
-                ))}
-                {homeSubMenu === 'edit' && (
-                    <SensorItemWrapper>
-                        <AddSensorButton onButtonClicked={onAddSensorValueItem}/>
-                    </SensorItemWrapper>
-                )}
-            </SensorValuesGrid>
-        </SensorValuesContainer>
-    );
+    useEffect(() => {
+        fetchSensorValues();
+    }, [sensorValuesConfig, homeSubMenu]);
+
+    const handleAddSensor = useCallback(() => {
+        onDataModificationConfirmed((newSensor) => {
+            const newConfig: Array = sensorValuesConfig
+            newConfig.push(newSensor)
+            setSensorValuesConfig(newConfig)
+        });
+    }, [sensorValuesConfig]);
+
+    const handleEditSensor = useCallback((id) => {
+        onDataModificationConfirmed((newSensorConfig) => {
+            const index = sensorValuesConfig.indexOf(sensorValuesConfig.find(s => s.id === id));
+            if (index > -1) {
+                const newConfig: Array = sensorValuesConfig
+                newConfig[index] = newSensorConfig;
+                setSensorValuesConfig(newConfig);
+            }
+        })
+    }, [sensorValuesConfig]);
+
+    const handleDeleteSensor = useCallback((id) => {
+        const index = sensorValuesConfig.indexOf(sensorValuesConfig.find(s => s.id === id));
+        if (index > -1) {
+            const newConfig: Array = sensorValuesConfig
+            newConfig.splice(index, 1)
+            setSensorValuesConfig(newConfig);
+        }
+    }, [sensorValuesConfig]);
+
+
+    return (<SensorValues
+        title={"Current sensor values"}
+        data={currentSensorValues}
+        handleEditSensor={handleEditSensor}
+        handleDeleteSensor={handleDeleteSensor}
+        handleAddSensor={handleAddSensor}
+        isAddSensorButtonVisible={homeSubMenu === 'edit'}
+    />);
 };
-
-export default CurrentSensorValues;

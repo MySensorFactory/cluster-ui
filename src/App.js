@@ -4,6 +4,7 @@ import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
 import MainContent from "./components/MainContent";
 import {AppStateProvider} from "./components/AppStateContext";
+import {ApiProvider} from "./datasource/ApiContext";
 
 const AppContainer = styled.div`
     display: flex;
@@ -21,15 +22,17 @@ const MainSection = styled.div`
 
 function App() {
     return (
-        <AppStateProvider>
-            <AppContainer>
-                <Header/>
-                <MainSection>
-                    <Sidebar/>
-                    <MainContent/>
-                </MainSection>
-            </AppContainer>
-        </AppStateProvider>
+        <ApiProvider>
+            <AppStateProvider>
+                <AppContainer>
+                    <Header/>
+                    <MainSection>
+                        <Sidebar/>
+                        <MainContent/>
+                    </MainSection>
+                </AppContainer>
+            </AppStateProvider>
+        </ApiProvider>
     );
 }
 

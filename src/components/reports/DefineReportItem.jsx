@@ -1,7 +1,7 @@
 import React, {useLayoutEffect, useRef, useState} from 'react';
 import styled from 'styled-components';
 import {MultiSelect, SingleSelect} from "../controls/Select";
-import {ButtonWithIcon} from "../controls/ButtonWithIcon";
+import {ButtonWithIcon} from "../controls/Buttons";
 import Apply from "../../assets/Apply";
 
 const FormContainer = styled.div`
@@ -70,12 +70,13 @@ const ControlLabel = styled.label`
 
 
 const DefineReportItem = ({onSave, initialData}) => {
-    const [title, setTitle] = useState(initialData?.title || '');
-    const [sensorLabel, setSensorLabel] = useState(initialData?.sensorLabel || '');
+    const [title, setTitle] = useState(initialData?.name || '');
+    const [sensorLabel, setSensorLabel] = useState(initialData?.label || '');
     const [description, setDescription] = useState(initialData?.description || '');
-    const [fromDate, setFromDate] = useState(initialData?.fromDate || '');
-    const [toDate, setToDate] = useState(initialData?.toDate || '');
+    const [fromDate, setFromDate] = useState(initialData?.timeRange.from || '');
+    const [toDate, setToDate] = useState(initialData != null ? new Date(initialData.timeRange.to) : '');
     const [includedSensors, setIncludedSensors] = useState(initialData?.includedSensors || []);
+
 
     const targetRef = useRef();
     const [dimensions, setDimensions] = useState({ width:0, height: 0 });
@@ -106,7 +107,7 @@ const DefineReportItem = ({onSave, initialData}) => {
 
     const handleSave = () => {
         if (onSave !== undefined) {
-            onSave({title, sensorLabel, description, fromDate, toDate, includedSensors});
+            onSave({title, sensorLabel, description, fromDate, toDate, includedSensors: includedSensors.map(s => s.value)});
         }
     };
 
@@ -126,7 +127,7 @@ const DefineReportItem = ({onSave, initialData}) => {
                     <SingleSelect
                         options={sensorLabelOptions}
                         value={sensorLabelOptions.find(option => option.value === sensorLabel)}
-                        onChange={(selected) => setSensorLabel(selected.value)}
+                        onChange={setSensorLabel}
                         placeholder="Select sensor label"
                     />
                 </ControlWrapper>

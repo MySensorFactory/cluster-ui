@@ -1,8 +1,15 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import ReportsList from "./ReportsList";
 import styled from "styled-components";
-import {DateInput} from "../controls/DateInput";
 import {MultiSelect, SingleSelect} from "../controls/Select";
+import {DateInput} from "../styles/DateInputStyles";
+import {useApiContext} from "../../datasource/ApiContext";
+import {
+    createFilter,
+    createSearchReportsRequest,
+    createSorting,
+    createUpsertReportRequest, GetReportListResponse
+} from "../../datasource/ReportsClient";
 
 const Title = styled.h2`
     font-size: 24px;
@@ -25,7 +32,6 @@ const SearchInput = styled.input`
 `;
 
 
-
 const SortDirectionButton = styled.button`
     background-color: #2a2a36;
     color: white;
@@ -42,29 +48,72 @@ const SortDirectionButton = styled.button`
     }
 `;
 
-export const ListDashboard = () => {
-    const [searchTerm, setSearchTerm] = useState('');
-    const [startDate, setStartDate] = useState('');
-    const [endDate, setEndDate] = useState('');
+export const ListPlaceholder = () => {
+    const [searchTerm, setSearchTerm] = useState("");
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
     const [selectedLabels, setSelectedLabels] = useState([]);
     const [selectedSensorTypes, setSelectedSensorTypes] = useState([]);
     const [sortProperty, setSortProperty] = useState(null);
     const [sortDirection, setSortDirection] = useState('asc');
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+    const [currentReports, setCurrentReports] = useState([])
 
-    const handleSearch = (e) => {
-        setSearchTerm(e.target.value);
-        // Implement search logic here
-    };
+    const {reportsApi} = useApiContext()
+
+    const searchReports = () => {
+        reportsApi.searchReports(
+            createSearchReportsRequest(
+                createFilter(searchTerm,
+                    {
+                        "label": selectedLabels.map(l => l.value),
+                        "sensorTypes": selectedSensorTypes.map(t => t.value)
+                    },
+                    ['title', 'description'],
+                    new Date(startDate).valueOf(),
+                    new Date(endDate).valueOf()),
+                itemsPerPage,
+                currentPage,
+                createSorting(sortDirection, sortProperty)),
+            (data: GetReportListResponse) => {
+                setCurrentReports(data.results)
+            })
+    }
+
+    useEffect(() => {
+        searchReports();
+    }, [itemsPerPage, currentPage, sortDirection, sortProperty, searchTerm, selectedLabels, selectedSensorTypes, startDate, endDate]);
+
+    const updateReport = (id, data) => {
+        const request = createUpsertReportRequest(
+            {
+                from: new Date(data.fromDate).valueOf(),
+                to: new Date(data.toDate).valueOf(),
+            },
+            data.includedSensors,
+            data.sensorLabel,
+            data.title,
+            data.description,
+        )
+        reportsApi.updateReport(id, request, (_) => searchReports())
+    }
+
+    const deleteReport = (id) => {
+        reportsApi.deleteReport(id, (_) => searchReports())
+    }
+
+    const handleGetReportDetails = (id, onComplete) => {
+        reportsApi.getReportDetails(id, onComplete)
+    }
 
     const handleStartDateChange = (e) => {
         setStartDate(e.target.value);
-        // Implement date filtering logic here
     };
 
     const handleEndDateChange = (e) => {
         setEndDate(e.target.value);
-        // Implement date filtering logic here
     };
 
     const toggleSortDirection = () => {
@@ -82,7 +131,7 @@ export const ListDashboard = () => {
     const sensorTypes = [
         {value: "temperature", label: "Temperature"},
         {value: "pressure", label: "Pressure"},
-        {value: "flow", label: "Flow Rate"},
+        {value: "flow", label: "flowRate"},
         {value: "composition", label: "Gas Composition"}
     ];
 
@@ -101,7 +150,7 @@ export const ListDashboard = () => {
                     type="text"
                     placeholder="Search"
                     value={searchTerm}
-                    onChange={handleSearch}
+                    onChange={e => setSearchTerm(e.target.value)}
                 />
                 <DateInput
                     type="date"
@@ -117,14 +166,31 @@ export const ListDashboard = () => {
                     isMulti
                     options={predefinedLabels}
                     value={selectedLabels}
-                    onChange={setSelectedLabels}
+                    onChange={labels => {
+                        if (labels != null) {
+                            setSelectedLabels(labels)
+                            return;
+                        }
+
+                        setSelectedLabels([])
+                    }}
                     placeholder="Select sensor labels"
                 />
                 <MultiSelect
                     isMulti
                     options={sensorTypes}
                     value={selectedSensorTypes}
-                    onChange={setSelectedSensorTypes}
+                    onChange={sensorTypes => {
+                        console.log(sensorTypes)
+                        if (sensorTypes != null) {
+                            console.log(sensorTypes)
+                            setSelectedSensorTypes(sensorTypes)
+                            console.log(selectedSensorTypes)
+                            return;
+                        }
+
+                        setSelectedSensorTypes([])
+                    }}
                     placeholder="Select included sensor types"
                 />
                 <SingleSelect
@@ -137,7 +203,12 @@ export const ListDashboard = () => {
                     {sortDirection === 'asc' ? '↑' : '↓'}
                 </SortDirectionButton>
             </SearchContainer>
-            <ReportsList/>
+            <ReportsList
+                reports={currentReports}
+                onReportDetailsShowRequest={handleGetReportDetails}
+                onReportUpdate={updateReport}
+                onReportDelete={deleteReport}
+            />
         </>
     );
 }

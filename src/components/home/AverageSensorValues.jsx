@@ -1,65 +1,59 @@
-import React from 'react';
-import styled from 'styled-components';
-import SensorValueItem from './SensorValueItem';
+import React, {useCallback, useEffect, useState} from 'react';
 import {useAppState} from "../AppStateContext";
-import {AddSensorButton} from "./AddSensorButton";
+import {useApiContext} from "../../datasource/ApiContext";
+import {SensorValues} from "./SensorValues";
 
-const AverageMetricsContainer = styled.div`
-    margin-bottom: 20px;
-    padding: 20px;
-`;
-
-const SensorValuesGrid = styled.div`
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-`;
-
-const SensorItemWrapper = styled.div`
-    flex: 0 0 calc(20.0% - 20px);
-    
-    &.wide {
-        flex: 0 0 calc(40.00% - 20px);
-    }
-`;
-
-const averageMetrics = [
-    {label: 'Pressure after compressor', value: '5.4 MPa'},
-    {label: 'Temperature before compressor', value: '300 K'},
-    {label: 'Temperature in combustion chamber', value: '700 K'},
-    {label: 'Input flow rate', value: '4 m\u00B3/min'},
-    {label: 'Output flow rate', value: '2.3 m\u00B3/min'},
-];
-
-const AverageSensorValues = ({onAddSensorValueItem, onEditSensorValueItem, onDeleteButtonClicked}) => {
+export const AverageSensorValues = ({
+                                        averageSensorValuesConfig,
+                                        setAverageSensorValuesConfig,
+                                        onDataModificationConfirmed
+                                    }) => {
     const {homeSubMenu} = useAppState();
+    const [averageMetrics, setAverageMetrics] = useState([]);
+    const {homeApi} = useApiContext();
 
-    return (
-        <AverageMetricsContainer>
-            <h2>Average sensors metrics</h2>
-            <SensorValuesGrid>
-                {averageMetrics.map((sensor, index) => (
-                    <SensorItemWrapper
-                        key={index}
-                        className={sensor.label === 'Input gas composition' ? 'wide' : ''}
-                    >
-                    <SensorValueItem
-                        key={index}
-                        label={sensor.label}
-                        value={sensor.value}
-                        onEdit={onEditSensorValueItem}
-                        onDelete={onDeleteButtonClicked}
-                    />
-                    </SensorItemWrapper>
-                ))}
-                {homeSubMenu === 'edit' && (
-                    <SensorItemWrapper>
-                    <AddSensorButton onButtonClicked={onAddSensorValueItem}/>
-                    </SensorItemWrapper>
-                )}
-            </SensorValuesGrid>
-        </AverageMetricsContainer>
-    );
+    const fetchAverageMetrics = useCallback(() => {
+        homeApi.getAverageSensorValues('038833bf-9efb-40a2-945f-4b7ea29354d4', setAverageMetrics);
+    }, [averageMetrics]);
+
+    useEffect(() => {
+        fetchAverageMetrics();
+    }, [fetchAverageMetrics]);
+
+    const handleAddSensor = useCallback(() => {
+        onDataModificationConfirmed((newSensor) => {
+            const newConfig: Array = averageSensorValuesConfig
+            newConfig.push(newSensor)
+            setAverageSensorValuesConfig(newConfig)
+        });
+    }, [averageSensorValuesConfig]);
+
+    const handleEditSensor = useCallback((id) => {
+        onDataModificationConfirmed((newSensorConfig) => {
+            const index = averageSensorValuesConfig.indexOf(averageSensorValuesConfig.find(s => s.id === id));
+            if (index > -1) {
+                const newConfig: Array = averageSensorValuesConfig
+                newConfig[index] = newSensorConfig;
+                setAverageSensorValuesConfig(newConfig);
+            }
+        })
+    }, [averageSensorValuesConfig]);
+
+    const handleDeleteSensor = useCallback((id) => {
+        const index = averageSensorValuesConfig.indexOf(averageSensorValuesConfig.find(s => s.id === id));
+        if (index > -1) {
+            const newConfig: Array = averageSensorValuesConfig
+            newConfig.splice(index, 1)
+            setAverageSensorValuesConfig(newConfig);
+        }
+    }, [averageSensorValuesConfig]);
+
+    return (<SensorValues
+        title={"Average sensor values"}
+        data={averageMetrics}
+        handleEditSensor={handleEditSensor}
+        handleDeleteSensor={handleDeleteSensor}
+        handleAddSensor={handleAddSensor}
+        isAddSensorButtonVisible={homeSubMenu === 'edit'}
+    />);
 };
-
-export default AverageSensorValues;

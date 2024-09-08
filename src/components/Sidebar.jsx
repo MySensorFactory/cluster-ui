@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import {ButtonWithIcon} from "./controls/ButtonWithIcon";
+import {ButtonWithIcon} from "./controls/Buttons";
 import Home from "../assets/Home";
 import Report from "../assets/Reports";
 import {UserProfile} from "./UserProfile";
