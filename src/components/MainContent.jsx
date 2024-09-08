@@ -21,8 +21,6 @@ function MainContent() {
                 return <Dashboard />;
             case 'Reports':
                 return <ReportsDashboard />;
-            case 'Users Management':
-                return <div>Users Management Content</div>;
             default:
                 return <div>Select a menu item</div>;
         }

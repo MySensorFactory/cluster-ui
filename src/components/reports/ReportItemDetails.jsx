@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
-import {generateData} from "../data/DataSource";
 import {DeleteButton, EditButton} from "../controls/Buttons";
 import DefineReportItem from "./DefineReportItem";
 import {TimeChart} from "../controls/TimeChart";
@@ -37,7 +36,15 @@ const ButtonsContainer = styled.div`
     align-items: center;
 `;
 
-const DetailsViewContent = ({title, sensorLabel, description, setEditReportState}) => {
+const unitMap = {
+    temperature: '°C',
+    humidity: '%',
+    pressure: 'hPa',
+    flowRate: 'm3/s',
+    windDirection: '°',
+};
+
+const DetailsViewContent = ({report, setEditReportState, onReportItemDelete}) => {
     return (<>
             <ButtonsContainer>
                 <EditButton
@@ -48,67 +55,51 @@ const DetailsViewContent = ({title, sensorLabel, description, setEditReportState
                 />
                 <DeleteButton
                     onDelete={() => {
+                        onReportItemDelete(report.id)
                     }}
                     iconSize={5}
                 />
             </ButtonsContainer>
-            <Title>{title}</Title>
-            <p>Sensor label: {sensorLabel}</p>
-            <Description>{description}</Description>
+            <Title>{report.title}</Title>
+            <p>Sensor label: {report.sensorLabel}</p>
+            <Description>{report.description}</Description>
 
-            <TimeChart
-                data={generateData(15, 25, 1)}
-                title="Temperature value"
-                dataKey="value"
-                stroke="#4fc3f7"
-                domain={[5, 40]}
-                yAxisUnit="K"
-                days={1}
-                numTicks={10} // Set the number of ticks you want to show
-            />
-
-            <TimeChart
-                data={generateData(15, 25, 1)}
-                title="Temperature value"
-                dataKey="value"
-                stroke="#4fc3f7"
-                domain={[5, 40]}
-                yAxisUnit="K"
-                days={1}
-                numTicks={10} // Set the number of ticks you want to show
-            />
-            <TimeChart
-                data={generateData(15, 25, 1)}
-                title="Temperature value"
-                dataKey="value"
-                stroke="#4fc3f7"
-                domain={[5, 40]}
-                yAxisUnit="K"
-                days={1}
-                numTicks={10} // Set the number of ticks you want to show
-            />
+            {Object.entries(report.dataBySensorType).map(([sensorType, data]) => (
+                <TimeChart
+                    key={Math.floor(Math.random() * 100)}
+                    data={data.map(d => {
+                        return {time: d.timestamp, value: d.values.value}
+                    }) || []}
+                    title={sensorType}
+                    dataKey="value"
+                    yAxisUnit={unitMap[sensorType]}
+                    days={Math.floor((report.timeRange.to - report.timeRange.from) / (24*60*60*1000))}
+                    numTicks={10}
+                />
+            ))}
         </>
     );
 }
 
-const ReportItemDetails = ({title, sensorLabel, description}) => {
+export const ReportItemDetails = ({report, onReportItemUpdate, onReportItemDelete}) => {
     const [isEditReportState, setEditReportState] = useState(false)
 
     return (
         <DetailsContainer>
             {!isEditReportState &&
                 <DetailsViewContent
-                    title={title}
-                    sensorLabel={sensorLabel}
-                    description={description}
+                    report={report}
                     setEditReportState={setEditReportState}
+                    onReportItemDelete={onReportItemDelete}
                 />}
             {isEditReportState &&
                 <DefineReportItem
-                    onSave={() => setEditReportState(false)}
+                    initialData={report}
+                    onSave={(data) => {
+                        setEditReportState(false)
+                        onReportItemUpdate(data)
+                    }}
                 />}
         </DetailsContainer>
     );
 };
-
-export default ReportItemDetails;

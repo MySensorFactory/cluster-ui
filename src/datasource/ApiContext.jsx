@@ -1,12 +1,14 @@
 import React, {createContext, useContext} from 'react';
-import {useApi} from './ApiClient';
+import {useHomeApi} from './HomeClient';
+import {useReportsApi} from "./ReportsClient";
 
 const ApiContext = createContext(null);
 
 export const ApiProvider = ({children}) => {
-    const homeApi = useApi()
+    const homeApi = useHomeApi()
+    const reportsApi = useReportsApi()
     return (
-        <ApiContext.Provider value={{homeApi}}>
+        <ApiContext.Provider value={{homeApi, reportsApi}}>
             {children}
         </ApiContext.Provider>
     );
