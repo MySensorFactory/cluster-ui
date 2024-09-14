@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import {MultiSelect, SingleSelect} from "../controls/Select";
 import {ButtonWithIcon} from "../controls/Buttons";
 import Apply from "../../assets/Apply";
+import {useConfigContext} from "../../datasource/ConfigContext";
 
 const FormContainer = styled.div`
     background-color: #1C1C21;
@@ -70,6 +71,7 @@ const ControlLabel = styled.label`
 
 
 const DefineReportItem = ({onSave, initialData}) => {
+    const {config} = useConfigContext();
     const [title, setTitle] = useState(initialData?.name || '');
     const [sensorLabel, setSensorLabel] = useState(initialData?.label || '');
     const [description, setDescription] = useState(initialData?.description || '');
@@ -89,21 +91,6 @@ const DefineReportItem = ({onSave, initialData}) => {
             });
         }
     }, []);
-
-    const sensorLabelOptions = [
-        {value: 'Temperature before compressor', label: 'Temperature before compressor'},
-        {value: 'Pressure after compressor', label: 'Pressure after compressor'},
-        {value: 'Input flow rate', label: 'Input flow rate'},
-        {value: 'Output flow rate', label: 'Output flow rate'},
-        {value: 'Gas composition', label: 'Gas composition'},
-    ];
-
-    const includedSensorOptions = [
-        {value: 'Temperature', label: 'Temperature'},
-        {value: 'Pressure', label: 'Pressure'},
-        {value: 'Flow Rate', label: 'Flow Rate'},
-        {value: 'Gas Composition', label: 'Gas Composition'},
-    ];
 
     const handleSave = () => {
         if (onSave !== undefined) {
@@ -125,8 +112,8 @@ const DefineReportItem = ({onSave, initialData}) => {
                 <ControlWrapper>
                     <ControlLabel>Sensor Label</ControlLabel>
                     <SingleSelect
-                        options={sensorLabelOptions}
-                        value={sensorLabelOptions.find(option => option.value === sensorLabel)}
+                        options={config.availableLabels}
+                        value={config.availableLabels.find(option => option.value === sensorLabel)}
                         onChange={setSensorLabel}
                         placeholder="Select sensor label"
                     />
@@ -150,7 +137,7 @@ const DefineReportItem = ({onSave, initialData}) => {
                 <ControlWrapper>
                     <ControlLabel>Included Sensor Types</ControlLabel>
                     <MultiSelect
-                        options={includedSensorOptions}
+                        options={config.availableSensors}
                         value={includedSensors}
                         onChange={setIncludedSensors}
                         placeholder="Select sensor types"

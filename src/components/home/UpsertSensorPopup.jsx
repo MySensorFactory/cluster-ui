@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Button, Input, PopupContainer, Title } from '../styles/CommonStyles';
 import {SingleSelect} from "../controls/Select";
+import {useConfigContext} from "../../datasource/ConfigContext";
 
 const UpsertSensorPopup = ({ onPopupClose, onSaveButtonClicked }) => {
     const [label, setLabel] = useState('');
     const [customLabel, setCustomLabel] = useState('');
     const [sensorType, setSensorType] = useState('');
+    const {config} = useConfigContext();
 
     const handleSave = () => {
         const finalLabel = label === 'custom' ? customLabel : label;
@@ -13,27 +15,11 @@ const UpsertSensorPopup = ({ onPopupClose, onSaveButtonClicked }) => {
         onPopupClose();
     };
 
-    const predefinedLabels = [
-        { value: "Temperature before compressor", label: "Temperature before compressor" },
-        { value: "Pressure after compressor", label: "Pressure after compressor" },
-        { value: "Input flow rate", label: "Input flow rate" },
-        { value: "Output flow rate", label: "Output flow rate" },
-        { value: "Gas composition", label: "Gas composition" },
-        { value: "custom", label: "Custom Label" },
-    ];
-
-    const sensorTypes = [
-        { value: 'temperature', label: 'Temperature' },
-        { value: 'pressure', label: 'Pressure' },
-        { value: 'flow', label: 'Flow Rate' },
-        { value: 'composition', label: 'Gas Composition' },
-    ];
-
     return (
         <PopupContainer direction='column'>
             <Title>Modify data</Title>
             <SingleSelect
-                options={predefinedLabels}
+                options={config.availableLabels}
                 value={label}
                 onChange={setLabel}
                 placeholder="Select Sensor Label"
@@ -47,7 +33,7 @@ const UpsertSensorPopup = ({ onPopupClose, onSaveButtonClicked }) => {
                 />
             )}
             <SingleSelect
-                options={sensorTypes}
+                options={config.availableSensors}
                 value={sensorType}
                 onChange={setSensorType}
                 placeholder="Select Sensor Type"
