@@ -10,6 +10,7 @@ import {
     createSorting,
     createUpsertReportRequest, GetReportListResponse
 } from "../../datasource/ReportsClient";
+import {useConfigContext} from "../../datasource/ConfigContext";
 
 const Title = styled.h2`
     font-size: 24px;
@@ -49,6 +50,7 @@ const SortDirectionButton = styled.button`
 `;
 
 export const ListPlaceholder = () => {
+    const {config} = useConfigContext();
     const [searchTerm, setSearchTerm] = useState("");
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
@@ -120,28 +122,6 @@ export const ListPlaceholder = () => {
         setSortDirection(prevDirection => prevDirection === 'asc' ? 'desc' : 'asc');
     };
 
-    const predefinedLabels = [
-        {value: "Temperature before compressor", label: "Temperature before compressor"},
-        {value: "Pressure after compressor", label: "Pressure after compressor"},
-        {value: "Input flow rate", label: "Input flow rate"},
-        {value: "Output flow rate", label: "Output flow rate"},
-        {value: "Gas composition", label: "Gas composition"}
-    ];
-
-    const sensorTypes = [
-        {value: "temperature", label: "Temperature"},
-        {value: "pressure", label: "Pressure"},
-        {value: "flow", label: "flowRate"},
-        {value: "composition", label: "Gas Composition"}
-    ];
-
-    const sortOptions = [
-        {value: "date", label: "Date"},
-        {value: "sensorType", label: "Sensor Type"},
-        {value: "label", label: "Sensor Label"},
-        {value: "value", label: "Sensor Value"}
-    ];
-
     return (
         <>
             <Title>Reports</Title>
@@ -164,7 +144,7 @@ export const ListPlaceholder = () => {
                 />
                 <MultiSelect
                     isMulti
-                    options={predefinedLabels}
+                    options={config.availableLabels}
                     value={selectedLabels}
                     onChange={labels => {
                         if (labels != null) {
@@ -178,7 +158,7 @@ export const ListPlaceholder = () => {
                 />
                 <MultiSelect
                     isMulti
-                    options={sensorTypes}
+                    options={config.availableSensors}
                     value={selectedSensorTypes}
                     onChange={sensorTypes => {
                         console.log(sensorTypes)
@@ -194,7 +174,7 @@ export const ListPlaceholder = () => {
                     placeholder="Select included sensor types"
                 />
                 <SingleSelect
-                    options={sortOptions}
+                    options={config.sortOptions}
                     value={sortProperty}
                     onChange={setSortProperty}
                     placeholder="Select sorting property"

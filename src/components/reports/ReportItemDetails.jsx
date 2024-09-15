@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import {DeleteButton, EditButton} from "../controls/Buttons";
 import DefineReportItem from "./DefineReportItem";
 import {TimeChart} from "../controls/TimeChart";
+import {useConfigContext} from "../../datasource/ConfigContext";
 
 const DetailsContainer = styled.div`
     background-color: #2a2a36;
@@ -36,15 +37,8 @@ const ButtonsContainer = styled.div`
     align-items: center;
 `;
 
-const unitMap = {
-    temperature: '°C',
-    humidity: '%',
-    pressure: 'hPa',
-    flowRate: 'm3/s',
-    windDirection: '°',
-};
-
 const DetailsViewContent = ({report, setEditReportState, onReportItemDelete}) => {
+    const {config} = useConfigContext();
     return (<>
             <ButtonsContainer>
                 <EditButton
@@ -72,7 +66,7 @@ const DetailsViewContent = ({report, setEditReportState, onReportItemDelete}) =>
                     }) || []}
                     title={sensorType}
                     dataKey="value"
-                    yAxisUnit={unitMap[sensorType]}
+                    yAxisUnit={config.unitMapping[sensorType]}
                     days={Math.floor((report.timeRange.to - report.timeRange.from) / (24*60*60*1000))}
                     numTicks={10}
                 />

@@ -5,24 +5,20 @@ import { useApiContext } from '../../datasource/ApiContext';
 import { Container, Title } from "../styles/CommonStyles";
 import {SingleSelect} from "../controls/Select";
 import {TimeChart} from "../controls/TimeChart";
-
-const TIME_RANGE_OPTIONS = [
-    { value: 'oneLastDay', label: 'One last day', days: 1 },
-    { value: 'twoLastDays', label: 'Two last days', days: 2 },
-    { value: 'threeLastDays', label: 'Three last days', days: 3 },
-    { value: 'fiveLastDays', label: 'Five last days', days: 5 },
-    { value: 'lastWeek', label: 'Last week', days: 7 },
-];
+import {useConfigContext} from "../../datasource/ConfigContext";
 
 export const Charts = ({
                            chartConfigs,
                            setChartConfigs,
                            onDataModificationConfirmed,
                        }) => {
-    const [timeRange, setTimeRange] = useState(TIME_RANGE_OPTIONS[0].value);
+
+    const {config} = useConfigContext();
+    const [timeRange, setTimeRange] = useState(config.timeRangeOptions[0].value);
     const [chartData, setChartData] = useState({});
     const { homeSubMenu } = useAppState();
     const { homeApi } = useApiContext();
+
 
     const fetchChartsData = useCallback(() => {
         chartConfigs.forEach((config) => {
@@ -76,22 +72,22 @@ export const Charts = ({
         <Container>
             <Title>Realtime data charts</Title>
             <SingleSelect
-                options={TIME_RANGE_OPTIONS}
+                options={config.timeRangeOptions}
                 value={timeRange}
                 onChange={setTimeRange}
                 placeholder="Select Time Range"
             />
-            {chartConfigs.map((config) => (
+            {chartConfigs.map((c) => (
                 <TimeChart
-                    key={chartConfigs.indexOf(config)}
-                    data={chartData[config.id] || []}
-                    title={config.label}
+                    key={chartConfigs.indexOf(c)}
+                    data={chartData[c.id] || []}
+                    title={c.label}
                     dataKey="value"
-                    yAxisUnit={unitMap[config.sensorType]}
-                    days={TIME_RANGE_OPTIONS.find((option) => option.value === timeRange).days}
+                    yAxisUnit={unitMap[c.sensorType]}
+                    days={config.timeRangeOptions.find((option) => option.value === timeRange).days}
                     numTicks={10}
-                    onEdit={() => handleEditChart(config.id)}
-                    onDelete={() => handleDeleteChart(config.id)}
+                    onEdit={() => handleEditChart(c.id)}
+                    onDelete={() => handleDeleteChart(c.id)}
                 />
             ))}
             {homeSubMenu === 'edit' && <AddButton onButtonClicked={handleAddChart} />}
