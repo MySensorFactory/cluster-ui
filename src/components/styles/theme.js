@@ -27,11 +27,15 @@ export const theme = {
             tight: '5px'
         },
         marginBottom: {
+            small: '10px',
             medium: '20px',
             large: '24px'
         },
         marginTop: {
             large: '20px'
+        },
+        marginRight: {
+            small: '10px'
         }
     },
     fonts: {

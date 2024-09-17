@@ -1,8 +1,13 @@
-import {SensorValueItem} from "./SensorValueItem";
-import {AddButton} from "../controls/Buttons";
-import React from "react";
-import {Container, FlexContainer, GridFlexItemWrapper, Title} from "../styles/CommonStyles";
-import {theme} from "../styles/theme"
+import React from 'react';
+import Button from 'antd/es/button/button'
+import Col  from 'antd/es/col'
+import Row from 'antd/es/row'
+import Typography from 'antd/es/typography'
+import {SensorValueItem} from './SensorValueItem';
+import {theme} from "../styles/theme";
+import Add from "../../assets/Add";
+
+const {Title} = Typography;
 
 export const SensorValues = ({
                                  title,
@@ -13,16 +18,23 @@ export const SensorValues = ({
                                  isAddSensorButtonVisible
                              }) => {
     return (
-        <Container>
-            <Title>{title}</Title>
-            <FlexContainer
-                wrap="wrap"
-                gap={theme.sizes.gap.large}
-            >
-                {data.map((sensor, _) => (
-                    <GridFlexItemWrapper
+        <div style={{marginBottom: theme.sizes.marginBottom.medium}}>
+            <Title
+                level={3}
+                style={{
+                    color: theme.colors.text,
+                    marginBottom: theme.sizes.marginBottom.medium
+                }}>
+                {title}
+            </Title>
+            <Row gutter={[16, 16]}>
+                {data.map((sensor) => (
+                    <Col
                         key={sensor.id}
-                        className={sensor.label === 'composition' ? 'wide' : ''}
+                        xs={sensor.isWide ? 24 : 12}
+                        sm={sensor.isWide ? 24 : 12}
+                        md={sensor.isWide ? 16 : 8}
+                        lg={sensor.isWide ? 8 : 4}
                     >
                         <SensorValueItem
                             label={sensor.label}
@@ -30,14 +42,25 @@ export const SensorValues = ({
                             onEdit={() => handleEditSensor(sensor.id)}
                             onDelete={() => handleDeleteSensor(sensor.id)}
                         />
-                    </GridFlexItemWrapper>
+                    </Col>
                 ))}
                 {isAddSensorButtonVisible && (
-                    <GridFlexItemWrapper>
-                        <AddButton onButtonClicked={handleAddSensor}/>
-                    </GridFlexItemWrapper>
+                    <Col xs={12} sm={12} md={8} lg={4}>
+                        <Button
+                            type="primary"
+                            icon={<Add/>}
+                            onClick={handleAddSensor}
+                            style={{
+                                width: '100%',
+                                height: '105px',
+                                backgroundColor: theme.colors.primary,
+                                borderColor: theme.colors.primary
+                            }}>
+                            Add Sensor
+                        </Button>
+                    </Col>
                 )}
-            </FlexContainer>
-        </Container>
+            </Row>
+        </div>
     );
-}
+};

@@ -1,11 +1,12 @@
 import * as React from "react";
-const Delete = () => (
+const Delete = (props) => (
     <svg
         width="1em"
         height="1em"
         viewBox="0 0 16 16"
         xmlns="http://www.w3.org/2000/svg"
         fill="#FFFFFF"
+        {...props}
     >
         <g id="SVGRepo_bgCarrier" strokeWidth={0} />
         <g

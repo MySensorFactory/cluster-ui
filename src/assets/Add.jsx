@@ -1,9 +1,9 @@
 import * as React from "react";
-const SVGComponent = (props) => (
+const Add = (props) => (
     <svg
         width="1em"
         height="1em"
-        viewBox="0 0 24 24"
+        viewBox="0 0 20 20"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         {...props}
@@ -20,4 +20,4 @@ const SVGComponent = (props) => (
         </g>
     </svg>
 );
-export default SVGComponent;
+export default Add;
