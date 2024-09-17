@@ -1,15 +1,5 @@
-import {eachMinuteOfInterval, format, subDays} from "date-fns";
+import {format} from "date-fns";
 
-export const generateData = (min, max, days) => {
-    const now = new Date();
-    const startDate = subDays(now, days);
-    const interval = eachMinuteOfInterval({ start: startDate, end: now }, { step: 15 });
-
-    return interval.map((date) => ({
-        time: date.getTime(),
-        value: Math.random() * (max - min) + min,
-    }));
-};
 export const formatTime = (timestamp, days) => {
     const date = new Date(timestamp);
     if (days <= 1) {

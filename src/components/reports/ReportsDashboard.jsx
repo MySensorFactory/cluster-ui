@@ -1,41 +1,44 @@
 import React from 'react';
-import styled from 'styled-components';
-import {ListPlaceholder} from "./ListPlaceholder";
-import {useAppState} from "../AppStateContext";
+import Layout from 'antd/es/layout';
+import { ListPlaceholder } from "./ListPlaceholder";
+import { useAppState } from "../AppStateContext";
 import DefineReportItem from "./DefineReportItem";
-import {useApiContext} from "../../datasource/ApiContext";
-import {createUpsertReportRequest, TimeRange} from "../../datasource/ReportsClient";
+import { useApiContext } from "../../datasource/ApiContext";
+import { createUpsertReportRequest, TimeRange } from "../../datasource/ReportsClient";
+import {theme} from "../styles/theme";
 
-const DashboardContainer = styled.div`
-    padding: 20px;
-    background-color: #1C1C21;
-    color: white;
-    min-height: 100vh;
-`;
+const { Content } = Layout;
 
 const ReportsDashboard = () => {
-    const {reportsSubMenu} = useAppState();
-    const {reportsApi} = useApiContext()
+    const { reportsSubMenu } = useAppState();
+    const { reportsApi } = useApiContext();
 
     return (
-        <DashboardContainer>
-            {reportsSubMenu === 'define_report' &&
-                <DefineReportItem
-                    onSave={data => {
-                        reportsApi.createReport(createUpsertReportRequest(
-                            new TimeRange(
-                                new Date(data.fromDate).valueOf(),
-                                new Date(data.toDate).valueOf()
-                            ),
-                            data.includedSensors,
-                            data.sensorLabel,
-                            data.title,
-                            data.description,
-                        ), null);
-                    }}
-                />}
-            {reportsSubMenu === 'report_list' && <ListPlaceholder/>}
-        </DashboardContainer>
+        <Layout>
+            <Content style={{
+                padding: theme.sizes.padding.large,
+                backgroundColor: theme.colors.background,
+                color: theme.colors.text,
+                minHeight: '100vh'
+            }}>
+                {reportsSubMenu === 'define_report' &&
+                    <DefineReportItem
+                        onSave={data => {
+                            reportsApi.createReport(createUpsertReportRequest(
+                                new TimeRange(
+                                    new Date(data.fromDate).valueOf(),
+                                    new Date(data.toDate).valueOf()
+                                ),
+                                data.includedSensors,
+                                data.sensorLabel,
+                                data.title,
+                                data.description,
+                            ), null);
+                        }}
+                    />}
+                {reportsSubMenu === 'report_list' && <ListPlaceholder />}
+            </Content>
+        </Layout>
     );
 };
 

@@ -92,10 +92,13 @@ export class ReportPreview {
 
 export class GetReportListResponse {
     results: ReportPreview[];
+    totalItems: number;
 
-    constructor(results: ReportPreview[]) {
+    constructor(results: ReportPreview[], totalItems: number) {
         this.results = results;
+        this.totalItems = totalItems;
     }
+
 }
 
 export class SensorData {

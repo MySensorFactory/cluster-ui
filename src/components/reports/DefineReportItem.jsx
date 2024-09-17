@@ -1,161 +1,132 @@
-import React, {useLayoutEffect, useRef, useState} from 'react';
-import styled from 'styled-components';
-import {MultiSelect, SingleSelect} from "../controls/Select";
-import {ButtonWithIcon} from "../controls/Buttons";
-import Apply from "../../assets/Apply";
+import React from 'react';
+import Button from 'antd/es/button'
+import Input from 'antd/es/input';
+import Form from 'antd/es/form'
+import Select from 'antd/es/select'
+import DatePicker from 'antd/es/date-picker'
 import {useConfigContext} from "../../datasource/ConfigContext";
+import styled from 'styled-components';
+import dayjs from 'dayjs';
+import Apply from "../../assets/Apply";
+import {theme} from "../styles/theme"
+import Modal from "antd/es/modal/Modal";
+
+const {TextArea} = Input;
+const {RangePicker} = DatePicker;
 
 const FormContainer = styled.div`
-    background-color: #1C1C21;
-    color: white;
-    padding: 20px;
-    width: 1000px; 
-    border-radius: 10px;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: ${theme.sizes.padding.xLarge};
+    background-color: ${theme.colors.background};
+    border-radius: ${theme.sizes.borderRadius};
 `;
 
-const Title = styled.h2`
-    font-size: 24px;
-    margin-bottom: 20px;
-`;
-
-const Input = styled.input`
-    width: ${props => props.width}px;
-    padding: 10px 0;
-    margin-bottom: 15px;
-    background-color: #2a2a36;
-    color: white;
-    border: 1px solid #3a3a3a;
-    border-radius: 5px;
-`;
-
-const TextArea = styled.textarea`
-    width: ${props => props.width}px;
-    height: 100px;
-    padding: 10px 0;
-    margin-bottom: 15px;
-    margin-right: 20px;
-    background-color: #2a2a36;
-    color: white;
-    border: 1px solid #3a3a3a;
-    border-radius: 5px;
-    resize: none;
-`;
-
-const ControlsContainer = styled.div`
-    display: flex;
-    width: 95%;
-    justify-content: space-between;
-    margin-bottom: 15px;
-    gap: 20px;
-`;
-
-const ControlWrapper = styled.div`
-    flex: 1;
-    margin-right: 10px;
-
-    &:last-child {
-        margin-right: 0;
+const StyledForm = styled(Form)`
+    .ant-form-item-label > label {
+        color: ${theme.colors.textMuted};
     }
 `;
 
-const DateInput = styled(Input)`
-    width: 100%;
-`;
+const DefineReportItem = ({onSave, initialData, isModal = false, onClose}) => {
 
-const ControlLabel = styled.label`
-    display: block;
-    margin-bottom: 5px;
-    font-size: 14px;
-    color: #a0a0a0;
-`;
-
-
-const DefineReportItem = ({onSave, initialData}) => {
     const {config} = useConfigContext();
-    const [title, setTitle] = useState(initialData?.name || '');
-    const [sensorLabel, setSensorLabel] = useState(initialData?.label || '');
-    const [description, setDescription] = useState(initialData?.description || '');
-    const [fromDate, setFromDate] = useState(initialData?.timeRange.from || '');
-    const [toDate, setToDate] = useState(initialData != null ? new Date(initialData.timeRange.to) : '');
-    const [includedSensors, setIncludedSensors] = useState(initialData?.includedSensors || []);
+    const [form] = Form.useForm();
 
+    let ControlsContainer = FormContainer;
 
-    const targetRef = useRef();
-    const [dimensions, setDimensions] = useState({ width:0, height: 0 });
+    if (isModal) {
+        ControlsContainer = Modal
+    }
 
-    useLayoutEffect(() => {
-        if (targetRef.current) {
-            setDimensions({
-                width: targetRef.current.offsetWidth,
-                height: targetRef.current.offsetHeight
+    const handleSave = (values) => {
+        if (onSave) {
+            const {dateRange, ...rest} = values;
+            onSave({
+                ...rest,
+                fromDate: dateRange[0].format('YYYY-MM-DD'),
+                toDate: dateRange[1].format('YYYY-MM-DD'),
+                includedSensors: values.includedSensors
             });
-        }
-    }, []);
-
-    const handleSave = () => {
-        if (onSave !== undefined) {
-            onSave({title, sensorLabel, description, fromDate, toDate, includedSensors: includedSensors.map(s => s.value)});
         }
     };
 
+    const initialDateRange = initialData?.timeRange
+        ? [dayjs(initialData.timeRange.from), dayjs(initialData.timeRange.to)]
+        : undefined;
+
     return (
-        <FormContainer>
-            <Title>{initialData ? 'Edit Report' : 'Create Report'}</Title>
-            <Input
-                width={dimensions.width}
-                type="text"
-                placeholder="Write title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-            />
-            <ControlsContainer ref={targetRef}>
-                <ControlWrapper>
-                    <ControlLabel>Sensor Label</ControlLabel>
-                    <SingleSelect
-                        options={config.availableLabels}
-                        value={config.availableLabels.find(option => option.value === sensorLabel)}
-                        onChange={setSensorLabel}
+        <ControlsContainer
+            visible={true}
+            closeable={true}
+            onCancel={onClose}
+            footer={null}
+        >
+
+            <h2 style={{
+                color: theme.colors.text,
+                marginBottom: theme.sizes.marginBottom.large,
+                fontFamily: theme.fonts.family
+            }}>
+                {initialData ? 'Edit Report' : 'Create Report'}
+            </h2>
+            <StyledForm
+                form={form}
+                layout="vertical"
+                onFinish={handleSave}
+                initialValues={{
+                    title: initialData?.name || '',
+                    sensorLabel: initialData?.label || undefined,
+                    dateRange: initialDateRange,
+                    includedSensors: initialData?.includedSensors || [],
+                    description: initialData?.description || ''
+                }}
+            >
+                <Form.Item
+                    name="title"
+                    rules={[{required: true, message: 'Please input the title!'}]}>
+                    <Input placeholder="Write title"/>
+                </Form.Item>
+
+                <Form.Item
+                    name="sensorLabel"
+                    label="Sensor Label">
+                    <Select
                         placeholder="Select sensor label"
+                        options={config.availableLabels}
                     />
-                </ControlWrapper>
-                <ControlWrapper>
-                    <ControlLabel>From Date</ControlLabel>
-                    <DateInput
-                        type="date"
-                        value={fromDate}
-                        onChange={(e) => setFromDate(e.target.value)}
-                    />
-                </ControlWrapper>
-                <ControlWrapper>
-                    <ControlLabel>To Date</ControlLabel>
-                    <DateInput
-                        type="date"
-                        value={toDate}
-                        onChange={(e) => setToDate(e.target.value)}
-                    />
-                </ControlWrapper>
-                <ControlWrapper>
-                    <ControlLabel>Included Sensor Types</ControlLabel>
-                    <MultiSelect
-                        options={config.availableSensors}
-                        value={includedSensors}
-                        onChange={setIncludedSensors}
+                </Form.Item>
+
+                <Form.Item
+                    name="dateRange"
+                    label="Date Range"
+                    rules={[{type: 'array', required: true, message: 'Please select date range!'}]}>
+                    <RangePicker style={{width: '100%'}}/>
+                </Form.Item>
+
+                <Form.Item
+                    name="includedSensors"
+                    label="Included Sensor Types">
+                    <Select
+                        mode="multiple"
                         placeholder="Select sensor types"
+                        options={config.availableSensors}
                     />
-                </ControlWrapper>
-            </ControlsContainer>
-            <TextArea
-                width={dimensions.width}
-                placeholder="Write description..."
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-            />
-            <ButtonWithIcon
-                svgComponent={<Apply/>}
-                text={'Save'}
-                onClick={handleSave}
-            />
-        </FormContainer>
+                </Form.Item>
+
+                <Form.Item
+                    name="description"
+                    rules={[{required: true, message: 'Please input the description!'}]}>
+                    <TextArea rows={4} placeholder="Write description..."/>
+                </Form.Item>
+
+                <Form.Item>
+                    <Button type="primary" htmlType="submit" icon={<Apply/>}>
+                        Save
+                    </Button>
+                </Form.Item>
+            </StyledForm>
+        </ControlsContainer>
     );
 };
 
