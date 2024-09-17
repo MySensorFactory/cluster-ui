@@ -13,19 +13,29 @@ export const theme = {
         chartStroke: '"#4fc3f7"'
     },
     sizes: {
-        borderRadius: '10px',
+        borderRadius: '5px',
         padding: {
+            none: "0",
             small: '10px',
             medium: '15px',
             large: '20px',
+            xLarge: '24px'
         },
         gap: {
             large: '20px',
             default: '10px',
             tight: '5px'
+        },
+        marginBottom: {
+            medium: '20px',
+            large: '24px'
+        },
+        marginTop: {
+            large: '20px'
         }
     },
     fonts: {
+        family: "Inter, monospace",
         sizes: {
             small: '14px',
             medium: '16px',

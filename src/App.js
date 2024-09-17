@@ -5,7 +5,9 @@ import Header from "./components/Header";
 import MainContent from "./components/MainContent";
 import {AppStateProvider} from "./components/AppStateContext";
 import {ApiProvider} from "./datasource/ApiContext";
-import {ConfigProvider} from "./datasource/ConfigContext";
+import {theme} from "./components/styles/theme";
+import {ConfigProvider as ConfigConextProvider} from "./datasource/ConfigContext";
+import ConfigProvider from "antd/es/config-provider"
 
 const AppContainer = styled.div`
     display: flex;
@@ -23,19 +25,45 @@ const MainSection = styled.div`
 
 function App() {
     return (
-        <ConfigProvider>
+        <ConfigConextProvider>
             <ApiProvider>
                 <AppStateProvider>
-                    <AppContainer>
-                        <Header/>
-                        <MainSection>
-                            <Sidebar/>
-                            <MainContent/>
-                        </MainSection>
-                    </AppContainer>
+                    <ConfigProvider
+                        theme={{
+                            components: {
+                                Table: {
+                                    rowHoverBg: theme.colors.primaryHover,
+                                    borderColor: theme.colors.border
+                                }
+                            },
+                            token: {
+                                // Seed Token
+                                colorPrimary: theme.colors.primary,
+                                fontFamily: theme.fonts.family,
+                                borderRadius: theme.sizes.borderRadius,
+
+                                // Alias Token
+                                colorBgContainer: theme.colors.secondary,
+                                colorBgElevated: theme.colors.secondary,
+                                colorText: theme.colors.text,
+                                colorTextQuaternary: theme.colors.textMuted,
+                                colorPrimaryBg: theme.colors.primaryHover,
+                                colorIcon: theme.colors.textMuted,
+                                colorFillSecondary: theme.colors.primary
+                            }
+                        }}
+                    >
+                        <AppContainer>
+                            <Header/>
+                            <MainSection>
+                                <Sidebar/>
+                                <MainContent/>
+                            </MainSection>
+                        </AppContainer>
+                    </ConfigProvider>
                 </AppStateProvider>
             </ApiProvider>
-        </ConfigProvider>
+        </ConfigConextProvider>
     );
 }
 
