@@ -1,10 +1,9 @@
 import SvgResizer from "react-svg-resizer";
-import Edit from "../../assets/Edit";
-import Delete from "../../assets/Delete";
 import React from "react";
-import {ButtonWithIconContainer, AddButtonContainer} from "../styles/ButtonStyles";
+import {ButtonWithIconContainer} from "../styles/ButtonStyles";
 import Add from "../../assets/Add";
-import {OverlayButton} from "../styles/CommonStyles";
+import {theme} from "../styles/theme";
+import Button from "antd/es/button/button";
 
 export const ButtonWithIcon = ({svgComponent, text, onClick, iconSize = 20}) => {
     const marginBetweenTextAndIcon = "7px";
@@ -17,28 +16,19 @@ export const ButtonWithIcon = ({svgComponent, text, onClick, iconSize = 20}) => 
     );
 };
 
-export const EditButton = ({onEdit, iconSize}) => (
-    <OverlayButton onClick={onEdit}>
-        <SvgResizer size={iconSize}>
-            <Edit/>
-        </SvgResizer>
-    </OverlayButton>
-);
-
-export const DeleteButton = ({onDelete, iconSize}) => (
-    <OverlayButton onClick={onDelete}>
-        <SvgResizer size={iconSize}>
-            <Delete/>
-        </SvgResizer>
-    </OverlayButton>
-);
-
-export const AddButton = ({onButtonClicked, iconSize = 45}) => {
+export const AddButton = ({onButtonClicked}) => {
     return (
-        <AddButtonContainer onClick={onButtonClicked}>
-            <SvgResizer size={iconSize}>
-                <Add/>
-            </SvgResizer>
-        </AddButtonContainer>
+        <Button
+            type="primary"
+            icon={<Add/>}
+            onClick={onButtonClicked}
+            style={{
+                width: '100%',
+                height: '105px',
+                backgroundColor: theme.colors.primary,
+                borderColor: theme.colors.primary
+            }}>
+            Add
+        </Button>
     );
 };

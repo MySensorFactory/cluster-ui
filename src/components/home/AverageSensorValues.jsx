@@ -48,12 +48,14 @@ export const AverageSensorValues = ({
         }
     }, [averageSensorValuesConfig]);
 
-    return (<SensorValues
-        title={"Average sensor values"}
-        data={averageMetrics}
-        handleEditSensor={handleEditSensor}
-        handleDeleteSensor={handleDeleteSensor}
-        handleAddSensor={handleAddSensor}
-        isAddSensorButtonVisible={homeSubMenu === 'edit'}
-    />);
+    return (
+        <SensorValues
+            title={"Average sensor values"}
+            data={averageMetrics}
+            handleEditSensor={handleEditSensor}
+            handleDeleteSensor={handleDeleteSensor}
+            handleAddSensor={handleAddSensor}
+            isAddSensorButtonVisible={homeSubMenu === 'edit'}
+        />
+    );
 };

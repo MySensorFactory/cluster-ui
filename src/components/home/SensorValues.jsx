@@ -1,11 +1,10 @@
 import React from 'react';
-import Button from 'antd/es/button/button'
-import Col  from 'antd/es/col'
+import Col from 'antd/es/col'
 import Row from 'antd/es/row'
 import Typography from 'antd/es/typography'
 import {SensorValueItem} from './SensorValueItem';
 import {theme} from "../styles/theme";
-import Add from "../../assets/Add";
+import {AddButton} from "../controls/Buttons";
 
 const {Title} = Typography;
 
@@ -46,18 +45,9 @@ export const SensorValues = ({
                 ))}
                 {isAddSensorButtonVisible && (
                     <Col xs={12} sm={12} md={8} lg={4}>
-                        <Button
-                            type="primary"
-                            icon={<Add/>}
+                        <AddButton
                             onClick={handleAddSensor}
-                            style={{
-                                width: '100%',
-                                height: '105px',
-                                backgroundColor: theme.colors.primary,
-                                borderColor: theme.colors.primary
-                            }}>
-                            Add Sensor
-                        </Button>
+                        />
                     </Col>
                 )}
             </Row>

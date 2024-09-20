@@ -45,12 +45,14 @@ export const CurrentSensorValues = ({sensorValuesConfig, setSensorValuesConfig, 
     }, [sensorValuesConfig]);
 
 
-    return (<SensorValues
-        title={"Current sensor values"}
-        data={currentSensorValues}
-        handleEditSensor={handleEditSensor}
-        handleDeleteSensor={handleDeleteSensor}
-        handleAddSensor={handleAddSensor}
-        isAddSensorButtonVisible={homeSubMenu === 'edit'}
-    />);
+    return (
+        <SensorValues
+            title={"Current sensor values"}
+            data={currentSensorValues}
+            handleEditSensor={handleEditSensor}
+            handleDeleteSensor={handleDeleteSensor}
+            handleAddSensor={handleAddSensor}
+            isAddSensorButtonVisible={homeSubMenu === 'edit'}
+        />
+    );
 };

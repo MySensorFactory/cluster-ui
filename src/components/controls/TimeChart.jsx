@@ -1,10 +1,12 @@
-import {useAppState} from "../AppStateContext";
 import React, {useState} from "react";
-import {calculateTicks, formatTime} from "../data/DataSource";
+import {Typography, Card} from 'antd';
 import {CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
-import {tryRenderEditBox} from "../home/TryRenderEditBox";
-import {ChartWrapper, ChartTitle} from "../styles/ChartStyles";
+import {useAppState} from "../AppStateContext";
+import {calculateTicks, formatTime} from "../data/DataSource";
 import {theme} from "../styles/theme";
+import {tryRenderEditBox} from "./TryRenderEditBox";
+
+const {Title} = Typography;
 
 export const TimeChart = ({
                               data,
@@ -21,16 +23,19 @@ export const TimeChart = ({
     const [isHovered, setIsHovered] = useState(false);
     const ticks = calculateTicks(data, numTicks);
 
-    const chartClassName = "chart-wrapper";
-    const parentSelector = "." + chartClassName;
-
     return (
-        <ChartWrapper
-            className={chartClassName}
+        <Card
+            title={<Title level={4} style={{color: theme.colors.text}}>{title}</Title>}
+            hoverable
+            style={{
+                backgroundColor: theme.colors.background,
+                marginBottom: theme.sizes.marginBottom.medium,
+                borderColor: theme.colors.border
+            }}
+            bodyStyle={{padding: 0}}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            <ChartTitle>{title}</ChartTitle>
             <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={data} margin={{top: 20, right: 30, left: 20, bottom: 25}}>
                     <CartesianGrid strokeDasharray="3 3" stroke={theme.colors.secondaryHover}/>
@@ -71,7 +76,7 @@ export const TimeChart = ({
                     <Line type="monotone" dataKey={dataKey} stroke={stroke} strokeWidth={2} dot={false}/>
                 </LineChart>
             </ResponsiveContainer>
-            {tryRenderEditBox(homeSubMenu, isHovered, onEdit, onDelete, parentSelector)}
-        </ChartWrapper>
+            {tryRenderEditBox(homeSubMenu, isHovered, onEdit, onDelete)}
+        </Card>
     );
 };

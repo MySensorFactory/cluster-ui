@@ -29,7 +29,8 @@ export const theme = {
         marginBottom: {
             small: '10px',
             medium: '20px',
-            large: '24px'
+            large: '24px',
+            xLarge: '40px'
         },
         marginTop: {
             large: '20px'

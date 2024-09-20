@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import Dashboard from "./home/Dashboard";
+import {Dashboard} from "./home/Dashboard";
 import ReportsDashboard from "./reports/ReportsDashboard";
 import {useAppState} from "./AppStateContext";
 import {useConfigContext} from "../datasource/ConfigContext";

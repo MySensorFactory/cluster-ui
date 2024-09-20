@@ -73,8 +73,7 @@ function Sidebar() {
                         )}
                         {homeSubMenu === 'edit' && (
                             <>
-                                <SubMenuItem onClick={() => setHomeSubMenu('view')}>Save</SubMenuItem>
-                                <SubMenuItem onClick={() => setHomeSubMenu('view')}>Cancel</SubMenuItem>
+                                <SubMenuItem onClick={() => setHomeSubMenu('view')}>View</SubMenuItem>
                             </>
                         )}
                     </SubMenuContainer>
