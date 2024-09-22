@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import Modal from 'antd/es/modal/Modal';
 import Select from 'antd/es/select';
-import Button from 'antd/es/modal';
+import Button from 'antd/es/button';
 import Typography from 'antd/es/typography';
 import Space from 'antd/es/space';
 import {useConfigContext} from "../../datasource/ConfigContext";
