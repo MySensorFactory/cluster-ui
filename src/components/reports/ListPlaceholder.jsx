@@ -19,6 +19,7 @@ import Row from 'antd/es/row';
 import Typography from 'antd/es/typography'
 import Layout from 'antd/es/layout'
 import {theme} from "../styles/theme";
+import Space from "antd/es/space";
 
 const {Title} = Typography;
 const {Content} = Layout;
@@ -153,23 +154,25 @@ export const ListPlaceholder = () => {
                     </Button>
                 </Col>
             </Row>
-            <ReportsList
-                reports={currentReports}
-                onReportDetailsShowRequest={handleGetReportDetails}
-                onReportUpdate={updateReport}
-                onReportDelete={deleteReport}
-            />
-            <Pagination
-                current={currentPage}
-                total={totalItems}
-                pageSize={pageSize}
-                onChange={handlePageChange}
-                onShowSizeChange={handlePageChange}
-                showSizeChanger={true}
-                showQuickJumper
-                pageSizeOptions={['5', '10', '20', '50']}
-                style={{marginTop: theme.sizes.marginTop, textAlign: 'center'}}
-            />
+            <Space direction="vertical" size="middle" style={{display: 'flex'}}>
+                <ReportsList
+                    reports={currentReports}
+                    onReportDetailsShowRequest={handleGetReportDetails}
+                    onReportUpdate={updateReport}
+                    onReportDelete={deleteReport}
+                />
+                <Pagination
+                    current={currentPage}
+                    total={totalItems}
+                    pageSize={pageSize}
+                    onChange={handlePageChange}
+                    onShowSizeChange={handlePageChange}
+                    showSizeChanger={true}
+                    showQuickJumper
+                    pageSizeOptions={['5', '10', '20', '50']}
+                    style={{marginTop: theme.sizes.marginTop, textAlign: 'center'}}
+                />
+            </Space>
         </Content>
     );
 

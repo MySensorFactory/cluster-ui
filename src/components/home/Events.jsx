@@ -1,74 +1,81 @@
 import React, {useEffect, useState} from 'react';
-import {Container, FlexContainer, Input, ScrollContainer, StyledCheckbox, Text, Title} from '../styles/CommonStyles';
+import Checkbox from 'antd/es/checkbox/Checkbox'
+import Col from 'antd/es/col';
+import Row from 'antd/es/row';
+import Space from 'antd/es/space';
+import DatePicker from 'antd/es/date-picker';
+import Input from 'antd/es/input';
+import Typography from 'antd/es/typography'
 import {EventItem} from './EventItem';
 import {useApiContext} from "../../datasource/ApiContext";
-import {theme} from '../styles/theme';
-import {LabeledDateInput} from "../controls/Inputs";
+import {theme} from "../styles/theme"
+import List from "antd/es/list";
+
+const {Title} = Typography;
+const {Search} = Input;
 
 export const Events = () => {
     const [filteredEvents, setFilteredEvents] = useState([]);
     const [showOnlyAlerts, setShowOnlyAlerts] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const [dateRange, setDateRange] = useState({start: '', end: ''});
+    const [dateRange, setDateRange] = useState([null, null]);
     const {homeApi} = useApiContext();
 
     useEffect(() => {
         homeApi.getEvents({
             showOnlyAlerts,
             searchTerm,
-            startDate: dateRange.start,
-            endDate: dateRange.end
+            startDate: dateRange[0]?.format('YYYY-MM-DD'),
+            endDate: dateRange[1]?.format('YYYY-MM-DD')
         }, setFilteredEvents);
     }, [showOnlyAlerts, searchTerm, dateRange]);
 
     return (
-        <Container>
-            <Title>Events & alerts</Title>
-            <FlexContainer
-                direction="column"
-                gap={theme.sizes.gap.tight}
-                padding={theme.sizes.padding.small}
-            >
-                <label>
-                    <FlexContainer gap={theme.sizes.gap.tight}>
-                        <StyledCheckbox
-                            type="checkbox"
-                            checked={showOnlyAlerts}
-                            onChange={(e) => setShowOnlyAlerts(e.target.checked)}
-                        />
-                        <Text>Show only alerts</Text>
-                    </FlexContainer>
-                </label>
-                <FlexContainer gap={theme.sizes.padding.small}
-                               align={'center'}>
-                    <Input
-                        type="text"
+        <div style={{
+            backgroundColor: theme.colors.background,
+            padding: theme.sizes.padding.large,
+            borderRadius: theme.sizes.borderRadius
+        }}>
+            <Title level={3} style={{color: theme.colors.text, marginBottom: theme.sizes.marginBottom.medium}}>
+                Events & alerts
+            </Title>
+            <Row gutter={[16, 16]} align="middle" style={{marginBottom: theme.sizes.marginBottom.medium}}>
+                <Col>
+                    <Checkbox
+                        checked={showOnlyAlerts}
+                        onChange={(e) => setShowOnlyAlerts(e.target.checked)}
+                        style={{color: theme.colors.text}}
+                    >
+                        Show only alerts
+                    </Checkbox>
+                </Col>
+                <Col flex="auto">
+                    <Search
                         placeholder="Search events..."
-                        value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
+                        style={{width: '100%'}}
                     />
-                    <LabeledDateInput
-                        label={'Start date'}
-                        onChange={(e) => setDateRange({...dateRange, start: e.target.value})}
-                        value={dateRange.start}
-                    />
-                    <LabeledDateInput
-                        label={'End date'}
-                        onChange={(e) => setDateRange({...dateRange, end: e.target.value})}
-                        value={dateRange.end}
-                    />
-                </FlexContainer>
-            </FlexContainer>
-            <ScrollContainer>
-                {filteredEvents.map((event, index) => (
+                </Col>
+                <Col>
+                    <Space>
+                        <DatePicker.RangePicker
+                            value={dateRange}
+                            onChange={setDateRange}
+                        />
+                    </Space>
+                </Col>
+            </Row>
+            <List
+                dataSource={filteredEvents}
+                renderItem={(event) => (
                     <EventItem
-                        key={index}
                         title={event.title}
                         time={event.time}
                         isAlert={event.isAlert}
                     />
-                ))}
-            </ScrollContainer>
-        </Container>
+                )}
+                style={{maxHeight: '300px', overflowY: 'auto'}}
+            />
+        </div>
     );
 };

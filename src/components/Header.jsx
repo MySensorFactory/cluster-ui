@@ -1,31 +1,33 @@
 import React from 'react';
-import styled from 'styled-components';
+import Layout from 'antd/es/layout';
+import Typography from 'antd/es/typography';
+import Space from 'antd/es/space';
 import DataCircle from "../assets/DataCircle";
 import SvgResizer from "react-svg-resizer";
+import {theme} from "./styles/theme";
 
-const HeaderContainer = styled.div`
-    background-color: #1C1C21;
-    color: white;
-    padding: 30px;
-    display: flex;
-    gap: 10px;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    font-family: Inter, sans-serif;
-    font-size: 12px;
-    height: 1%;
-    border-bottom: 1px solid white;
-`;
+const {Header: AntHeader} = Layout;
+const {Title} = Typography;
 
 function Header() {
     return (
-        <HeaderContainer>
-            <SvgResizer size={25}>
-                <DataCircle/>
-            </SvgResizer>
-            <h1>Factory Data Analytics</h1>
-        </HeaderContainer>
+        <AntHeader
+            style={{
+                backgroundColor: theme.colors.background,
+                padding: theme.sizes.padding.large,
+                height: 'auto',
+                borderBottom: '1px solid white',
+            }}
+        >
+            <Space size={10}>
+                <SvgResizer size={30}>
+                    <DataCircle/>
+                </SvgResizer>
+                <Title level={2} style={{marginBottom: theme.sizes.marginBottom.xLarge}}>
+                    Factory Data Analytics
+                </Title>
+            </Space>
+        </AntHeader>
     );
 }
 

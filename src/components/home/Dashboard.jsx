@@ -1,14 +1,17 @@
 import React, {useEffect, useState} from 'react';
+import Layout from 'antd/es/layout';
 import {Header} from './Header';
 import {Events} from './Events';
 import {CurrentSensorValues} from './CurrentSensorValues';
 import {AverageSensorValues} from './AverageSensorValues';
 import {Charts} from "./Charts";
-import UpsertSensorPopup from './UpsertSensorPopup';
+import {UpsertSensorPopup} from './UpsertSensorPopup';
 import {useApiContext} from "../../datasource/ApiContext";
-import {Container, Overlay} from "../styles/CommonStyles";
+import {theme} from "../styles/theme";
 
-const Dashboard = () => {
+const {Content} = Layout;
+
+export const Dashboard = () => {
     const [isUpsertPopupActive, setIsUpsertPopupActive] = useState(false);
     const [postprocessor, setPostprocessor] = useState((_) => {
     })
@@ -63,44 +66,31 @@ const Dashboard = () => {
     }
 
     return (
-        dashboardConfig != null &&
-        <>
-            <Container
-                isInfinitelyHigh={true}
-                isBlurEnabled={isUpsertPopupActive}
-            >
-                <Header/>
-                <Events/>
-                <CurrentSensorValues
-                    sensorValuesConfig={dashboardConfig.currentSensorValuesConfig}
-                    setSensorValuesConfig={setCurrentSensorValuesConfig}
-                    onDataModificationConfirmed={activateUpsertPopup}
-                />
-                <AverageSensorValues
-                    averageSensorValuesConfig={dashboardConfig.averageSensorValuesConfig}
-                    setAverageSensorValuesConfig={setAverageSensorValuesConfig}
-                    onDataModificationConfirmed={activateUpsertPopup}
-                />
-                <Charts
-                    chartConfigs={dashboardConfig.chartConfigs}
-                    setChartConfigs={setChartConfigs}
-                    onDataModificationConfirmed={activateUpsertPopup}
-                />
-            </Container>
-            {
-                isUpsertPopupActive && (
-                    <>
-                        <Overlay onClick={handleClosePopup}/>
-                        <UpsertSensorPopup
-                            onPopupClose={handleClosePopup}
-                            onSaveButtonClicked={handleOnSaveButtonClicked}
-                        />
-                    </>
-                )
-            }
-        </>
-    )
-        ;
+        dashboardConfig && (
+            <Layout style={{minHeight: '100vh', background: theme.colors.background, marginBottom: theme.sizes.marginBottom.xLarge}}>
+                <Content style={{padding: theme.sizes.padding.xLarge, filter: isUpsertPopupActive ? 'blur(5px)' : 'none'}}>
+                    <Header/>
+                    <Events/>
+                    <CurrentSensorValues
+                        sensorValuesConfig={dashboardConfig.currentSensorValuesConfig}
+                        setSensorValuesConfig={setCurrentSensorValuesConfig}
+                        onDataModificationConfirmed={activateUpsertPopup}
+                    />
+                    <AverageSensorValues
+                        averageSensorValuesConfig={dashboardConfig.averageSensorValuesConfig}
+                        setAverageSensorValuesConfig={setAverageSensorValuesConfig}
+                        onDataModificationConfirmed={activateUpsertPopup}
+                    />
+                    <Charts
+                        chartConfigs={dashboardConfig.chartConfigs}
+                        setChartConfigs={setChartConfigs}
+                        onDataModificationConfirmed={activateUpsertPopup}
+                    /></Content>
+                {isUpsertPopupActive && (
+                    <UpsertSensorPopup
+                        onPopupClose={handleClosePopup}
+                        onSaveButtonClicked={handleOnSaveButtonClicked}
+                    />)}
+            </Layout>)
+    );
 };
-
-export default Dashboard;

@@ -14,7 +14,7 @@ export const AverageSensorValues = ({
 
     const fetchAverageMetrics = useCallback(() => {
         homeApi.getAverageSensorValues('038833bf-9efb-40a2-945f-4b7ea29354d4', setAverageMetrics);
-    }, [averageMetrics]);
+    }, [averageSensorValuesConfig, homeApi]);
 
     useEffect(() => {
         fetchAverageMetrics();
@@ -48,12 +48,14 @@ export const AverageSensorValues = ({
         }
     }, [averageSensorValuesConfig]);
 
-    return (<SensorValues
-        title={"Average sensor values"}
-        data={averageMetrics}
-        handleEditSensor={handleEditSensor}
-        handleDeleteSensor={handleDeleteSensor}
-        handleAddSensor={handleAddSensor}
-        isAddSensorButtonVisible={homeSubMenu === 'edit'}
-    />);
+    return (
+        <SensorValues
+            title={"Average sensor values"}
+            data={averageMetrics}
+            handleEditSensor={handleEditSensor}
+            handleDeleteSensor={handleDeleteSensor}
+            handleAddSensor={handleAddSensor}
+            isAddSensorButtonVisible={homeSubMenu === 'edit'}
+        />
+    );
 };

@@ -27,10 +27,18 @@ export const theme = {
             tight: '5px'
         },
         marginBottom: {
+            small: '10px',
             medium: '20px',
-            large: '24px'
+            large: '24px',
+            xLarge: '40px'
         },
         marginTop: {
+            large: '20px'
+        },
+        marginRight: {
+            small: '10px'
+        },
+        marginLeft: {
             large: '20px'
         }
     },

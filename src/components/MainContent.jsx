@@ -1,17 +1,12 @@
 import React from 'react';
-import styled from 'styled-components';
-import Dashboard from "./home/Dashboard";
+import Layout from 'antd/es/layout/layout';
+import {Dashboard} from "./home/Dashboard";
 import ReportsDashboard from "./reports/ReportsDashboard";
 import {useAppState} from "./AppStateContext";
 import {useConfigContext} from "../datasource/ConfigContext";
+import {theme} from "./styles/theme";
 
-const MainContentContainer = styled.div`
-    background-color: #1C1C21;
-    color: white;
-    padding: 20px;
-    flex: 1;
-    overflow-y: auto;
-`;
+const {Content} = Layout;
 
 function MainContent() {
     const {activeMenu} = useAppState();
@@ -29,10 +24,19 @@ function MainContent() {
     };
 
     return (
-        config != null &&
-        <MainContentContainer>
-            {renderContent()}
-        </MainContentContainer>
+        config != null && (
+            <Content
+                style={{
+                    backgroundColor: theme.colors.background,
+                    color: theme.colors.text,
+                    padding: theme.sizes.padding.large,
+                    flex: 1,
+                    overflowY: 'auto',
+                }}
+            >
+                {renderContent()}
+            </Content>
+        )
     );
 }
 

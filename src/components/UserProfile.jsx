@@ -1,44 +1,40 @@
-import styled from "styled-components";
 import React from "react";
+import Avatar from 'antd/es/avatar';
+import Space from 'antd/es/space';
+import Typography from 'antd/es/typography';
+import {theme} from "./styles/theme";
 
+const { Text } = Typography;
 
-const UserProfileImage = styled.div`
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background-color: #3D404A;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 30px;
-    color: white;
-    font-family: Inter, monospace;
-
-    &:hover {
-        background-color: #3A3D43;
-    }
-`;
-
-const UserProfileContainer = styled.div`
-    display: flex;
-    gap: 10px;
-    align-items: center;
-`;
-
-function UserFrontData () {
+function UserFrontData() {
     return (
-        <div>
-            <p>Name Surname</p>
-            <p>Administrator</p>
-        </div>
-    )
+        <Space direction="vertical" size={0}>
+            <Text style={{ color: theme.colors.text }}>Name Surname</Text>
+            <Text style={{ color: theme.colors.text }}>Administrator</Text>
+        </Space>
+    );
 }
 
 export function UserProfile() {
     return (
-        <UserProfileContainer>
-            <UserProfileImage>US</UserProfileImage>
-            <UserFrontData/>
-        </UserProfileContainer>
-    )
+        <Space size={10} align="center">
+            <Avatar
+                size={60}
+                style={{
+                    backgroundColor: theme.colors.secondaryHover,
+                    color: theme.colors.text,
+                    fontSize: '30px',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    cursor: 'pointer',
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = theme.colors.textMuted}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = theme.colors.secondaryHover}
+            >
+                US
+            </Avatar>
+            <UserFrontData />
+        </Space>
+    );
 }
