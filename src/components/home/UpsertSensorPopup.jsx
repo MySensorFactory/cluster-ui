@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import Modal from 'antd/es/modal/Modal';
-import Select from 'antd/es/modal';
+import Select from 'antd/es/select';
 import Button from 'antd/es/modal';
 import Typography from 'antd/es/typography';
 import Space from 'antd/es/space';
@@ -11,8 +11,8 @@ const { Title } = Typography;
 const { Option } = Select;
 
 export const UpsertSensorPopup = ({ onPopupClose, onSaveButtonClicked }) => {
-    const [label, setLabel] = useState(undefined);
-    const [sensorType, setSensorType] = useState(undefined);
+    const [label, setLabel] = useState(null);
+    const [sensorType, setSensorType] = useState(null);
     const { config } = useConfigContext();
 
     const handleSave = () => {
@@ -50,7 +50,7 @@ export const UpsertSensorPopup = ({ onPopupClose, onSaveButtonClicked }) => {
                 </Select>
 
                 <Select
-                    style={{ width: '100%' }}
+                    style={selectStyle}
                     value={sensorType}
                     onChange={setSensorType}
                     placeholder="Select Sensor Type"

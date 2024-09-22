@@ -1,31 +1,19 @@
 import './App.css';
-import styled from 'styled-components';
-import Sidebar from "./components/Sidebar";
+import {Layout} from 'antd';
+import {Sidebar} from "./components/Sidebar";
 import Header from "./components/Header";
 import MainContent from "./components/MainContent";
 import {AppStateProvider} from "./components/AppStateContext";
 import {ApiProvider} from "./datasource/ApiContext";
 import {theme} from "./components/styles/theme";
-import {ConfigProvider as ConfigConextProvider} from "./datasource/ConfigContext";
-import ConfigProvider from "antd/es/config-provider"
+import {ConfigProvider as ConfigContextProvider} from "./datasource/ConfigContext";
+import ConfigProvider from "antd/es/config-provider";
 
-const AppContainer = styled.div`
-    display: flex;
-    flex-flow: column;
-    height: 100vh;
-    overflow: hidden;
-`;
-
-const MainSection = styled.div`
-    flex: 1;
-    display: flex;
-    flex-direction: row;
-    height: 100vh;
-`;
+const {Content} = Layout;
 
 function App() {
     return (
-        <ConfigConextProvider>
+        <ConfigContextProvider>
             <ApiProvider>
                 <AppStateProvider>
                     <ConfigProvider
@@ -53,19 +41,20 @@ function App() {
                             }
                         }}
                     >
-                        <AppContainer>
+                        <Layout style={{height: '100vh', overflow: 'hidden'}}>
                             <Header/>
-                            <MainSection>
+                            <Layout>
                                 <Sidebar/>
-                                <MainContent/>
-                            </MainSection>
-                        </AppContainer>
+                                <Content style={{display: 'flex', flexDirection: 'column'}}>
+                                    <MainContent/>
+                                </Content>
+                            </Layout>
+                        </Layout>
                     </ConfigProvider>
                 </AppStateProvider>
             </ApiProvider>
-        </ConfigConextProvider>
+        </ConfigContextProvider>
     );
 }
-
 
 export default App;

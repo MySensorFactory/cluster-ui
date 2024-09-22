@@ -46,7 +46,7 @@ export const SensorValues = ({
                 {isAddSensorButtonVisible && (
                     <Col xs={12} sm={12} md={8} lg={4}>
                         <AddButton
-                            onClick={handleAddSensor}
+                            onButtonClicked={handleAddSensor}
                         />
                     </Col>
                 )}

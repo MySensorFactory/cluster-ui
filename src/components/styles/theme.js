@@ -37,6 +37,9 @@ export const theme = {
         },
         marginRight: {
             small: '10px'
+        },
+        marginLeft: {
+            large: '20px'
         }
     },
     fonts: {

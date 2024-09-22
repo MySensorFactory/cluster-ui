@@ -1,56 +1,18 @@
 import React from 'react';
-import styled from 'styled-components';
-import {ButtonWithIcon} from "./controls/Buttons";
-import Home from "../assets/Home";
-import Report from "../assets/Reports";
+import Layout from 'antd/es/layout';
+import Menu from 'antd/es/menu';
 import {UserProfile} from "./UserProfile";
 import {useAppState} from "./AppStateContext";
+import Home from "../assets/Home";
+import Reports from "../assets/Reports";
+import {theme} from "./styles/theme";
 
-const SidebarContainer = styled.div`
-    width: 200px;
-    height: 100vh;
-    background-color: #1C1C21;
-    color: white;
-    padding: 10px 20px 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-`;
+const {Sider} = Layout;
 
-const ButtonContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-`;
-
-const SubMenuContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    margin-left: 20px;
-`;
-
-const SubMenuItem = styled.button`
-    text-align: left;
-    background-color: transparent;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    border-radius: 10px;
-    font-family: Inter, monospace;
-    font-size: 12px;
-
-    &:hover {
-        background-color: #3D404A;
-    }
-`;
-
-function Sidebar() {
+export const Sidebar = () => {
     const {
         activeMenu, setActiveMenu, homeSubMenu, setHomeSubMenu,
-        setReportsSubMenu
+        reportsSubMenu, setReportsSubMenu
     } = useAppState();
 
     const handleMenuClick = (menu) => {
@@ -63,52 +25,45 @@ function Sidebar() {
         }
     };
 
-    const renderSubMenu = () => {
-        switch (activeMenu) {
-            case 'Home':
-                return (
-                    <SubMenuContainer>
-                        {homeSubMenu === 'view' && (
-                            <SubMenuItem onClick={() => setHomeSubMenu('edit')}>Edit</SubMenuItem>
-                        )}
-                        {homeSubMenu === 'edit' && (
-                            <>
-                                <SubMenuItem onClick={() => setHomeSubMenu('view')}>View</SubMenuItem>
-                            </>
-                        )}
-                    </SubMenuContainer>
-                );
-            case 'Reports':
-                return (
-                    <SubMenuContainer>
-                        <SubMenuItem onClick={() => setReportsSubMenu('report_list')}>Reports list</SubMenuItem>
-                        <SubMenuItem onClick={() => setReportsSubMenu('define_report')}>Define report</SubMenuItem>
-                    </SubMenuContainer>
-                );
-            default:
-                return null;
-        }
-    };
-
     return (
-        <SidebarContainer>
+        <Sider
+            width={250}
+            style={{
+                backgroundColor: theme.colors.background,
+                color: theme.colors.text,
+                padding: '10px 20px 20px',
+            }}
+        >
             <UserProfile/>
-            <ButtonContainer>
-                <ButtonWithIcon
-                    svgComponent={<Home/>}
-                    text={'Home'}
-                    onClick={() => handleMenuClick('Home')}
-                />
-                {activeMenu === 'Home' && renderSubMenu()}
-                <ButtonWithIcon
-                    svgComponent={<Report/>}
-                    text={'Reports'}
-                    onClick={() => handleMenuClick('Reports')}
-                />
-                {activeMenu === 'Reports' && renderSubMenu()}
-            </ButtonContainer>
-        </SidebarContainer>
+            <Menu
+                mode="inline"
+                selectedKeys={[activeMenu, homeSubMenu, reportsSubMenu]}
+                style={{backgroundColor: 'transparent', color: theme.colors.text, border: 'none'}}
+            >
+                <Menu.Item key="Home" icon={<Home/>} onClick={() => handleMenuClick('Home')}>
+                    Home
+                </Menu.Item>
+                {activeMenu === 'Home' && (
+                    <Menu.ItemGroup key="HomeSubMenu" style={{marginLeft: theme.sizes.marginLeft.large}}>
+                        {homeSubMenu === 'view' ? (
+                            <Menu.Item key="edit" onClick={() => setHomeSubMenu('edit')}>Edit</Menu.Item>
+                        ) : (
+                            <Menu.Item key="view" onClick={() => setHomeSubMenu('view')}>View</Menu.Item>
+                        )}
+                    </Menu.ItemGroup>
+                )}
+                <Menu.Item key="Reports" icon={<Reports/>} onClick={() => handleMenuClick('Reports')}>
+                    Reports
+                </Menu.Item>
+                {activeMenu === 'Reports' && (
+                    <Menu.ItemGroup key="ReportsSubMenu" style={{marginLeft: theme.sizes.marginLeft.large}}>
+                        <Menu.Item key="report_list" onClick={() => setReportsSubMenu('report_list')}>Reports
+                            list</Menu.Item>
+                        <Menu.Item key="define_report" onClick={() => setReportsSubMenu('define_report')}>Define
+                            report</Menu.Item>
+                    </Menu.ItemGroup>
+                )}
+            </Menu>
+        </Sider>
     );
 }
-
-export default Sidebar;
