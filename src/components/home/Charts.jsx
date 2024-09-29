@@ -8,6 +8,8 @@ import {useConfigContext} from "../../datasource/ConfigContext";
 import {TimeChart} from "../controls/TimeChart";
 import type {SensorValue} from "../../datasource/HomeClient";
 import {ChartConfig} from "../../datasource/HomeClient";
+import {Postprocessor, PostprocessorInput} from "./Dashboard";
+import type {TimeRangeOption} from "../../datasource/ConfigClient";
 
 const {Title} = Typography;
 const {Option} = Select;
@@ -23,7 +25,7 @@ export const Charts = ({
     chartData: Record<string, SensorValue[]>,
     chartConfigs: ChartConfig[],
     setChartConfigs: (ChartConfig[]) => void,
-    onDataModificationConfirmed: (any) => void,
+    onDataModificationConfirmed: (postprocessor: Postprocessor) => void,
     timeRange: string,
     setTimeRange: (string) => void
 }) => {
@@ -32,23 +34,23 @@ export const Charts = ({
     const {homeSubMenu} = useAppState();
 
     const handleAddChart = useCallback(() => {
-        onDataModificationConfirmed((newConfig) => {
-            const newChartConfigs = [...chartConfigs, newConfig];
+        onDataModificationConfirmed((newConfig: PostprocessorInput) => {
+            const newChartConfigs: ChartConfig = [...chartConfigs, newConfig];
             setChartConfigs(newChartConfigs);
         });
     }, [chartConfigs, onDataModificationConfirmed, setChartConfigs]);
 
-    const handleEditChart = useCallback((id) => {
-        onDataModificationConfirmed((newChartConfig) => {
-            const newChartConfigs = chartConfigs.map(config =>
-                config.id === id ? newChartConfig : config
+    const handleEditChart = useCallback((id: string) => {
+        onDataModificationConfirmed((newConfig: PostprocessorInput) => {
+            const newChartConfigs: ChartConfig[] = chartConfigs.map(config =>
+                config.id === id ? newConfig : config
             );
             setChartConfigs(newChartConfigs);
         });
     }, [chartConfigs, onDataModificationConfirmed, setChartConfigs]);
 
-    const handleDeleteChart = useCallback((id) => {
-        const newChartConfigs = chartConfigs.filter(config => config.id !== id);
+    const handleDeleteChart = useCallback((id: string) => {
+        const newChartConfigs: ChartConfig[] = chartConfigs.filter(config => config.id !== id);
         setChartConfigs(newChartConfigs);
     }, [chartConfigs, setChartConfigs]);
 
@@ -61,7 +63,7 @@ export const Charts = ({
                 onChange={setTimeRange}
                 placeholder="Select Time Range"
             >
-                {config.timeRangeOptions.map(option => (
+                {config.timeRangeOptions.map((option: TimeRangeOption) => (
                     <Option key={option.value} value={option.value}>{option.label}</Option>
                 ))}
             </Select>
@@ -71,7 +73,7 @@ export const Charts = ({
                     data={chartData[c.id]}
                     sensorType={c.sensorType}
                     title={c.label}
-                    days={config.timeRangeOptions.find((option) => option.value === timeRange).daysCount}
+                    days={config.timeRangeOptions.find((option: TimeRangeOption): boolean => option.value === timeRange).daysCount}
                     numTicks={10}
                     onEdit={() => handleEditChart(c.id)}
                     onDelete={() => handleDeleteChart(c.id)}

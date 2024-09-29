@@ -7,9 +7,14 @@ import {tryRenderEditBox} from "../controls/TryRenderEditBox";
 
 const {Text} = Typography;
 
-export const SensorValueItem = ({label, value, onEdit, onDelete}) => {
-    const {homeSubMenu} = useAppState();
-    const [isHovered, setIsHovered] = useState(false);
+export const SensorValueItem = ({label, value, onEdit, onDelete} : {
+    label: string;
+    value: string;
+    onEdit: () => void;
+    onDelete: () => void;
+}) => {
+    const {homeSubMenu}: {homeSubMenu: string} = useAppState();
+    const [isHovered: boolean, setIsHovered: (boolean) => void] = useState(false);
 
     return (
         <Card

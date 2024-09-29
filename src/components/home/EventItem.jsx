@@ -5,7 +5,11 @@ import {theme} from "../styles/theme"
 
 const {Text} = Typography;
 
-export const EventItem = ({title, time, isAlert = false}) => {
+export const EventItem = ({title, time, isAlert = false}: {
+    title: string;
+    time: Date;
+    isAlert?: boolean;
+}) => {
     return (
         <Card
             style={{

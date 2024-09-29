@@ -8,21 +8,30 @@ import {Charts} from "./Charts";
 import {UpsertSensorPopup} from './UpsertSensorPopup';
 import {useApiContext} from "../../datasource/ApiContext";
 import {theme} from "../styles/theme";
-import {ChartConfig, DashboardConfig} from "../../datasource/HomeClient";
+import {ChartConfig, DashboardConfig, HomeApi, ValueConfig} from "../../datasource/HomeClient";
 import type {SensorValue} from "../../datasource/HomeClient";
 import {useConfigContext} from "../../datasource/ConfigContext";
+import type {Config} from "../../datasource/ConfigClient";
 
 const {Content} = Layout;
 
+export type PostprocessorInput = {
+    label: string;
+    sensorType: string;
+};
+
+export type Postprocessor = (PostprocessorInput) => void;
+
 export const Dashboard = () => {
-    const [isUpsertPopupActive, setIsUpsertPopupActive] = useState(false);
-    const [postprocessor, setPostprocessor] = useState((_) => {})
-    const [isReadyToShowCharts, setIsReadyToShowCharts] = useState(false)
-    const [dashboardConfig: DashboardConfig, setDashboardConfig] = useState(null)
-    const [chartData: Record<string, SensorValue[]>, setChartData] = useState({});
-    const {homeApi} = useApiContext();
-    const {config} = useConfigContext();
-    const [timeRange: string, setTimeRange] = useState(config.timeRangeOptions[0].value);
+    const [isUpsertPopupActive: boolean, setIsUpsertPopupActive: (boolean) => void] = useState(false);
+    const [postprocessor: Postprocessor, setPostprocessor: (Postprocessor) => void] = useState((_) => {
+    })
+    const [isReadyToShowCharts: boolean, setIsReadyToShowCharts: (boolean) => void] = useState(false)
+    const [dashboardConfig: DashboardConfig, setDashboardConfig: (DashboardConfig) => void] = useState(null)
+    const [chartData: Record<string, SensorValue[]>, setChartData: (Record<string, SensorValue[]>) => void] = useState({});
+    const {homeApi}: { homeApi: HomeApi } = useApiContext();
+    const {config}: { config: Config } = useConfigContext();
+    const [timeRange: string, setTimeRange: (string) => void] = useState(config.timeRangeOptions[0].value);
 
     const fetchDashboardConfig = () => {
         homeApi.getDashboardConfig('038833bf-9efb-40a2-945f-4b7ea29354d4', setDashboardConfig);
@@ -36,17 +45,18 @@ export const Dashboard = () => {
         if (dashboardConfig == null) {
             return;
         }
-        homeApi.getChartData(dashboardConfig.chartConfigs.map(c => c.id), timeRange, (result) => {
-            setChartData(result);
-            setIsReadyToShowCharts(true);
-        });
+        homeApi.getChartData(dashboardConfig.chartConfigs.map((c: ChartConfig): string => c.id), timeRange,
+            (result: Record<string, SensorValue[]>) => {
+                setChartData(result);
+                setIsReadyToShowCharts(true);
+            });
     }, [dashboardConfig, timeRange, homeApi]);
 
     useEffect(() => {
         fetchChartsData();
     }, [dashboardConfig]);
 
-    const activateUpsertPopup = (postprocessor) => {
+    const activateUpsertPopup = (postprocessor: Postprocessor) => {
         setPostprocessor(() => postprocessor)
         setIsUpsertPopupActive(true);
     };
@@ -55,7 +65,7 @@ export const Dashboard = () => {
         setIsUpsertPopupActive(false);
     };
 
-    const handleOnSaveButtonClicked = (data) => {
+    const handleOnSaveButtonClicked = (data: { label: string, sensorType: string }) => {
         postprocessor(data)
         handleClosePopup()
     }
@@ -64,12 +74,12 @@ export const Dashboard = () => {
         setIsReadyToShowCharts(false);
         const newConfig = structuredClone(dashboardConfig);
         newConfig.chartConfigs = newChartConfigs
-        homeApi.updateDashboardConfig('038833bf-9efb-40a2-945f-4b7ea29354d4', newConfig, (updatedDashboardConfig) => {
+        homeApi.updateDashboardConfig('038833bf-9efb-40a2-945f-4b7ea29354d4', newConfig, (updatedDashboardConfig: DashboardConfig) => {
             setDashboardConfig(updatedDashboardConfig)
         })
     }
 
-    const setCurrentSensorValuesConfig = (newCurrentSensorValuesConfig) => {
+    const setCurrentSensorValuesConfig = (newCurrentSensorValuesConfig: ValueConfig[]) => {
         const newConfig = dashboardConfig
         newConfig.currentSensorValuesConfig = newCurrentSensorValuesConfig
         homeApi.updateDashboardConfig('038833bf-9efb-40a2-945f-4b7ea29354d4', newConfig, (_) => {
@@ -77,7 +87,7 @@ export const Dashboard = () => {
         })
     }
 
-    const setAverageSensorValuesConfig = (newAverageSensorValuesConfig) => {
+    const setAverageSensorValuesConfig = (newAverageSensorValuesConfig: ValueConfig[]) => {
         const newConfig = dashboardConfig
         newConfig.averageSensorValuesConfig = newAverageSensorValuesConfig
         homeApi.updateDashboardConfig('038833bf-9efb-40a2-945f-4b7ea29354d4', newConfig, (_) => {
@@ -87,8 +97,13 @@ export const Dashboard = () => {
 
     return (
         dashboardConfig && (
-            <Layout style={{minHeight: '100vh', background: theme.colors.background, marginBottom: theme.sizes.marginBottom.xLarge}}>
-                <Content style={{padding: theme.sizes.padding.xLarge, filter: isUpsertPopupActive ? 'blur(5px)' : 'none'}}>
+            <Layout style={{
+                minHeight: '100vh',
+                background: theme.colors.background,
+                marginBottom: theme.sizes.marginBottom.xLarge
+            }}>
+                <Content
+                    style={{padding: theme.sizes.padding.xLarge, filter: isUpsertPopupActive ? 'blur(5px)' : 'none'}}>
                     <Header/>
                     <Events/>
                     <CurrentSensorValues
@@ -109,7 +124,7 @@ export const Dashboard = () => {
                         timeRange={timeRange}
                         setTimeRange={setTimeRange}
                     />}
-                    </Content>
+                </Content>
                 {isUpsertPopupActive && (
                     <UpsertSensorPopup
                         onPopupClose={handleClosePopup}

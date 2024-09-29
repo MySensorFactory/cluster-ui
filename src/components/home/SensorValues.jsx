@@ -7,6 +7,7 @@ import {theme} from "../styles/theme";
 import {AddButton} from "../controls/Buttons";
 import {useConfigContext} from "../../datasource/ConfigContext";
 import type {SensorValue} from "../../datasource/HomeClient";
+import type {Config} from "../../datasource/ConfigClient";
 
 const {Title} = Typography;
 
@@ -25,10 +26,8 @@ export const SensorValues = ({
     handleAddSensor: () => void,
     isAddSensorButtonVisible: boolean
 }) => {
+    const {config}: { config: Config } = useConfigContext()
 
-    console.log(data)
-
-    const {config} = useConfigContext()
     return (
         <div style={{marginBottom: theme.sizes.marginBottom.medium}}>
             <Title
@@ -53,8 +52,8 @@ export const SensorValues = ({
                             <SensorValueItem
                                 label={sensor.label}
                                 value={Object.entries(sensor.values)
-                                    .map(([key,value]) =>
-                                        `${key}: ${Math.round(value * 100)/ 100} ${config.unitMapping[sensor.sensorType][key]} `)}
+                                    .map(([key: string, value: number]): string =>
+                                        `${key}: ${Math.round(value * 100) / 100} ${config.unitMapping[sensor.sensorType][key]} `)}
                                 onEdit={() => handleEditSensor(sensor.id)}
                                 onDelete={() => handleDeleteSensor(sensor.id)}
                             />
