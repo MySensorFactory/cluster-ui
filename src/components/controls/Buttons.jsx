@@ -3,7 +3,7 @@ import Add from "../../assets/Add";
 import {theme} from "../styles/theme";
 import Button from "antd/es/button/button";
 
-export const AddButton = ({onButtonClicked}) => {
+export const AddButton = ({onButtonClicked}: {onButtonClicked: () => void}) => {
     return (
         <Button
             type="primary"
