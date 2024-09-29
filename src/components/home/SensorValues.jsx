@@ -6,6 +6,7 @@ import {SensorValueItem} from './SensorValueItem';
 import {theme} from "../styles/theme";
 import {AddButton} from "../controls/Buttons";
 import {useConfigContext} from "../../datasource/ConfigContext";
+import type {SensorValue} from "../../datasource/HomeClient";
 
 const {Title} = Typography;
 
@@ -16,9 +17,18 @@ export const SensorValues = ({
                                  handleDeleteSensor,
                                  handleAddSensor,
                                  isAddSensorButtonVisible
-                             }) => {
-    const {config} = useConfigContext()
+                             }: {
+    title: string,
+    data: SensorValue[],
+    handleEditSensor: (sensorId: string) => void,
+    handleDeleteSensor: (sensorId: string) => void,
+    handleAddSensor: () => void,
+    isAddSensorButtonVisible: boolean
+}) => {
+
     console.log(data)
+
+    const {config} = useConfigContext()
     return (
         <div style={{marginBottom: theme.sizes.marginBottom.medium}}>
             <Title
@@ -30,7 +40,7 @@ export const SensorValues = ({
                 {title}
             </Title>
             <Row gutter={[16, 16]}>
-                {data.map((sensor) => {
+                {data.map((sensor: SensorValue) => {
                     const isSensorWide = config.wideSensors.includes(sensor.sensorType, 0);
                     return (
                         <Col
@@ -42,7 +52,9 @@ export const SensorValues = ({
                         >
                             <SensorValueItem
                                 label={sensor.label}
-                                value={sensor.value}
+                                value={Object.entries(sensor.values)
+                                    .map(([key,value]) =>
+                                        `${key}: ${Math.round(value * 100)/ 100} ${config.unitMapping[sensor.sensorType][key]} `)}
                                 onEdit={() => handleEditSensor(sensor.id)}
                                 onDelete={() => handleDeleteSensor(sensor.id)}
                             />

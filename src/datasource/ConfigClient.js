@@ -24,7 +24,7 @@ export class Config {
     availableLabels: LabeledValue[];
     sortOptions: LabeledValue[];
     timeRangeOptions: TimeRangeOption[];
-    unitMapping: Record<string, string>;
+    unitMapping: Record<string, Record<string,string>>;
     wideSensors: string[];
 
     constructor(availableSensors: LabeledValue[],

@@ -1,38 +1,35 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback} from 'react';
 import Typography from 'antd/es/typography/Typography'
 import Select from 'antd/es/select';
 import Space from 'antd/es/space'
 import {AddButton} from '../controls/Buttons';
 import {useAppState} from '../AppStateContext';
-import {useApiContext} from '../../datasource/ApiContext';
 import {useConfigContext} from "../../datasource/ConfigContext";
 import {TimeChart} from "../controls/TimeChart";
+import type {SensorValue} from "../../datasource/HomeClient";
+import {ChartConfig} from "../../datasource/HomeClient";
 
 const {Title} = Typography;
 const {Option} = Select;
 
 export const Charts = ({
+                           chartData,
                            chartConfigs,
                            setChartConfigs,
                            onDataModificationConfirmed,
-                       }) => {
+                           timeRange,
+                           setTimeRange
+                       }: {
+    chartData: Record<string, SensorValue[]>,
+    chartConfigs: ChartConfig[],
+    setChartConfigs: (ChartConfig[]) => void,
+    onDataModificationConfirmed: (any) => void,
+    timeRange: string,
+    setTimeRange: (string) => void
+}) => {
+
     const {config} = useConfigContext();
-    const [timeRange, setTimeRange] = useState(config.timeRangeOptions[0].value);
-    const [chartData, setChartData] = useState({});
     const {homeSubMenu} = useAppState();
-    const {homeApi} = useApiContext();
-
-    const fetchChartsData = useCallback(() => {
-        chartConfigs.forEach((config) => {
-            homeApi.getChartData(config.sensorType, timeRange, (result) => {
-                setChartData((prevData) => ({...prevData, [config.id]: result}));
-            });
-        });
-    }, [chartConfigs, timeRange, homeApi]);
-
-    useEffect(() => {
-        fetchChartsData();
-    }, [fetchChartsData]);
 
     const handleAddChart = useCallback(() => {
         onDataModificationConfirmed((newConfig) => {
@@ -68,19 +65,18 @@ export const Charts = ({
                     <Option key={option.value} value={option.value}>{option.label}</Option>
                 ))}
             </Select>
-            {chartConfigs.map((c) => (
-                <TimeChart
+            {chartData && chartConfigs.map((c: ChartConfig) => {
+                return <TimeChart
                     key={c.id}
-                    data={chartData[c.id] || []}
+                    data={chartData[c.id]}
+                    sensorType={c.sensorType}
                     title={c.label}
-                    dataKey="value"
-                    yAxisUnit={config.unitMapping[c.sensorType]}
-                    days={config.timeRangeOptions.find((option) => option.value === timeRange).days}
+                    days={config.timeRangeOptions.find((option) => option.value === timeRange).daysCount}
                     numTicks={10}
                     onEdit={() => handleEditChart(c.id)}
                     onDelete={() => handleDeleteChart(c.id)}
                 />
-            ))}
+            })}
             {homeSubMenu === 'edit' && <AddButton onButtonClicked={handleAddChart}/>}
         </Space>
     );
