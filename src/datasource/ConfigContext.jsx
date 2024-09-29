@@ -28,6 +28,5 @@ export const useConfigContext = (): ConfigContext => {
     if (!context) {
         throw new Error('useContextContext must be used within an ConfigProvider');
     }
-    console.log(context)
     return context;
 };

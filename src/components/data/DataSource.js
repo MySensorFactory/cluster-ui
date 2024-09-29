@@ -1,4 +1,5 @@
 import {format} from "date-fns";
+import type {SensorValue} from "../../datasource/HomeClient";
 
 export const formatTime = (timestamp, days) => {
     const date = new Date(timestamp);
@@ -8,7 +9,7 @@ export const formatTime = (timestamp, days) => {
     return format(date, 'dd HH:mm');
 };
 
-export const calculateTicks = (data, numTicks) => {
+export const calculateTicks = (data: SensorValue[], numTicks) => {
     const step = Math.ceil(data.length / numTicks);
     return data.filter((_, index) => index % step === 0).map(item => item.time);
 };

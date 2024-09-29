@@ -44,6 +44,7 @@ const DetailsViewContent = ({report, setEditReportState, onReportItemDelete}) =>
                 {Object.entries(report.dataBySensorType).map(([sensorType, data]) => (
                     <TimeChart
                         key={sensorType}
+                        sensorType={sensorType}
                         data={data.map(d => ({time: d.timestamp, value: d.values.value}))}
                         title={sensorType}
                         dataKey="value"

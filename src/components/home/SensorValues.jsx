@@ -18,7 +18,6 @@ export const SensorValues = ({
                                  isAddSensorButtonVisible
                              }) => {
     const {config} = useConfigContext()
-    console.log(data)
     return (
         <div style={{marginBottom: theme.sizes.marginBottom.medium}}>
             <Title
