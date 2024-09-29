@@ -69,9 +69,8 @@ export const Charts = ({
                 return <TimeChart
                     key={c.id}
                     data={chartData[c.id]}
-                    title={c.label}
                     sensorType={c.sensorType}
-                    dataKey="value"
+                    title={c.label}
                     days={config.timeRangeOptions.find((option) => option.value === timeRange).daysCount}
                     numTicks={10}
                     onEdit={() => handleEditChart(c.id)}

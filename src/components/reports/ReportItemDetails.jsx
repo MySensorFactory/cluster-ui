@@ -6,15 +6,13 @@ import Button from 'antd/es/button'
 import Modal from 'antd/es/modal'
 import DefineReportItem from "./DefineReportItem";
 import {TimeChart} from "../controls/TimeChart";
-import {useConfigContext} from "../../datasource/ConfigContext";
 import Edit from "../../assets/Edit";
 import Delete from "../../assets/Delete";
+import type {SensorData} from "../../datasource/ReportsClient";
 
 const {Title, Text, Paragraph} = Typography;
 
 const DetailsViewContent = ({report, setEditReportState, onReportItemDelete}) => {
-    const {config} = useConfigContext();
-
     const getDaysFromReport = () => Math.floor((report.timeRange.to - report.timeRange.from) / (24 * 60 * 60 * 1000))
 
     return (
@@ -41,14 +39,12 @@ const DetailsViewContent = ({report, setEditReportState, onReportItemDelete}) =>
             <Paragraph>{report.description}</Paragraph>
 
             <Space direction="vertical" size="large" style={{width: '100%'}}>
-                {Object.entries(report.dataBySensorType).map(([sensorType, data]) => (
+                {Object.entries(report.dataBySensorType).map(([sensorType, data: SensorData[]]) => (
                     <TimeChart
                         key={sensorType}
+                        data={data}
                         sensorType={sensorType}
-                        data={data.map(d => ({time: d.timestamp, value: d.values.value}))}
                         title={sensorType}
-                        dataKey="value"
-                        yAxisUnit={config.unitMapping[sensorType]}
                         days={getDaysFromReport()}
                         numTicks={10}
                     />
