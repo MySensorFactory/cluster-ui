@@ -98,13 +98,13 @@ export function useHomeApi() {
                 .catch(handleError);
         },
 
-        getAverageSensorValues: (dashboardConfigId: string, onComplete?: (data: Record<string,SensorValue[]>) => void) => {
+        getAverageSensorValues: (dashboardConfigId: string, onComplete?: (data: SensorValue[]) => void) => {
             api.get(`/average-sensor-values/${dashboardConfigId}`)
                 .then(r => nullSafeOnComplete(r, onComplete))
                 .catch(handleError);
         },
 
-        getChartData: (chartConfigIds: string[], timeRange: string, onComplete?: (data: SensorValue[]) => void) => {
+        getChartData: (chartConfigIds: string[], timeRange: string, onComplete?: (data: Record<string,SensorValue[]>) => void) => {
             api.get('/chart-data', {params: {
                 chartConfigIds, timeRange
             },

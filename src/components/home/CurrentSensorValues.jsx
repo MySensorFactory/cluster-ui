@@ -2,10 +2,11 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {useAppState} from '../AppStateContext';
 import {useApiContext} from "../../datasource/ApiContext";
 import {SensorValues} from "./SensorValues";
+import type {SensorValue} from "../../datasource/HomeClient";
 
 export const CurrentSensorValues = ({sensorValuesConfig, setSensorValuesConfig, onDataModificationConfirmed}) => {
     const {homeSubMenu} = useAppState();
-    const [currentSensorValues, setCurrentSensorValues] = useState([]);
+    const [currentSensorValues: SensorValue[], setCurrentSensorValues: (SensorValue[]) => void] = useState([]);
     const {homeApi} = useApiContext();
 
     const fetchSensorValues = useCallback(() => {
