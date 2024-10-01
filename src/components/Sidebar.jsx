@@ -13,9 +13,16 @@ export const Sidebar = () => {
     const {
         activeMenu, setActiveMenu, homeSubMenu, setHomeSubMenu,
         reportsSubMenu, setReportsSubMenu
-    } = useAppState();
+    } : {
+        activeMenu: string,
+        setActiveMenu: (activeMenu: string) => void,
+        homeSubMenu: string,
+        setHomeSubMenu: (homeSubMenu: string) => void,
+        reportsSubMenu: string,
+        setReportsSubMenu: (reportsSubMenu: string) => void,
+    }= useAppState();
 
-    const handleMenuClick = (menu) => {
+    const handleMenuClick = (menu: string) => {
         setActiveMenu(menu);
         if (menu === 'Home') {
             setHomeSubMenu('view');

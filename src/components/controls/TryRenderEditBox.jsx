@@ -4,7 +4,8 @@ import Button from "antd/es/button";
 import Edit from "../../assets/Edit";
 import Delete from "../../assets/Delete";
 
-export function tryRenderEditBox(homeSubMenu, isHovered, onEdit, onDelete) {
+export function tryRenderEditBox(homeSubMenu: string, isHovered: boolean,
+                                 onEdit: () => void, onDelete: () => void) {
     if (homeSubMenu !== 'edit' || !isHovered) {
         return null;
     }

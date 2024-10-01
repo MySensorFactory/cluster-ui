@@ -1,12 +1,17 @@
 import React, {createContext, useContext} from 'react';
-import {useHomeApi} from './HomeClient';
-import {useReportsApi} from "./ReportsClient";
+import {HomeApi} from './HomeClient';
+import {ReportsApi} from "./ReportsClient";
 
 const ApiContext = createContext(null);
 
+export class ApiContextType{
+    homeApi: HomeApi;
+    reportsApi: ReportsApi;
+}
+
 export const ApiProvider = ({children}) => {
-    const homeApi = useHomeApi()
-    const reportsApi = useReportsApi()
+    const homeApi = new HomeApi('http://localhost:8080/home')
+    const reportsApi = new ReportsApi('http://localhost:8080')
     return (
         <ApiContext.Provider value={{homeApi, reportsApi}}>
             {children}
@@ -14,7 +19,7 @@ export const ApiProvider = ({children}) => {
     );
 };
 
-export const useApiContext = () => {
+export const useApiContext = (): ApiContextType => {
     const context = useContext(ApiContext);
     if (!context) {
         throw new Error('useApiContext must be used within an ApiProvider');

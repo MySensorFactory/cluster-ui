@@ -1,5 +1,6 @@
-import axios from 'axios';
-var qs = require('qs');
+import axios from 'axios'
+
+const qs = require('qs');
 
 export class ValueConfig {
     id: string;
@@ -56,76 +57,75 @@ export class SensorValue extends ValueConfig {
     }
 }
 
-export function useHomeApi() {
-    const baseURL = 'http://localhost:8080/home';
+export class HomeApi {
+    constructor(baseURL) {
+        this.api = axios.create({
+            baseURL,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
 
-    const api = axios.create({
-        baseURL,
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    });
+        this.nullSafeOnComplete = (result: any, onComplete?: (data: any) => void) => {
+            if (!onComplete) {
+                return;
+            }
 
-    const nullSafeOnComplete = (result: any, onComplete?: (data: any) => void) => {
-        if (!onComplete) {
-            return;
-        }
+            if (result.data != null) {
+                onComplete(result.data);
+            }
+        };
 
-        if (result.data != null) {
-            onComplete(result.data);
-        }
-    };
+        this.handleError = (err: any) => {
+            console.error('API request failed:', err);
+        };
+    }
 
-    const handleError = (err: any) => {
-        console.error('API request failed:', err);
-    };
+    getEvents(params: {
+        showOnlyAlerts?: boolean,
+        searchTerm?: string,
+        startDate?: string,
+        endDate?: string
+    } = {}, onComplete ?: (data: Event[]) => void) {
+        return this.api.get('/events', {params})
+            .then(r => this.nullSafeOnComplete(r, onComplete))
+            .catch(this.handleError);
+    }
 
-    return {
-        getEvents: (params: {
-            showOnlyAlerts?: boolean,
-            searchTerm?: string,
-            startDate?: string,
-            endDate?: string
-        } = {}, onComplete?: (data: Event[]) => void) => {
-            api.get('/events', {params})
-                .then(r => nullSafeOnComplete(r, onComplete))
-                .catch(handleError);
-        },
+    getCurrentSensorValues(dashboardConfigId: string, onComplete ?: (data: SensorValue[]) => void) {
+        return this.api.get(`/sensor-values/${dashboardConfigId}`)
+            .then(r => this.nullSafeOnComplete(r, onComplete))
+            .catch(this.handleError);
+    }
 
-        getCurrentSensorValues: (dashboardConfigId: string, onComplete?: (data: SensorValue[]) => void) => {
-            api.get(`/sensor-values/${dashboardConfigId}`)
-                .then(r => nullSafeOnComplete(r, onComplete))
-                .catch(handleError);
-        },
+    getAverageSensorValues(dashboardConfigId: string, onComplete ?: (data: SensorValue[]) => void) {
+        return this.api.get(`/average-sensor-values/${dashboardConfigId}`)
+            .then(r => this.nullSafeOnComplete(r, onComplete))
+            .catch(this.handleError);
+    }
 
-        getAverageSensorValues: (dashboardConfigId: string, onComplete?: (data: SensorValue[]) => void) => {
-            api.get(`/average-sensor-values/${dashboardConfigId}`)
-                .then(r => nullSafeOnComplete(r, onComplete))
-                .catch(handleError);
-        },
-
-        getChartData: (chartConfigIds: string[], timeRange: string, onComplete?: (data: Record<string,SensorValue[]>) => void) => {
-            api.get('/chart-data', {params: {
+    getChartData(chartConfigIds: string[], timeRange: string, onComplete ?: (data: Record<string, SensorValue[]>) => void) {
+        return this.api.get('/chart-data', {
+            params: {
                 chartConfigIds, timeRange
             },
-                'paramsSerializer': function(params) {
-                    return qs.stringify(params, {arrayFormat: 'repeat'})
-                }
-            })
-                .then(r => nullSafeOnComplete(r, onComplete))
-                .catch(handleError);
-        },
+            'paramsSerializer': function (params) {
+                return qs.stringify(params, {arrayFormat: 'repeat'})
+            }
+        })
+            .then(r => this.nullSafeOnComplete(r, onComplete))
+            .catch(this.handleError);
+    }
 
-        getDashboardConfig: (id: string, onComplete?: (data: DashboardConfig) => void) => {
-            return api.get(`/dashboard-config/${id}`)
-                .then(r => nullSafeOnComplete(r, onComplete))
-                .catch(handleError);
-        },
+    getDashboardConfig(id: string, onComplete ?: (data: DashboardConfig) => void) {
+        return this.api.get(`/dashboard-config/${id}`)
+            .then(r => this.nullSafeOnComplete(r, onComplete))
+            .catch(this.handleError);
+    }
 
-        updateDashboardConfig: (id: string, config: DashboardConfig, onComplete?: (data: DashboardConfig) => void) => {
-            api.put(`/dashboard-config/${id}`, config)
-                .then(r => nullSafeOnComplete(r, onComplete))
-                .catch(handleError);
-        },
-    };
+    updateDashboardConfig(id: string, config: DashboardConfig, onComplete?: (data: DashboardConfig) => void) {
+        return this.api.put(`/dashboard-config/${id}`, config)
+            .then(r => this.nullSafeOnComplete(r, onComplete))
+            .catch(this.handleError);
+    }
 }

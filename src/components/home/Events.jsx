@@ -10,16 +10,19 @@ import {EventItem} from './EventItem';
 import {useApiContext} from "../../datasource/ApiContext";
 import {theme} from "../styles/theme"
 import List from "antd/es/list";
+import {Event, HomeApi} from "../../datasource/HomeClient"
+import dayjs from "dayjs";
+import {CheckboxChangeEvent} from "antd/es/checkbox/Checkbox";
 
 const {Title} = Typography;
 const {Search} = Input;
 
 export const Events = () => {
-    const [filteredEvents, setFilteredEvents] = useState([]);
-    const [showOnlyAlerts, setShowOnlyAlerts] = useState(false);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [dateRange, setDateRange] = useState([null, null]);
-    const {homeApi} = useApiContext();
+    const [filteredEvents: Event[], setFilteredEvents: (Event[])=> void] = useState([]);
+    const [showOnlyAlerts: boolean, setShowOnlyAlerts: (boolean)=> void] = useState(false);
+    const [searchTerm: string, setSearchTerm: (string) => void] = useState('');
+    const [dateRange: dayjs[], setDateRange: (dayjs[]) => void] = useState([null, null]);
+    const {homeApi}: { homeApi: HomeApi } = useApiContext();
 
     useEffect(() => {
         homeApi.getEvents({
@@ -43,7 +46,7 @@ export const Events = () => {
                 <Col>
                     <Checkbox
                         checked={showOnlyAlerts}
-                        onChange={(e) => setShowOnlyAlerts(e.target.checked)}
+                        onChange={(e: CheckboxChangeEvent) => setShowOnlyAlerts(e.target.checked)}
                         style={{color: theme.colors.text}}
                     >
                         Show only alerts
@@ -67,7 +70,7 @@ export const Events = () => {
             </Row>
             <List
                 dataSource={filteredEvents}
-                renderItem={(event) => (
+                renderItem={(event: Event) => (
                     <EventItem
                         title={event.title}
                         time={event.time}

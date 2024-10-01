@@ -115,7 +115,9 @@ export class GetReportDetailsResponse extends ReportPreview {
     description: string;
     dataBySensorType: Record<string, SensorData[]>;
 
-    constructor(id: string, name: string, includedSensors: string[], label: string, timeRange: TimeRange, description: string, dataBySensorType: Record<string, SensorData[]>) {
+    constructor(id: string, name: string, includedSensors: string[],
+                label: string, timeRange: TimeRange, description: string,
+                dataBySensorType: Record<string, SensorData[]>) {
         super(id, name, includedSensors, label, timeRange);
         this.description = description;
         this.dataBySensorType = dataBySensorType;
@@ -158,59 +160,57 @@ export function createSorting(
     return [new Sorting(order, name)];
 }
 
-export function useReportsApi() {
-    const baseURL = 'http://localhost:8080';
+export class ReportsApi {
+    constructor(baseURL) {
+        this.api = axios.create({
+            baseURL,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
 
-    const api = axios.create({
-        baseURL,
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    });
+        this.nullSafeOnComplete = (result: any, onComplete?: (any) => void) => {
+            if (!onComplete) {
+                return;
+            }
 
-    const nullSafeOnComplete = (result: any, onComplete?: (any) => void) => {
-        if (!onComplete) {
-            return;
-        }
+            if (result.data != null) {
+                onComplete(result.data);
+            }
+        };
 
-        if (result.data != null) {
-            onComplete(result.data);
-        }
-    };
+        this.handleError = (err) => {
+            console.error('API request failed:', err);
+        };
+    }
 
-    const handleError = (err: any) => {
-        console.error('API request failed:', err);
-    };
+    createReport(data: UpsertReportRequest, onComplete?: (data: UpsertReportResponse) => void) {
+        return this.api.post('/reports', data)
+            .then(r => this.nullSafeOnComplete(r, onComplete))
+            .catch(this.handleError);
+    }
 
-    return {
-        createReport: (data: UpsertReportRequest, onComplete?: (data: UpsertReportResponse) => void) => {
-            api.post('/reports', data)
-                .then(r => nullSafeOnComplete(r, onComplete))
-                .catch(handleError);
-        },
+    searchReports(data: SearchReportsRequest, onComplete?: (data: GetReportListResponse) => void) {
+        return this.api.post('/reports/search', data)
+            .then(r => this.nullSafeOnComplete(r, onComplete))
+            .catch(this.handleError);
+    }
 
-        searchReports: (data: SearchReportsRequest, onComplete?: (data: GetReportListResponse) => void) => {
-            api.post('/reports/search', data)
-                .then(r => nullSafeOnComplete(r, onComplete))
-                .catch(handleError);
-        },
+    getReportDetails(id: string, onComplete?: (data: GetReportDetailsResponse) => void) {
+        return this.api.get(`/reports/${id}`)
+            .then(r => this.nullSafeOnComplete(r, onComplete))
+            .catch(this.handleError);
+    }
 
-        getReportDetails: (id: string, onComplete?: (data: GetReportDetailsResponse) => void) => {
-            api.get(`/reports/${id}`)
-                .then(r => nullSafeOnComplete(r, onComplete))
-                .catch(handleError);
-        },
+    updateReport(id: string, data: UpsertReportRequest, onComplete?: (data: UpsertReportResponse) => void) {
+        return this.api.patch(`/reports/${id}`, data)
+            .then(r => this.nullSafeOnComplete(r, onComplete))
+            .catch(this.handleError);
+    }
 
-        updateReport: (id: string, data: UpsertReportRequest, onComplete?: (data: UpsertReportResponse) => void) => {
-            api.patch(`/reports/${id}`, data)
-                .then(r => nullSafeOnComplete(r, onComplete))
-                .catch(handleError);
-        },
-
-        deleteReport: (id: string, onComplete?: (success: boolean) => void) => {
-            api.delete(`/reports/${id}`)
-                .then(r => onComplete && onComplete(r.status === 204))
-                .catch(handleError);
-        },
-    };
+    deleteReport(id: string, onComplete?: (success: boolean) => void) {
+        return this.api.delete(`/reports/${id}`)
+            .then(r => onComplete && onComplete(r.status === 204))
+            .catch(this.handleError);
+    }
 }

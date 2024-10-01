@@ -5,8 +5,11 @@ import {
     createFilter,
     createSearchReportsRequest,
     createSorting,
-    createUpsertReportRequest,
-    GetReportListResponse
+    GetReportDetailsResponse,
+    GetReportListResponse,
+    ReportPreview,
+    ReportsApi,
+    UpsertReportRequest
 } from "../../datasource/ReportsClient";
 import {useConfigContext} from "../../datasource/ConfigContext";
 import Button from 'antd/es/button';
@@ -20,25 +23,27 @@ import Typography from 'antd/es/typography'
 import Layout from 'antd/es/layout'
 import {theme} from "../styles/theme";
 import Space from "antd/es/space";
+import type {Config} from "../../datasource/ConfigClient";
+import dayjs from "dayjs";
 
 const {Title} = Typography;
 const {Content} = Layout;
 
 export const ListPlaceholder = () => {
-    const {config} = useConfigContext();
-    const [searchTerm, setSearchTerm] = useState("");
-    const [dateRange, setDateRange] = useState([null, null]);
-    const [selectedLabels, setSelectedLabels] = useState([]);
-    const [selectedSensorTypes, setSelectedSensorTypes] = useState([]);
-    const [sortProperty, setSortProperty] = useState(null);
-    const [sortDirection, setSortDirection] = useState('asc');
+    const {config}: { config: Config } = useConfigContext();
+    const [searchTerm: string, setSearchTerm: (string) => void] = useState("");
+    const [dateRange: dayjs[], setDateRange: (dayjs[]) => void] = useState([null, null]);
+    const [selectedLabels: string[], setSelectedLabels: (string[]) => void] = useState([]);
+    const [selectedSensorTypes: string[], setSelectedSensorTypes: (string[]) => void] = useState([]);
+    const [sortProperty: string, setSortProperty: (string) => void] = useState(null);
+    const [sortDirection: string, setSortDirection: (string) => void] = useState('asc');
 
-    const [currentPage, setCurrentPage] = useState(1);
-    const [currentReports, setCurrentReports] = useState([])
-    const [totalItems, setTotalItems] = useState(0);
-    const [pageSize, setPageSize] = useState(10);
+    const [currentPage: number, setCurrentPage: (number) => void] = useState(1);
+    const [currentReports: ReportPreview[], setCurrentReports: (ReportPreview[]) => void] = useState([])
+    const [totalItems: number, setTotalItems: (number) => void] = useState(0);
+    const [pageSize: number, setPageSize: (number) => void] = useState(10);
 
-    const {reportsApi} = useApiContext()
+    const {reportsApi}: { reportsApi: ReportsApi } = useApiContext()
 
     const searchReports = () => {
         reportsApi.searchReports(
@@ -64,30 +69,27 @@ export const ListPlaceholder = () => {
         searchReports();
     }, [pageSize, currentPage, sortDirection, sortProperty, searchTerm, selectedLabels, selectedSensorTypes, dateRange]);
 
-    const updateReport = (id, data) => {
-        const request = createUpsertReportRequest(
-            {
-                from: new Date(data.fromDate).valueOf(),
-                to: new Date(data.toDate).valueOf(),
-            },
+    const updateReport = (id: string, data: GetReportDetailsResponse) => {
+        const request = new UpsertReportRequest(
+            data.timeRange,
             data.includedSensors,
-            data.sensorLabel,
-            data.title,
+            data.label,
+            data.name,
             data.description,
         )
         reportsApi.updateReport(id, request, (_) => searchReports())
     }
 
-    const handlePageChange = (page, pageSize) => {
+    const handlePageChange = (page: number, pageSize: number) => {
         setCurrentPage(page);
         setPageSize(pageSize);
     };
 
-    const deleteReport = (id) => {
+    const deleteReport = (id: string) => {
         reportsApi.deleteReport(id, (_) => searchReports())
     }
 
-    const handleGetReportDetails = (id, onComplete) => {
+    const handleGetReportDetails = (id: string, onComplete: (GetReportDetailsResponse) => void) => {
         reportsApi.getReportDetails(id, onComplete)
     }
 
@@ -157,9 +159,9 @@ export const ListPlaceholder = () => {
             <Space direction="vertical" size="middle" style={{display: 'flex'}}>
                 <ReportsList
                     reports={currentReports}
-                    onReportDetailsShowRequest={handleGetReportDetails}
                     onReportUpdate={updateReport}
                     onReportDelete={deleteReport}
+                    onReportDetailsShowRequest={handleGetReportDetails}
                 />
                 <Pagination
                     current={currentPage}

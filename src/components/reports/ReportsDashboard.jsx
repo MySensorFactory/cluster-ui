@@ -4,15 +4,19 @@ import { ListPlaceholder } from "./ListPlaceholder";
 import { useAppState } from "../AppStateContext";
 import DefineReportItem from "./DefineReportItem";
 import { useApiContext } from "../../datasource/ApiContext";
-import { createUpsertReportRequest, TimeRange } from "../../datasource/ReportsClient";
+import {
+    createUpsertReportRequest,
+    GetReportDetailsResponse,
+    ReportsApi,
+    TimeRange
+} from "../../datasource/ReportsClient";
 import {theme} from "../styles/theme";
 
 const { Content } = Layout;
 
 const ReportsDashboard = () => {
-    const { reportsSubMenu } = useAppState();
-    const { reportsApi } = useApiContext();
-
+    const { reportsSubMenu }: {reportsSubMenu: string} = useAppState();
+    const { reportsApi } : {reportsApi: ReportsApi}= useApiContext();
     return (
         <Layout>
             <Content style={{
@@ -23,15 +27,15 @@ const ReportsDashboard = () => {
             }}>
                 {reportsSubMenu === 'define_report' &&
                     <DefineReportItem
-                        onSave={data => {
+                        onSave={(data: GetReportDetailsResponse) => {
                             reportsApi.createReport(createUpsertReportRequest(
                                 new TimeRange(
-                                    new Date(data.fromDate).valueOf(),
-                                    new Date(data.toDate).valueOf()
+                                    new Date(data.timeRange.from).valueOf(),
+                                    new Date(data.timeRange.to).valueOf()
                                 ),
                                 data.includedSensors,
-                                data.sensorLabel,
-                                data.title,
+                                data.label,
+                                data.name,
                                 data.description,
                             ), null);
                         }}

@@ -2,6 +2,8 @@ import React, {useState} from 'react';
 import Table from 'antd/es/table';
 import styled from 'styled-components';
 import {ReportItemDetails} from "./ReportItemDetails";
+import type {GetReportDetailsResponse} from "../../datasource/ReportsClient";
+import {ReportPreview} from "../../datasource/ReportsClient";
 
 const TableWithHoverableRows = styled(Table)`
     .ant-table-tbody > tr {
@@ -9,8 +11,13 @@ const TableWithHoverableRows = styled(Table)`
     }
 `;
 
-export const ReportsList = ({reports, onReportUpdate, onReportDelete, onReportDetailsShowRequest}) => {
-    const [selectedReport, setSelectedReport] = useState(null);
+export const ReportsList = ({reports, onReportUpdate, onReportDelete, onReportDetailsShowRequest}: {
+    reports: ReportPreview[],
+    onReportUpdate: (id: string, data: GetReportDetailsResponse) => void,
+    onReportDelete: (id: string) => void,
+    onReportDetailsShowRequest: (id: string, onComplete: (GetReportDetailsResponse) => void) => void
+}) => {
+    const [selectedReport: GetReportDetailsResponse, setSelectedReport: (GetReportDetailsResponse) => void] = useState(null);
 
     const columns = [
         {
@@ -43,8 +50,8 @@ export const ReportsList = ({reports, onReportUpdate, onReportDelete, onReportDe
         },
     ];
 
-    const handleReportClick = (record) => {
-        onReportDetailsShowRequest(record.id, (reportDetails) => {
+    const handleReportClick = (record: ReportPreview) => {
+        onReportDetailsShowRequest(record.id, (reportDetails: GetReportDetailsResponse) => {
             setSelectedReport(reportDetails);
         });
     };
@@ -61,17 +68,17 @@ export const ReportsList = ({reports, onReportUpdate, onReportDelete, onReportDe
                 bordered
                 rowKey="id"
                 pagination={false}
-                onRow={(record, _) => ({
+                onRow={(record: ReportPreview, _) => ({
                     onClick: (_) => handleReportClick(record)
                 })}
             />
             {selectedReport && (
                 <ReportItemDetails
                     report={selectedReport}
-                    onReportItemUpdate={(data) => {
+                    onReportItemUpdate={(data: GetReportDetailsResponse) => {
                         onReportUpdate(selectedReport.id, data);
                     }}
-                    onReportItemDelete={(id) => {
+                    onReportItemDelete={(id: string) => {
                         onReportDelete(id);
                         setSelectedReport(null);
                     }}

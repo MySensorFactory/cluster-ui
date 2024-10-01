@@ -9,10 +9,11 @@ import type {SensorData} from "../../datasource/ReportsClient";
 import {useConfigContext} from "../../datasource/ConfigContext";
 import {format} from "date-fns";
 import type {SensorValue} from "../../datasource/HomeClient";
+import type {Config} from "../../datasource/ConfigClient";
 
 const {Title} = Typography;
 
-const formatTime = (timestamp, days) => {
+const formatTime = (timestamp: number, days: number): string => {
     const date = new Date(timestamp);
     if (days <= 1) {
         return format(date, 'HH:mm');
@@ -20,7 +21,7 @@ const formatTime = (timestamp, days) => {
     return format(date, 'dd HH:mm');
 };
 
-const calculateTicks = (data: SensorValue[], numTicks) => {
+const calculateTicks = (data: SensorValue[], numTicks: number): number[] => {
     const step = Math.ceil(data.length / numTicks);
     return data.filter((_, index) => index % step === 0).map(item => item.timestamp);
 };
@@ -51,7 +52,7 @@ const LineTimedChart = ({
             <XAxis
                 dataKey="timestamp"
                 stroke={theme.colors.textMuted}
-                tickFormatter={(time) => formatTime(time, days)}
+                tickFormatter={(time: number): string => formatTime(time, days)}
                 domain={["auto", "auto"]}
                 scale="time"
                 type="number"
@@ -73,13 +74,13 @@ const LineTimedChart = ({
                     offset: -15,
                     fill: theme.colors.textMuted,
                 }}
-                tickFormatter={(value) => `${value}`}
+                tickFormatter={(value: number): string => `${value}`}
             />
             <Tooltip
                 contentStyle={{backgroundColor: theme.colors.secondaryHover, border: "none"}}
                 labelStyle={{color: "white"}}
                 itemStyle={{color: theme.colors.chartStroke}}
-                formatter={(value) => [`${value.toFixed(2)} ${yAxisUnit}`, ""]}
+                formatter={(value: any): string[] => [`${value.toFixed(2)} ${yAxisUnit}`, ""]}
                 labelFormatter={(time) => formatTime(time, days)}
             />
             <Line type="monotone" dataKey={"values." + dataKey} strokeWidth={2} dot={false}/>
@@ -104,11 +105,11 @@ export const TimeChart = ({
     onEdit: () => void,
     onDelete: () => void
 }) => {
-    const {config} = useConfigContext();
-    const {homeSubMenu} = useAppState();
-    const [isHovered, setIsHovered] = useState(false);
-    const ticks = calculateTicks(data, numTicks);
-    const dataKeys = Object.keys(data[0].values);
+    const {config}: {config: Config} = useConfigContext();
+    const {homeSubMenu}: string = useAppState();
+    const [isHovered: boolean, setIsHovered: (boolean) => void] = useState(false);
+    const ticks: number[] = calculateTicks(data, numTicks);
+    const dataKeys: string[] = Object.keys(data[0].values);
 
     return (
         <Card
@@ -127,7 +128,7 @@ export const TimeChart = ({
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            {dataKeys.map(dataKey =>
+            {dataKeys.map((dataKey: string) =>
                 <LineTimedChart
                     key={dataKey}
                     data={data}

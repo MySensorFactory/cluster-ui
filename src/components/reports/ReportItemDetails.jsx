@@ -9,10 +9,15 @@ import {TimeChart} from "../controls/TimeChart";
 import Edit from "../../assets/Edit";
 import Delete from "../../assets/Delete";
 import type {SensorData} from "../../datasource/ReportsClient";
+import {GetReportDetailsResponse} from "../../datasource/ReportsClient";
 
 const {Title, Text, Paragraph} = Typography;
 
-const DetailsViewContent = ({report, setEditReportState, onReportItemDelete}) => {
+const DetailsViewContent = ({report, setEditReportState, onReportItemDelete}: {
+    report: GetReportDetailsResponse,
+    setEditReportState: (state: boolean) => void,
+    onReportItemDelete: (id: string) => void
+}) => {
     const getDaysFromReport = () => Math.floor((report.timeRange.to - report.timeRange.from) / (24 * 60 * 60 * 1000))
 
     return (
@@ -32,14 +37,14 @@ const DetailsViewContent = ({report, setEditReportState, onReportItemDelete}) =>
                     ghost
                 />
             </Space>
-            <Title level={2}>{report.title}</Title>
+            <Title level={2}>{report.name}</Title>
             <Paragraph>
                 <Text strong>Sensor label:</Text> {report.sensorLabel}
             </Paragraph>
             <Paragraph>{report.description}</Paragraph>
 
             <Space direction="vertical" size="large" style={{width: '100%'}}>
-                {Object.entries(report.dataBySensorType).map(([sensorType, data: SensorData[]]) => (
+                {Object.entries(report.dataBySensorType).map(([sensorType: string, data: SensorData[]]) => (
                     <TimeChart
                         key={sensorType}
                         data={data}
@@ -54,8 +59,14 @@ const DetailsViewContent = ({report, setEditReportState, onReportItemDelete}) =>
     );
 }
 
-export const ReportItemDetails = ({report, onReportItemUpdate, onReportItemDelete, onClose}) => {
-    const [isEditReportState, setEditReportState] = useState(false);
+export const ReportItemDetails = ({report, onReportItemUpdate, onReportItemDelete, onClose}: {
+    report: GetReportDetailsResponse,
+    onReportItemUpdate: (data: GetReportDetailsResponse) => void,
+    onReportItemDelete: (id: string) => void,
+    onClose: () => void
+}) => {
+
+    const [isEditReportState: boolean, setEditReportState: (boolean) => void] = useState(false);
 
     return (
         <>
@@ -83,7 +94,7 @@ export const ReportItemDetails = ({report, onReportItemUpdate, onReportItemDelet
                     {isEditReportState && (
                         <DefineReportItem
                             initialData={report}
-                            onSave={(data) => {
+                            onSave={(data: GetReportDetailsResponse) => {
                                 setEditReportState(false);
                                 onReportItemUpdate(data);
                             }}
