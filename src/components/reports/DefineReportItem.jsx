@@ -10,6 +10,7 @@ import dayjs from 'dayjs';
 import Apply from "../../assets/Apply";
 import {theme} from "../styles/theme"
 import Modal from "antd/es/modal/Modal";
+import {GetReportDetailsResponse, TimeRange} from "../../datasource/ReportsClient";
 
 const {TextArea} = Input;
 const {RangePicker} = DatePicker;
@@ -28,7 +29,12 @@ const StyledForm = styled(Form)`
     }
 `;
 
-const DefineReportItem = ({onSave, initialData, isModal = false, onClose}) => {
+const DefineReportItem = ({onSave, initialData, isModal = false, onClose}: {
+    onSave: (GetReportDetailsResponse) => void,
+    initialData: GetReportDetailsResponse,
+    isModal: boolean,
+    onClose: () => void
+}) => {
 
     const {config} = useConfigContext();
     const [form] = Form.useForm();
@@ -41,13 +47,17 @@ const DefineReportItem = ({onSave, initialData, isModal = false, onClose}) => {
 
     const handleSave = (values) => {
         if (onSave) {
-            const {dateRange, ...rest} = values;
-            onSave({
-                ...rest,
-                fromDate: dateRange[0].format('YYYY-MM-DD'),
-                toDate: dateRange[1].format('YYYY-MM-DD'),
-                includedSensors: values.includedSensors
-            });
+            onSave(
+                new GetReportDetailsResponse(
+                    null,
+                    values.name,
+                    values.includedSensors,
+                    values.sensorLabel,
+                    new TimeRange(values.dateRange[0].unix(),
+                        values.dateRange[1].unix()),
+                    values.description,
+                    null
+                ))
         }
     };
 
@@ -75,7 +85,7 @@ const DefineReportItem = ({onSave, initialData, isModal = false, onClose}) => {
                 layout="vertical"
                 onFinish={handleSave}
                 initialValues={{
-                    title: initialData?.name || '',
+                    name: initialData?.name || '',
                     sensorLabel: initialData?.label || undefined,
                     dateRange: initialDateRange,
                     includedSensors: initialData?.includedSensors || [],
@@ -83,7 +93,7 @@ const DefineReportItem = ({onSave, initialData, isModal = false, onClose}) => {
                 }}
             >
                 <Form.Item
-                    name="title"
+                    name="name"
                     rules={[{required: true, message: 'Please input the title!'}]}>
                     <Input placeholder="Write title"/>
                 </Form.Item>

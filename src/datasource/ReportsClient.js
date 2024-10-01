@@ -115,7 +115,9 @@ export class GetReportDetailsResponse extends ReportPreview {
     description: string;
     dataBySensorType: Record<string, SensorData[]>;
 
-    constructor(id: string, name: string, includedSensors: string[], label: string, timeRange: TimeRange, description: string, dataBySensorType: Record<string, SensorData[]>) {
+    constructor(id: string, name: string, includedSensors: string[],
+                label: string, timeRange: TimeRange, description: string,
+                dataBySensorType: Record<string, SensorData[]>) {
         super(id, name, includedSensors, label, timeRange);
         this.description = description;
         this.dataBySensorType = dataBySensorType;
