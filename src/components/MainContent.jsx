@@ -5,12 +5,13 @@ import ReportsDashboard from "./reports/ReportsDashboard";
 import {useAppState} from "./AppStateContext";
 import {useConfigContext} from "../datasource/ConfigContext";
 import {theme} from "./styles/theme";
+import type {Config} from "../datasource/ConfigClient";
 
 const {Content} = Layout;
 
 function MainContent() {
-    const {activeMenu} = useAppState();
-    const {config} = useConfigContext()
+    const {activeMenu}: { activeMenu: string } = useAppState();
+    const {config}: { config: Config } = useConfigContext()
 
     const renderContent = () => {
         switch (activeMenu) {

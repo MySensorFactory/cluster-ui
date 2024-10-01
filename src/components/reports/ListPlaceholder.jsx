@@ -70,7 +70,6 @@ export const ListPlaceholder = () => {
     }, [pageSize, currentPage, sortDirection, sortProperty, searchTerm, selectedLabels, selectedSensorTypes, dateRange]);
 
     const updateReport = (id: string, data: GetReportDetailsResponse) => {
-        console.log(data)
         const request = new UpsertReportRequest(
             data.timeRange,
             data.includedSensors,
