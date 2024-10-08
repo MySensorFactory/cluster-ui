@@ -1,4 +1,5 @@
-import axios from 'axios'
+import type {RequestError} from "./Common";
+import {ClientBase} from "./Common";
 
 const qs = require('qs');
 
@@ -57,54 +58,40 @@ export class SensorValue extends ValueConfig {
     }
 }
 
-export class HomeApi {
-    constructor(baseURL) {
-        this.api = axios.create({
-            baseURL,
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-
-        this.nullSafeOnComplete = (result: any, onComplete?: (data: any) => void) => {
-            if (!onComplete) {
-                return;
-            }
-
-            if (result.data != null) {
-                onComplete(result.data);
-            }
-        };
-
-        this.handleError = (err: any) => {
-            console.error('API request failed:', err);
-        };
-    }
+export class HomeApi extends ClientBase{
 
     getEvents(params: {
-        showOnlyAlerts?: boolean,
-        searchTerm?: string,
-        startDate?: string,
-        endDate?: string
-    } = {}, onComplete ?: (data: Event[]) => void) {
+                  showOnlyAlerts?: boolean,
+                  searchTerm?: string,
+                  startDate?: string,
+                  endDate?: string
+              } = {},
+              onComplete ?: (data: Event[]) => void,
+              errorSetter?: (RequestError) => void) {
         return this.api.get('/events', {params})
             .then(r => this.nullSafeOnComplete(r, onComplete))
-            .catch(this.handleError);
+            .catch((err) => this.handleError(err, errorSetter));
     }
 
-    getCurrentSensorValues(dashboardConfigId: string, onComplete ?: (data: SensorValue[]) => void) {
+    getCurrentSensorValues(dashboardConfigId: string,
+                           onComplete ?: (data: SensorValue[]) => void,
+                           errorSetter?: (RequestError) => void) {
         return this.api.get(`/sensor-values/${dashboardConfigId}`)
             .then(r => this.nullSafeOnComplete(r, onComplete))
-            .catch(this.handleError);
+            .catch((err) => this.handleError(err, errorSetter));
     }
 
-    getAverageSensorValues(dashboardConfigId: string, onComplete ?: (data: SensorValue[]) => void) {
+    getAverageSensorValues(dashboardConfigId: string,
+                           onComplete ?: (data: SensorValue[]) => void,
+                           errorSetter?: (RequestError) => void) {
         return this.api.get(`/average-sensor-values/${dashboardConfigId}`)
             .then(r => this.nullSafeOnComplete(r, onComplete))
-            .catch(this.handleError);
+            .catch((err) => this.handleError(err, errorSetter));
     }
 
-    getChartData(chartConfigIds: string[], timeRange: string, onComplete ?: (data: Record<string, SensorValue[]>) => void) {
+    getChartData(chartConfigIds: string[], timeRange: string,
+                 onComplete ?: (data: Record<string, SensorValue[]>) => void,
+                 errorSetter?: (RequestError) => void) {
         return this.api.get('/chart-data', {
             params: {
                 chartConfigIds, timeRange
@@ -114,18 +101,22 @@ export class HomeApi {
             }
         })
             .then(r => this.nullSafeOnComplete(r, onComplete))
-            .catch(this.handleError);
+            .catch((err) => this.handleError(err, errorSetter));
     }
 
-    getDashboardConfig(id: string, onComplete ?: (data: DashboardConfig) => void) {
+    getDashboardConfig(id: string,
+                       onComplete ?: (data: DashboardConfig) => void,
+                       errorSetter?: (RequestError) => void) {
         return this.api.get(`/dashboard-config/${id}`)
             .then(r => this.nullSafeOnComplete(r, onComplete))
-            .catch(this.handleError);
+            .catch((err) => this.handleError(err, errorSetter));
     }
 
-    updateDashboardConfig(id: string, config: DashboardConfig, onComplete?: (data: DashboardConfig) => void) {
+    updateDashboardConfig(id: string, config: DashboardConfig,
+                          onComplete?: (data: DashboardConfig) => void,
+                          errorSetter?: (RequestError) => void) {
         return this.api.put(`/dashboard-config/${id}`, config)
             .then(r => this.nullSafeOnComplete(r, onComplete))
-            .catch(this.handleError);
+            .catch((err) => this.handleError(err, errorSetter));
     }
 }

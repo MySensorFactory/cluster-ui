@@ -1,5 +1,5 @@
 import React, {createContext, useContext, useState} from 'react';
-import {Config, configApi} from "./ConfigClient";
+import {Config, ConfigApi} from "./ConfigClient";
 
 class ConfigContext {
     config: Config
@@ -10,10 +10,13 @@ const ConfigurationContext = createContext(null);
 export const ConfigProvider = ({children}) => {
     const [config, setConfig] = useState(null)
 
+    const configApi = new ConfigApi('http://localhost:8082/data');
+
     if (config == null) {
-        configApi().getConfiguration((newConfig: Config) => {
-            setConfig(newConfig);
-        })
+        configApi.getConfiguration((newConfig: Config) => {
+                setConfig(newConfig);
+            },
+            (_) => {})
     }
 
     return (

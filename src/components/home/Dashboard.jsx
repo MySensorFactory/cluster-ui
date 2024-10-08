@@ -12,6 +12,7 @@ import {ChartConfig, DashboardConfig, HomeApi, ValueConfig} from "../../datasour
 import type {SensorValue} from "../../datasource/HomeClient";
 import {useConfigContext} from "../../datasource/ConfigContext";
 import type {Config} from "../../datasource/ConfigClient";
+import {KeycloakInterface} from "../../datasource/KeycloakInterface";
 
 const {Content} = Layout;
 
@@ -34,7 +35,7 @@ export const Dashboard = () => {
     const [timeRange: string, setTimeRange: (string) => void] = useState(config.timeRangeOptions[0].value);
 
     const fetchDashboardConfig = () => {
-        homeApi.getDashboardConfig('038833bf-9efb-40a2-945f-4b7ea29354d4', setDashboardConfig);
+        homeApi.getDashboardConfig( KeycloakInterface.getUsername(), setDashboardConfig);
     }
 
     useEffect(() => {
@@ -74,7 +75,7 @@ export const Dashboard = () => {
         setIsReadyToShowCharts(false);
         const newConfig = structuredClone(dashboardConfig);
         newConfig.chartConfigs = newChartConfigs
-        homeApi.updateDashboardConfig('038833bf-9efb-40a2-945f-4b7ea29354d4', newConfig, (updatedDashboardConfig: DashboardConfig) => {
+        homeApi.updateDashboardConfig(KeycloakInterface.getUsername(), newConfig, (updatedDashboardConfig: DashboardConfig) => {
             setDashboardConfig(updatedDashboardConfig)
         })
     }
@@ -82,7 +83,7 @@ export const Dashboard = () => {
     const setCurrentSensorValuesConfig = (newCurrentSensorValuesConfig: ValueConfig[]) => {
         const newConfig = dashboardConfig
         newConfig.currentSensorValuesConfig = newCurrentSensorValuesConfig
-        homeApi.updateDashboardConfig('038833bf-9efb-40a2-945f-4b7ea29354d4', newConfig, (_) => {
+        homeApi.updateDashboardConfig(KeycloakInterface.getUsername(), newConfig, (_) => {
             fetchDashboardConfig()
         })
     }
@@ -90,7 +91,7 @@ export const Dashboard = () => {
     const setAverageSensorValuesConfig = (newAverageSensorValuesConfig: ValueConfig[]) => {
         const newConfig = dashboardConfig
         newConfig.averageSensorValuesConfig = newAverageSensorValuesConfig
-        homeApi.updateDashboardConfig('038833bf-9efb-40a2-945f-4b7ea29354d4', newConfig, (_) => {
+        homeApi.updateDashboardConfig(KeycloakInterface.getUsername(), newConfig, (_) => {
             fetchDashboardConfig()
         })
     }
