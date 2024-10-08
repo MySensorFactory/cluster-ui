@@ -1,4 +1,5 @@
-import axios from 'axios';
+import {ClientBase, RequestError} from "./Common";
+
 
 export class LabeledValue {
     value: string;
@@ -24,7 +25,7 @@ export class Config {
     availableLabels: LabeledValue[];
     sortOptions: LabeledValue[];
     timeRangeOptions: TimeRangeOption[];
-    unitMapping: Record<string, Record<string,string>>;
+    unitMapping: Record<string, Record<string, string>>;
     wideSensors: string[];
 
     constructor(availableSensors: LabeledValue[],
@@ -40,35 +41,10 @@ export class Config {
     }
 }
 
-export function configApi() {
-    const baseURL = 'http://localhost:8080';
-
-    const api = axios.create({
-        baseURL,
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    });
-
-    const nullSafeOnComplete = (result: any, onComplete?: (data: any) => void) => {
-        if (!onComplete) {
-            return;
-        }
-
-        if (result.data != null) {
-            onComplete(result.data);
-        }
-    };
-
-    const handleError = (err: any) => {
-        console.error('API request failed:', err);
-    };
-
-    return {
-        getConfiguration: (onComplete?: (data: Config) => void) => {
-            api.get('/config')
-                .then(r => nullSafeOnComplete(r, onComplete))
-                .catch(handleError);
-        },
-    };
+export class ConfigApi extends ClientBase{
+    getConfiguration(onComplete?: (data: Config) => void, errorSetter: (RequestError) => void) {
+        this.api.get('/config')
+            .then(r => this.nullSafeOnComplete(r, onComplete))
+            .catch(err => this.handleError(err, errorSetter));
+    }
 }

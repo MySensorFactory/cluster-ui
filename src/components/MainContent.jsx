@@ -6,12 +6,15 @@ import {useAppState} from "./AppStateContext";
 import {useConfigContext} from "../datasource/ConfigContext";
 import {theme} from "./styles/theme";
 import type {Config} from "../datasource/ConfigClient";
+import {useErrorContext} from "./ErrorContext";
+import Alert from "antd/es/alert";
 
 const {Content} = Layout;
 
 function MainContent() {
     const {activeMenu}: { activeMenu: string } = useAppState();
     const {config}: { config: Config } = useConfigContext()
+    const [error, setError] = useErrorContext();
 
     const renderContent = () => {
         switch (activeMenu) {
@@ -23,6 +26,16 @@ function MainContent() {
                 return <div>Select a menu item</div>;
         }
     };
+
+    if (config === null){
+        return <Alert
+            message="Cannot load configuration due to network error"
+            description={error}
+            type="error"
+            showIcon
+            onClose={() => setError(null)}
+        />
+    }
 
     return (
         config != null && (

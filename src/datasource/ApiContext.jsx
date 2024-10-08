@@ -10,8 +10,8 @@ export class ApiContextType{
 }
 
 export const ApiProvider = ({children}) => {
-    const homeApi = new HomeApi('http://localhost:8080/home')
-    const reportsApi = new ReportsApi('http://localhost:8080')
+    const homeApi = new HomeApi('http://localhost:8082/data/home')
+    const reportsApi = new ReportsApi('http://localhost:8082/data')
     return (
         <ApiContext.Provider value={{homeApi, reportsApi}}>
             {children}

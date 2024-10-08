@@ -6,8 +6,8 @@ import Typography from 'antd/es/typography';
 import Space from 'antd/es/space';
 import {useConfigContext} from "../../datasource/ConfigContext";
 import {theme} from "../styles/theme";
-import {Config} from "@testing-library/react";
 import type {LabeledValue} from "../../datasource/ConfigClient";
+import {Config} from "../../datasource/ConfigClient";
 
 const {Title} = Typography;
 const {Option} = Select;

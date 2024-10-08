@@ -5,6 +5,7 @@ import {SensorValues} from "./SensorValues";
 import type {ValueConfig} from "../../datasource/HomeClient";
 import {HomeApi, SensorValue} from "../../datasource/HomeClient";
 import type {Postprocessor} from "./Dashboard";
+import {KeycloakInterface} from "../../datasource/KeycloakInterface";
 
 export const AverageSensorValues = ({
                                         averageSensorValuesConfig,
@@ -20,7 +21,7 @@ export const AverageSensorValues = ({
     const {homeApi} : {homeApi: HomeApi}= useApiContext();
 
     const fetchAverageMetrics = useCallback(() => {
-        homeApi.getAverageSensorValues('038833bf-9efb-40a2-945f-4b7ea29354d4', setAverageMetrics);
+        homeApi.getAverageSensorValues(KeycloakInterface.getUsername(), setAverageMetrics);
     }, [averageSensorValuesConfig, homeApi]);
 
     useEffect(() => {

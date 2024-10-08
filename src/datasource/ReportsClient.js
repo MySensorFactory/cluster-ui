@@ -1,4 +1,4 @@
-import axios from 'axios';
+import {ClientBase} from "./Common";
 
 export class Sorting {
     order: 'asc' | 'desc';
@@ -160,29 +160,7 @@ export function createSorting(
     return [new Sorting(order, name)];
 }
 
-export class ReportsApi {
-    constructor(baseURL) {
-        this.api = axios.create({
-            baseURL,
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-
-        this.nullSafeOnComplete = (result: any, onComplete?: (any) => void) => {
-            if (!onComplete) {
-                return;
-            }
-
-            if (result.data != null) {
-                onComplete(result.data);
-            }
-        };
-
-        this.handleError = (err) => {
-            console.error('API request failed:', err);
-        };
-    }
+export class ReportsApi extends ClientBase{
 
     createReport(data: UpsertReportRequest, onComplete?: (data: UpsertReportResponse) => void) {
         return this.api.post('/reports', data)

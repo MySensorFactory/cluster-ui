@@ -5,6 +5,7 @@ import {SensorValues} from "./SensorValues";
 import type {SensorValue, ValueConfig} from "../../datasource/HomeClient";
 import type {Postprocessor} from "./Dashboard";
 import {HomeApi} from "../../datasource/HomeClient";
+import {KeycloakInterface} from "../../datasource/KeycloakInterface";
 
 export const CurrentSensorValues = ({sensorValuesConfig, setSensorValuesConfig, onDataModificationConfirmed}: {
     sensorValuesConfig: ValueConfig[],
@@ -16,7 +17,7 @@ export const CurrentSensorValues = ({sensorValuesConfig, setSensorValuesConfig, 
     const {homeApi} : {homeApi: HomeApi}= useApiContext();
 
     const fetchSensorValues = useCallback(() => {
-        homeApi.getCurrentSensorValues('038833bf-9efb-40a2-945f-4b7ea29354d4', setCurrentSensorValues);
+        homeApi.getCurrentSensorValues(KeycloakInterface.getUsername(), setCurrentSensorValues);
     }, [homeApi]);
 
     useEffect(() => {
