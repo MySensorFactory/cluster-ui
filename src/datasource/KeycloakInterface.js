@@ -2,9 +2,9 @@ import Keycloak from 'keycloak-js';
 
 
 export const keycloakConfig = {
-    url: 'http://localhost:8081/auth',
-    realm: 'FactoryRealm',
-    clientId: 'login-app'
+    url: process.env.REACT_APP_KEYCLOAK_URL,
+    realm: process.env.REACT_APP_KEYCLOAK_REALM,
+    clientId: process.env.REACT_APP_CLIENT_ID
 };
 
 const _kc = new Keycloak(keycloakConfig);
