@@ -10,7 +10,7 @@ const ConfigurationContext = createContext(null);
 export const ConfigProvider = ({children}) => {
     const [config, setConfig] = useState(null)
 
-    const configApi = new ConfigApi('http://localhost:8082/data');
+    const configApi = new ConfigApi(process.env.REACT_APP_CONFIG_API_BASE_URL);
 
     if (config == null) {
         configApi.getConfiguration((newConfig: Config) => {
