@@ -13,6 +13,7 @@ import type {SensorValue} from "../../datasource/HomeClient";
 import {useConfigContext} from "../../datasource/ConfigContext";
 import type {Config} from "../../datasource/ConfigClient";
 import {KeycloakInterface} from "../../datasource/KeycloakInterface";
+import Spin from "antd/es/spin";
 
 const {Content} = Layout;
 
@@ -22,6 +23,8 @@ export type PostprocessorInput = {
 };
 
 export type Postprocessor = (PostprocessorInput) => void;
+
+const LoadingSpinner = <Spin size="large" fullscreen={true}/>;
 
 export const Dashboard = () => {
     const [isUpsertPopupActive: boolean, setIsUpsertPopupActive: (boolean) => void] = useState(false);
@@ -34,8 +37,14 @@ export const Dashboard = () => {
     const {config}: { config: Config } = useConfigContext();
     const [timeRange: string, setTimeRange: (string) => void] = useState(config.timeRangeOptions[0].value);
 
+    const [isDashboardLoading, setIsDashboardLoading] = useState(true);
+
     const fetchDashboardConfig = () => {
-        homeApi.getDashboardConfig( KeycloakInterface.getUsername(), setDashboardConfig);
+        setIsDashboardLoading(true);
+        homeApi.getDashboardConfig(KeycloakInterface.getUsername(), (config: DashboardConfig) => {
+            setDashboardConfig(config)
+            setIsDashboardLoading(false);
+        });
     }
 
     useEffect(() => {
@@ -46,6 +55,7 @@ export const Dashboard = () => {
         if (dashboardConfig == null) {
             return;
         }
+        setIsReadyToShowCharts(false);
         homeApi.getChartData(dashboardConfig.chartConfigs.map((c: ChartConfig): string => c.id), timeRange,
             (result: Record<string, SensorValue[]>) => {
                 setChartData(result);
@@ -94,6 +104,10 @@ export const Dashboard = () => {
         homeApi.updateDashboardConfig(KeycloakInterface.getUsername(), newConfig, (_) => {
             fetchDashboardConfig()
         })
+    }
+
+    if (isDashboardLoading) {
+        return LoadingSpinner;
     }
 
     return (

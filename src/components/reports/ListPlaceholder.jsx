@@ -25,9 +25,12 @@ import {theme} from "../styles/theme";
 import Space from "antd/es/space";
 import type {Config} from "../../datasource/ConfigClient";
 import dayjs from "dayjs";
+import Spin from "antd/es/spin";
 
 const {Title} = Typography;
 const {Content} = Layout;
+
+const LoadingSpinner = <Spin size="large" fullscreen={true}/>;
 
 export const ListPlaceholder = () => {
     const {config}: { config: Config } = useConfigContext();
@@ -45,7 +48,10 @@ export const ListPlaceholder = () => {
 
     const {reportsApi}: { reportsApi: ReportsApi } = useApiContext()
 
+    const [isLoading, setIsLoading: (boolean) => void] = useState(true);
+
     const searchReports = () => {
+        setIsLoading(true);
         reportsApi.searchReports(
             createSearchReportsRequest(
                 createFilter(searchTerm,
@@ -62,6 +68,7 @@ export const ListPlaceholder = () => {
             (data: GetReportListResponse) => {
                 setCurrentReports(data.results);
                 setTotalItems(data.totalItems);
+                setIsLoading(false);
             })
     }
 
@@ -157,12 +164,13 @@ export const ListPlaceholder = () => {
                 </Col>
             </Row>
             <Space direction="vertical" size="middle" style={{display: 'flex'}}>
-                <ReportsList
+                {isLoading? LoadingSpinner :
+                    <ReportsList
                     reports={currentReports}
                     onReportUpdate={updateReport}
                     onReportDelete={deleteReport}
                     onReportDetailsShowRequest={handleGetReportDetails}
-                />
+                />}
                 <Pagination
                     current={currentPage}
                     total={totalItems}
