@@ -1,70 +1,129 @@
-# Getting Started with Create React App
+# Factory Data Analytics Dashboard
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Overview
 
-## Available Scripts
+This React application provides a comprehensive dashboard for factory data analytics. It features real-time sensor data
+visualization, event tracking, and report generation capabilities.
 
-In the project directory, you can run:
+## Key Features
 
-### `npm start`
+#### User Interface:
+The app likely has a clean, modern interface with a header at the top, a sidebar for navigation, and a main content area. The design probably follows a consistent theme as indicated by the 'theme.js' file in the styles folder.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+#### Authentication: 
+Users are greeted with a login screen where they can authenticate using their credentials. The app seems to use Keycloak for authentication, providing secure access to the application.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+#### Home Dashboard: 
+After logging in, users are presented with a home dashboard. This dashboard likely includes:
+Current sensor values displayed in an easy-to-read format
+Average sensor values, possibly shown over different time periods
+Charts visualizing sensor data trends over time
+A list of recent events or alerts related to the sensors
 
-### `npm test`
+#### Sensor Management: 
+Users can view a list of all sensors in the system. They probably have the ability to:
+Add new sensors using the 'UpsertSensorPopup' component
+Edit existing sensor details
+Delete sensors that are no longer needed
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+#### Real-time Monitoring: 
+The app likely provides real-time or near-real-time updates of sensor values. Users can monitor these values and receive alerts if any sensors report unusual readings.
 
-### `npm run build`
+#### Reporting: 
+There's a dedicated reports section where users can:
+View a list of predefined reports
+Create new custom reports
+Generate and view detailed reports on sensor performance, trends, and events
+The 'ReportItemDetails' component suggests that users can drill down into specific report details
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+#### Data Visualization: 
+The app seems to offer various data visualization options:
+Time-based charts to show sensor value trends
+Possibly other types of charts or graphs to represent data in meaningful ways
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+#### User Profile: 
+Users can access and manage their profile information, possibly updating details like contact information or notification preferences.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+#### Responsive Design: 
+Given that this is a modern web application, it's likely responsive and works well on both desktop and mobile devices.
 
-### `npm run eject`
+#### Configuration: 
+There might be a section for system administrators to configure various aspects of the application, such as sensor thresholds, alert rules, or user permissions.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+#### Event Tracking: 
+The app appears to track and display events, which could include things like sensor malfunctions, threshold breaches, or system notifications.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Technology Stack
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- React
+- Ant Design (UI components)
+- Recharts (for data visualization)
+- Keycloak (for authentication)
+- Custom API integration for data fetching
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## Getting Started
 
-## Learn More
+1. Clone the repository
+2. Install dependencies:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```shell
+npm install
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+3. Set up Keycloak configuration in `KeycloakInterface.js`
+4. Start the development server:
 
-### Code Splitting
+```shell
+npm start
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Project Structure
 
-### Analyzing the Bundle Size
+- `src/components`: React components for the UI
+    - `home`: Components for the main dashboard
+    - `reports`: Components for the reports functionality
+    - `controls`: Reusable UI control components
+    - `styles`: Theme and styling related files
+- `src/datasource`: API clients and data management
+- `src/assets`: Static assets and icon components
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## Key Components
 
-### Making a Progressive Web App
+- `Dashboard`: Main component for the home page
+- `ReportsDashboard`: Manages the reports functionality
+- `Charts`: Renders real-time data charts
+- `Events`: Displays and filters events/alerts
+- `SensorValues`: Shows current and average sensor readings
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Configuration
 
-### Advanced Configuration
+The app uses various configuration files:
+- `theme.js`: Defines the app's color scheme and styling variables
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+Configuration file (.env file) contains the following parameters:
+- `REACT_APP_KEYCLOAK_URL` - base url for Keycloak server
+- `REACT_APP_KEYCLOAK_REALM` - realm which is used by app's users 
+- `REACT_APP_CLIENT_ID` - Keycloak's client id for given realm
+- `REACT_APP_HOME_API_BASE_URL` - base url for Home Api
+- `REACT_APP_REPORTS_API_BASE_URL` - base url for Reports Api
+- `REACT_APP_CONFIG_API_BASE_URL` - base url for Config Api
 
-### Deployment
+## Authentication
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+The app uses Keycloak for user authentication. The `KeycloakInterface.js` file manages the integration.
 
-### `npm run build` fails to minify
+## API Integration
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+The `ApiContext.jsx` and various client files in the `datasource` directory handle API communications.
+
+## Customization
+
+Users can customize their dashboard in 'edit' mode:
+- Add/remove sensors in the current and average sensor value sections
+- Modify chart configurations
+- Adjust time ranges for data display
+
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE.md file for details.
