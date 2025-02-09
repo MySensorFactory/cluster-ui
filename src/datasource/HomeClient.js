@@ -22,13 +22,13 @@ export class ChartConfig extends ValueConfig {
 }
 
 export class DashboardConfig {
-    id: string;
+    userName: string;
     currentSensorValuesConfig: ValueConfig[];
     averageSensorValuesConfig: ValueConfig[];
     chartConfigs: ChartConfig[];
 
-    constructor(id: string, currentSensorValuesConfig: ValueConfig[], averageSensorValuesConfig: ValueConfig[], chartConfigs: ChartConfig[]) {
-        this.id = id;
+    constructor(userName: string, currentSensorValuesConfig: ValueConfig[], averageSensorValuesConfig: ValueConfig[], chartConfigs: ChartConfig[]) {
+        this.userName = userName;
         this.currentSensorValuesConfig = currentSensorValuesConfig;
         this.averageSensorValuesConfig = averageSensorValuesConfig;
         this.chartConfigs = chartConfigs;
@@ -37,12 +37,12 @@ export class DashboardConfig {
 
 export class Event {
     title: string;
-    time: string;
+    timestamp: string;
     isAlert: boolean;
 
     constructor(title: string, time: string, isAlert: boolean) {
         this.title = title;
-        this.time = time;
+        this.timestamp = time;
         this.isAlert = isAlert;
     }
 }
