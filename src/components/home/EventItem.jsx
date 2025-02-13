@@ -5,9 +5,9 @@ import {theme} from "../styles/theme"
 
 const {Text} = Typography;
 
-export const EventItem = ({title, time, isAlert = false}: {
+export const EventItem = ({title, timestamp, isAlert = false}: {
     title: string;
-    time: Date;
+    timestamp: Date;
     isAlert?: boolean;
 }) => {
     return (
@@ -22,7 +22,7 @@ export const EventItem = ({title, time, isAlert = false}: {
         >
             <Text style={{color: theme.colors.text, display: 'block'}}>{title}</Text>
             <Text style={{color: theme.colors.textMuted, fontSize: theme.fonts.sizes.small}}>
-                {time.toLocaleString()}
+                {new Date(timestamp).toLocaleString()}
             </Text>
         </Card>
     );

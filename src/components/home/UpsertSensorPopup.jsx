@@ -6,23 +6,30 @@ import Typography from 'antd/es/typography';
 import Space from 'antd/es/space';
 import {useConfigContext} from "../../datasource/ConfigContext";
 import {theme} from "../styles/theme";
-import type {LabeledValue} from "../../datasource/ConfigClient";
-import {Config} from "../../datasource/ConfigClient";
+import type {DataSource, SensorLabel} from "../../datasource/ConfigClient";
 
 const {Title} = Typography;
 const {Option} = Select;
 
 export const UpsertSensorPopup = ({onPopupClose, onSaveButtonClicked}: {
     onPopupClose: () => void,
-    onSaveButtonClicked: ({ label: string, sensorType: string }) => void,
+    onSaveButtonClicked: ({ sensorType: string, label: string }) => void,
 }) => {
-    const [label: string, setLabel: (string) => void] = useState(null);
-    const [sensorType: string, setSensorType: (string) => void] = useState(null);
-    const {config}: { config: Config } = useConfigContext();
+    const [selectedSensorType, setSelectedSensorType] = useState(null);
+    const [selectedLabel, setSelectedLabel] = useState(null);
+    const {config} = useConfigContext();
 
     const handleSave = () => {
-        onSaveButtonClicked({label, sensorType});
+        onSaveButtonClicked({
+            sensorType: selectedSensorType,
+            label: selectedLabel
+        });
         onPopupClose();
+    };
+
+    const handleSensorTypeChange = (value: string) => {
+        setSelectedSensorType(value);
+        setSelectedLabel(null); // Reset label when sensor type changes
     };
 
     const selectStyle = {
@@ -35,7 +42,12 @@ export const UpsertSensorPopup = ({onPopupClose, onSaveButtonClicked}: {
             title={<Title level={4}>Modify/save data</Title>}
             onCancel={onPopupClose}
             footer={[
-                <Button key="submit" type="primary" onClick={handleSave}>
+                <Button
+                    key="submit"
+                    type="primary"
+                    onClick={handleSave}
+                    disabled={!selectedSensorType || !selectedLabel}
+                >
                     Ok
                 </Button>,
             ]}
@@ -43,26 +55,35 @@ export const UpsertSensorPopup = ({onPopupClose, onSaveButtonClicked}: {
             <Space direction="vertical" style={{width: '100%'}}>
                 <Select
                     style={selectStyle}
-                    value={label}
-                    onChange={setLabel}
-                    placeholder="Select Sensor Label"
+                    value={selectedSensorType}
+                    onChange={handleSensorTypeChange}
+                    placeholder="Select Sensor Type"
                 >
-                    {config.availableLabels.map((option: LabeledValue) => (
-                        <Option key={option.value} value={option.value} style={{color: theme.colors.text}}>
-                            {option.label}
+                    {Object.entries(config.dataSources).map(([sensorType, dataSource]: [string, DataSource]) => (
+                        <Option
+                            key={sensorType}
+                            value={sensorType}
+                            style={{color: theme.colors.text}}
+                        >
+                            {dataSource.displayName}
                         </Option>
                     ))}
                 </Select>
 
                 <Select
                     style={selectStyle}
-                    value={sensorType}
-                    onChange={setSensorType}
-                    placeholder="Select Sensor Type"
+                    value={selectedLabel}
+                    onChange={setSelectedLabel}
+                    placeholder="Select Sensor Label"
+                    disabled={!selectedSensorType}
                 >
-                    {config.availableSensors.map((option: LabeledValue) => (
-                        <Option key={option.value} value={option.value}>
-                            {option.label}
+                    {selectedSensorType && config.dataSources[selectedSensorType].availableLabels.map((labelInfo: SensorLabel) => (
+                        <Option
+                            key={labelInfo.label}
+                            value={labelInfo.label}
+                            style={{color: theme.colors.text}}
+                        >
+                            {labelInfo.displayName}
                         </Option>
                     ))}
                 </Select>

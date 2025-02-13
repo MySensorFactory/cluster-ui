@@ -65,7 +65,7 @@ export const Dashboard = () => {
 
     useEffect(() => {
         fetchChartsData();
-    }, [dashboardConfig]);
+    }, [dashboardConfig, timeRange]);
 
     const activateUpsertPopup = (postprocessor: Postprocessor) => {
         setPostprocessor(() => postprocessor)

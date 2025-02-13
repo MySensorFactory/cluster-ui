@@ -8,7 +8,7 @@ import {useConfigContext} from "../../datasource/ConfigContext";
 import {TimeChart} from "../controls/TimeChart";
 import type {SensorValue} from "../../datasource/HomeClient";
 import {ChartConfig} from "../../datasource/HomeClient";
-import {Postprocessor, PostprocessorInput} from "./Dashboard";
+import {Postprocessor} from "./Dashboard";
 import type {TimeRangeOption} from "../../datasource/ConfigClient";
 
 const {Title} = Typography;
@@ -29,30 +29,47 @@ export const Charts = ({
     timeRange: string,
     setTimeRange: (string) => void
 }) => {
-
     const {config} = useConfigContext();
     const {homeSubMenu} = useAppState();
 
     const handleAddChart = useCallback(() => {
-        onDataModificationConfirmed((newConfig: PostprocessorInput) => {
-            const newChartConfigs: ChartConfig = [...chartConfigs, newConfig];
+        onDataModificationConfirmed((sensorConfig: {sensorType: string, label: string}) => {
+            const newChartConfigs = [...chartConfigs, {
+                id: crypto.randomUUID(),
+                sensorType: sensorConfig.sensorType,
+                label: sensorConfig.label
+            }];
             setChartConfigs(newChartConfigs);
         });
     }, [chartConfigs, onDataModificationConfirmed, setChartConfigs]);
 
     const handleEditChart = useCallback((id: string) => {
-        onDataModificationConfirmed((newConfig: PostprocessorInput) => {
-            const newChartConfigs: ChartConfig[] = chartConfigs.map(config =>
-                config.id === id ? newConfig : config
+        onDataModificationConfirmed((sensorConfig: {sensorType: string, label: string}) => {
+            const newChartConfigs = chartConfigs.map(config =>
+                config.id === id ? {
+                    ...config,
+                    sensorType: sensorConfig.sensorType,
+                    label: sensorConfig.label
+                } : config
             );
             setChartConfigs(newChartConfigs);
         });
     }, [chartConfigs, onDataModificationConfirmed, setChartConfigs]);
 
     const handleDeleteChart = useCallback((id: string) => {
-        const newChartConfigs: ChartConfig[] = chartConfigs.filter(config => config.id !== id);
+        const newChartConfigs = chartConfigs.filter(config => config.id !== id);
         setChartConfigs(newChartConfigs);
     }, [chartConfigs, setChartConfigs]);
+
+    const getDisplayName = (chartConfig: ChartConfig): string => {
+        const dataSource = config.dataSources[chartConfig.sensorType];
+        if (!dataSource) {
+            return chartConfig.sensorType;
+        }
+
+        const labelInfo = dataSource.availableLabels.find(l => l.label === chartConfig.label);
+        return `${dataSource.displayName} - ${labelInfo?.displayName || chartConfig.label}`;
+    };
 
     return (
         <Space direction="vertical" size="large" style={{width: '100%'}}>
@@ -72,8 +89,9 @@ export const Charts = ({
                     key={c.id}
                     data={chartData[c.id]}
                     sensorType={c.sensorType}
-                    title={c.label}
-                    days={config.timeRangeOptions.find((option: TimeRangeOption): boolean => option.value === timeRange).daysCount}
+                    title={getDisplayName(c)}
+                    days={config.timeRangeOptions.find((option: TimeRangeOption): boolean =>
+                        option.value === timeRange).daysCount}
                     numTicks={10}
                     onEdit={() => handleEditChart(c.id)}
                     onDelete={() => handleDeleteChart(c.id)}

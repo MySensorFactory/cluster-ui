@@ -108,8 +108,8 @@ export const TimeChart = ({
     const {config}: {config: Config} = useConfigContext();
     const {homeSubMenu}: string = useAppState();
     const [isHovered: boolean, setIsHovered: (boolean) => void] = useState(false);
-    const ticks: number[] = calculateTicks(data, numTicks);
-    const dataKeys: string[] = Object.keys(data[0].values);
+    const ticks: number[] = data !== undefined ? calculateTicks(data, numTicks): [];
+    const dataKeys: string[] = data !== undefined && data.length > 0 ? Object.keys(data[0].values) : undefined;
 
     return (
         <Card
@@ -128,16 +128,22 @@ export const TimeChart = ({
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            {dataKeys.map((dataKey: string) =>
-                <LineTimedChart
-                    key={dataKey}
-                    data={data}
-                    sensorType={sensorType}
-                    yAxisUnit={config.unitMapping[sensorType][dataKey]}
-                    days={days}
-                    ticks={ticks}
-                    dataKey={dataKey}
-                />
+            {(!data || data.length === 0) ? (
+                <Title style={{color: theme.colors.textMuted}}>
+                    No data available for this chart
+                </Title>
+            ) : (
+                dataKeys.map((dataKey: string) =>
+                    <LineTimedChart
+                        key={dataKey}
+                        data={data}
+                        sensorType={sensorType}
+                        yAxisUnit={config.unitMapping[sensorType][dataKey]}
+                        days={days}
+                        ticks={ticks}
+                        dataKey={dataKey}
+                    />
+                )
             )}
             {tryRenderEditBox(homeSubMenu, isHovered, onEdit, onDelete)}
         </Card>

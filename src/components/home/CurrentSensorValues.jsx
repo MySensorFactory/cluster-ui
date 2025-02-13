@@ -1,20 +1,22 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import {useAppState} from '../AppStateContext';
+import {useAppState} from "../AppStateContext";
 import {useApiContext} from "../../datasource/ApiContext";
-import {SensorValues} from "./SensorValues";
-import type {SensorValue, ValueConfig} from "../../datasource/HomeClient";
+import {useConfigContext} from "../../datasource/ConfigContext";
 import type {Postprocessor} from "./Dashboard";
-import {HomeApi} from "../../datasource/HomeClient";
+import type {ValueConfig} from "../../datasource/HomeClient";
+import {useCallback, useEffect, useState} from "react";
 import {KeycloakInterface} from "../../datasource/KeycloakInterface";
+import {SensorValues} from "./SensorValues";
+import {SensorValue} from "../../datasource/HomeClient";
 
 export const CurrentSensorValues = ({sensorValuesConfig, setSensorValuesConfig, onDataModificationConfirmed}: {
     sensorValuesConfig: ValueConfig[],
     setSensorValuesConfig: (ValueConfig[]) => void,
     onDataModificationConfirmed: (Postprocessor) => void
 }) => {
-    const {homeSubMenu}: {homeSubMenu: string} = useAppState();
-    const [currentSensorValues: SensorValue[], setCurrentSensorValues: (SensorValue[]) => void] = useState([]);
-    const {homeApi} : {homeApi: HomeApi}= useApiContext();
+    const {homeSubMenu} = useAppState();
+    const [currentSensorValues, setCurrentSensorValues] = useState([]);
+    const {homeApi} = useApiContext();
+    const {config} = useConfigContext();
 
     const fetchSensorValues = useCallback(() => {
         homeApi.getCurrentSensorValues(KeycloakInterface.getUsername(), setCurrentSensorValues);
@@ -25,42 +27,51 @@ export const CurrentSensorValues = ({sensorValuesConfig, setSensorValuesConfig, 
     }, [sensorValuesConfig, homeSubMenu]);
 
     const handleAddSensor = useCallback(() => {
-        onDataModificationConfirmed((newSensor: ValueConfig) => {
-            const newConfig: ValueConfig[] = sensorValuesConfig
-            newConfig.push(newSensor)
-            setSensorValuesConfig(newConfig)
+        onDataModificationConfirmed((sensorConfig: { sensorType: string, label: string }) => {
+            const newValue = {
+                id: crypto.randomUUID(),
+                sensorType: sensorConfig.sensorType,
+                label: sensorConfig.label
+            };
+            setSensorValuesConfig([...sensorValuesConfig, newValue]);
         });
-    }, [sensorValuesConfig]);
+    }, [sensorValuesConfig, setSensorValuesConfig]);
 
     const handleEditSensor = useCallback((id: string) => {
-        onDataModificationConfirmed((newSensorConfig) => {
-            const index = sensorValuesConfig.indexOf(sensorValuesConfig.find(s => s.id === id));
-            if (index > -1) {
-                const newConfig: ValueConfig[] = sensorValuesConfig
-                newConfig[index] = newSensorConfig;
-                setSensorValuesConfig(newConfig);
-            }
-        })
-    }, [sensorValuesConfig]);
+        onDataModificationConfirmed((sensorConfig: { sensorType: string, label: string }) => {
+            const newConfig = sensorValuesConfig.map(value =>
+                value.id === id ? {
+                    ...value,
+                    sensorType: sensorConfig.sensorType,
+                    label: sensorConfig.label
+                } : value
+            );
+            setSensorValuesConfig(newConfig);
+        });
+    }, [sensorValuesConfig, setSensorValuesConfig]);
 
     const handleDeleteSensor = useCallback((id: string) => {
-        const index = sensorValuesConfig.indexOf(sensorValuesConfig.find(s => s.id === id));
-        if (index > -1) {
-            const newConfig: ValueConfig[] = sensorValuesConfig
-            newConfig.splice(index, 1)
-            setSensorValuesConfig(newConfig);
-        }
-    }, [sensorValuesConfig]);
+        const newConfig = sensorValuesConfig.filter(value => value.id !== id);
+        setSensorValuesConfig(newConfig);
+    }, [sensorValuesConfig, setSensorValuesConfig]);
 
+    const getDisplayName = (sensor: SensorValue): string => {
+        const dataSource = config.dataSources[sensor.sensorType];
+        if (!dataSource) return sensor.label;
+
+        const labelInfo = dataSource.availableLabels.find(l => l.label === sensor.label);
+        return `${dataSource.displayName} - ${labelInfo?.displayName || sensor.label}`;
+    };
 
     return (
         <SensorValues
-            title={"Current sensor values"}
+            title="Current sensor values"
             data={currentSensorValues}
             handleEditSensor={handleEditSensor}
             handleDeleteSensor={handleDeleteSensor}
             handleAddSensor={handleAddSensor}
             isAddSensorButtonVisible={homeSubMenu === 'edit'}
+            getDisplayName={getDisplayName}
         />
     );
 };

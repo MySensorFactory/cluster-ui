@@ -73,7 +73,7 @@ export const Events = () => {
                 renderItem={(event: Event) => (
                     <EventItem
                         title={event.title}
-                        time={event.time}
+                        timestamp={event.timestamp}
                         isAlert={event.isAlert}
                     />
                 )}

@@ -52,15 +52,13 @@ export class TimeRange {
 
 export class UpsertReportRequest {
     timeRange: TimeRange;
-    includedSensors: string[];
-    label: string;
+    sensorLabels: Record<string, string>;
     name: string;
     description: string;
 
-    constructor(timeRange: TimeRange, includedSensors: string[], label: string, name: string, description: string) {
+    constructor(timeRange: TimeRange, sensorLabels: Record<string, string>, name: string, description: string) {
         this.timeRange = timeRange;
-        this.includedSensors = includedSensors;
-        this.label = label;
+        this.sensorLabels = sensorLabels;
         this.name = name;
         this.description = description;
     }
@@ -77,15 +75,13 @@ export class UpsertReportResponse {
 export class ReportPreview {
     id: string;
     name: string;
-    includedSensors: string[];
-    label: string;
+    sensorLabels: Record<string, string>;
     timeRange: TimeRange;
 
-    constructor(id: string, name: string, includedSensors: string[], label: string, timeRange: TimeRange) {
+    constructor(id: string, name: string, sensorLabels: Record<string, string>, timeRange: TimeRange) {
         this.id = id;
         this.name = name;
-        this.includedSensors = includedSensors;
-        this.label = label;
+        this.sensorLabels = sensorLabels;
         this.timeRange = timeRange;
     }
 }
@@ -98,7 +94,6 @@ export class GetReportListResponse {
         this.results = results;
         this.totalItems = totalItems;
     }
-
 }
 
 export class SensorData {
@@ -115,10 +110,10 @@ export class GetReportDetailsResponse extends ReportPreview {
     description: string;
     dataBySensorType: Record<string, SensorData[]>;
 
-    constructor(id: string, name: string, includedSensors: string[],
-                label: string, timeRange: TimeRange, description: string,
+    constructor(id: string, name: string, sensorLabels: Record<string, string>,
+                timeRange: TimeRange, description: string,
                 dataBySensorType: Record<string, SensorData[]>) {
-        super(id, name, includedSensors, label, timeRange);
+        super(id, name, sensorLabels, timeRange);
         this.description = description;
         this.dataBySensorType = dataBySensorType;
     }
@@ -126,12 +121,11 @@ export class GetReportDetailsResponse extends ReportPreview {
 
 export function createUpsertReportRequest(
     timeRange: TimeRange,
-    includedSensors: string[],
-    label: string,
+    sensorLabels: Record<string, string>,
     name: string,
     description: string,
 ): UpsertReportRequest {
-    return new UpsertReportRequest(timeRange, includedSensors, label, name, description);
+    return new UpsertReportRequest(timeRange, sensorLabels, name, description);
 }
 
 export function createSearchReportsRequest(
@@ -160,8 +154,7 @@ export function createSorting(
     return [new Sorting(order, name)];
 }
 
-export class ReportsApi extends ClientBase{
-
+export class ReportsApi extends ClientBase {
     createReport(data: UpsertReportRequest, onComplete?: (data: UpsertReportResponse) => void) {
         return this.api.post('/reports', data)
             .then(r => this.nullSafeOnComplete(r, onComplete))

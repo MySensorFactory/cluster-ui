@@ -37,12 +37,12 @@ export class DashboardConfig {
 
 export class Event {
     title: string;
-    timestamp: string;
+    timestamp: number;
     isAlert: boolean;
 
-    constructor(title: string, time: string, isAlert: boolean) {
+    constructor(title: string, timestamp: number, isAlert: boolean) {
         this.title = title;
-        this.timestamp = time;
+        this.timestamp = timestamp;
         this.isAlert = isAlert;
     }
 }
@@ -97,7 +97,7 @@ export class HomeApi extends ClientBase{
                 chartConfigIds, timeRange
             },
             'paramsSerializer': function (params) {
-                return qs.stringify(params, {arrayFormat: 'repeat'})
+                return qs.stringify(params, {arrayFormat: 'repeat', allowEmptyArrays: true})
             }
         })
             .then(r => this.nullSafeOnComplete(r, onComplete))

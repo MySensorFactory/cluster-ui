@@ -7,7 +7,6 @@ import {theme} from "../styles/theme";
 import {AddButton} from "../controls/Buttons";
 import {useConfigContext} from "../../datasource/ConfigContext";
 import type {SensorValue} from "../../datasource/HomeClient";
-import type {Config} from "../../datasource/ConfigClient";
 
 const {Title} = Typography;
 
@@ -17,16 +16,18 @@ export const SensorValues = ({
                                  handleEditSensor,
                                  handleDeleteSensor,
                                  handleAddSensor,
-                                 isAddSensorButtonVisible
+                                 isAddSensorButtonVisible,
+                                 getDisplayName
                              }: {
     title: string,
     data: SensorValue[],
     handleEditSensor: (sensorId: string) => void,
     handleDeleteSensor: (sensorId: string) => void,
     handleAddSensor: () => void,
-    isAddSensorButtonVisible: boolean
+    isAddSensorButtonVisible: boolean,
+    getDisplayName: (sensor: SensorValue) => string
 }) => {
-    const {config}: { config: Config } = useConfigContext()
+    const {config} = useConfigContext()
 
     return (
         <div style={{marginBottom: theme.sizes.marginBottom.medium}}>
@@ -40,7 +41,7 @@ export const SensorValues = ({
             </Title>
             <Row gutter={[16, 16]}>
                 {data.map((sensor: SensorValue) => {
-                    const isSensorWide = config.wideSensors.includes(sensor.sensorType, 0);
+                    const isSensorWide = config.wideSensors.includes(sensor.sensorType);
                     return (
                         <Col
                             key={sensor.id}
@@ -50,7 +51,7 @@ export const SensorValues = ({
                             lg={isSensorWide ? 8 : 4}
                         >
                             <SensorValueItem
-                                label={sensor.label}
+                                label={getDisplayName(sensor)}
                                 value={Object.entries(sensor.values)
                                     .map(([key: string, value: number]): string =>
                                         `${key}: ${Math.round(value * 100) / 100} ${config.unitMapping[sensor.sensorType][key]} `)}

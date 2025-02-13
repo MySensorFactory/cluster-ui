@@ -6,19 +6,21 @@ import type {ValueConfig} from "../../datasource/HomeClient";
 import {HomeApi, SensorValue} from "../../datasource/HomeClient";
 import type {Postprocessor} from "./Dashboard";
 import {KeycloakInterface} from "../../datasource/KeycloakInterface";
+import {useConfigContext} from "../../datasource/ConfigContext";
 
 export const AverageSensorValues = ({
                                         averageSensorValuesConfig,
                                         setAverageSensorValuesConfig,
                                         onDataModificationConfirmed
-                                    }:{
+                                    }: {
     averageSensorValuesConfig: ValueConfig[],
     setAverageSensorValuesConfig: (ValueConfig[]) => void,
     onDataModificationConfirmed: (Postprocessor) => void
 }) => {
-    const {homeSubMenu}: {homeSubMenu: string} = useAppState();
-    const [averageMetrics: SensorValue[], setAverageMetrics: (SensorValue[]) => void] = useState([]);
-    const {homeApi} : {homeApi: HomeApi}= useApiContext();
+    const {homeSubMenu} = useAppState();
+    const [averageMetrics, setAverageMetrics] = useState([]);
+    const {homeApi}: { homeApi: HomeApi } = useApiContext();
+    const {config} = useConfigContext();
 
     const fetchAverageMetrics = useCallback(() => {
         homeApi.getAverageSensorValues(KeycloakInterface.getUsername(), setAverageMetrics);
@@ -29,41 +31,51 @@ export const AverageSensorValues = ({
     }, [fetchAverageMetrics]);
 
     const handleAddSensor = useCallback(() => {
-        onDataModificationConfirmed((newSensor: ValueConfig) => {
-            const newConfig: ValueConfig[] = averageSensorValuesConfig
-            newConfig.push(newSensor)
-            setAverageSensorValuesConfig(newConfig)
+        onDataModificationConfirmed((sensorConfig: { sensorType: string, label: string }) => {
+            const newValue = {
+                id: crypto.randomUUID(),
+                sensorType: sensorConfig.sensorType,
+                label: sensorConfig.label
+            };
+            setAverageSensorValuesConfig([...averageSensorValuesConfig, newValue]);
         });
-    }, [averageSensorValuesConfig]);
+    }, [averageSensorValuesConfig, setAverageSensorValuesConfig]);
 
     const handleEditSensor = useCallback((id: string) => {
-        onDataModificationConfirmed((newSensorConfig: ValueConfig) => {
-            const index = averageSensorValuesConfig.indexOf(averageSensorValuesConfig.find(s => s.id === id));
-            if (index > -1) {
-                const newConfig: ValueConfig[] = averageSensorValuesConfig
-                newConfig[index] = newSensorConfig;
-                setAverageSensorValuesConfig(newConfig);
-            }
-        })
-    }, [averageSensorValuesConfig]);
+        onDataModificationConfirmed((sensorConfig: { sensorType: string, label: string }) => {
+            const newConfig = averageSensorValuesConfig.map(value =>
+                value.id === id ? {
+                    ...value,
+                    sensorType: sensorConfig.sensorType,
+                    label: sensorConfig.label
+                } : value
+            );
+            setAverageSensorValuesConfig(newConfig);
+        });
+    }, [averageSensorValuesConfig, setAverageSensorValuesConfig]);
 
     const handleDeleteSensor = useCallback((id: string) => {
-        const index = averageSensorValuesConfig.indexOf(averageSensorValuesConfig.find(s => s.id === id));
-        if (index > -1) {
-            const newConfig: ValueConfig[] = averageSensorValuesConfig
-            newConfig.splice(index, 1)
-            setAverageSensorValuesConfig(newConfig);
-        }
-    }, [averageSensorValuesConfig]);
+        const newConfig = averageSensorValuesConfig.filter(value => value.id !== id);
+        setAverageSensorValuesConfig(newConfig);
+    }, [averageSensorValuesConfig, setAverageSensorValuesConfig]);
+
+    const getDisplayName = (sensor: SensorValue): string => {
+        const dataSource = config.dataSources[sensor.sensorType];
+        if (!dataSource) return sensor.label;
+
+        const labelInfo = dataSource.availableLabels.find(l => l.label === sensor.label);
+        return `${dataSource.displayName} - ${labelInfo?.displayName || sensor.label}`;
+    };
 
     return (
         <SensorValues
-            title={"Average sensor values"}
+            title="Average sensor values"
             data={averageMetrics}
             handleEditSensor={handleEditSensor}
             handleDeleteSensor={handleDeleteSensor}
             handleAddSensor={handleAddSensor}
             isAddSensorButtonVisible={homeSubMenu === 'edit'}
+            getDisplayName={getDisplayName}
         />
     );
 };
