@@ -10,6 +10,7 @@ import Edit from "../../assets/Edit";
 import Delete from "../../assets/Delete";
 import type {SensorData} from "../../datasource/ReportsClient";
 import {GetReportDetailsResponse} from "../../datasource/ReportsClient";
+import {useConfigContext} from "../../datasource/ConfigContext";
 
 const {Title, Text, Paragraph} = Typography;
 
@@ -18,7 +19,22 @@ const DetailsViewContent = ({report, setEditReportState, onReportItemDelete}: {
     setEditReportState: (state: boolean) => void,
     onReportItemDelete: (id: string) => void
 }) => {
-    const getDaysFromReport = () => Math.floor((report.timeRange.to - report.timeRange.from) / (24 * 60 * 60 * 1000))
+    const {config} = useConfigContext();
+
+    const formatSensorLabels = () => {
+        return Object.entries(report.sensorLabels)
+            .map(([sensorType, labels]) => {
+                const dataSource = config.dataSources[sensorType];
+                const displaySensorType = dataSource?.displayName || sensorType;
+                const labelInfo = dataSource?.availableLabels.find(l => l.label === labels);
+                const displayLabel = labelInfo?.displayName || labels;
+                return `${displaySensorType}: ${displayLabel}`;
+            })
+            .join(', ');
+    };
+
+    const getDaysFromReport = () =>
+        Math.floor((report.timeRange.to - report.timeRange.from) / (24 * 60 * 60 * 1000));
 
     return (
         <>
@@ -38,26 +54,28 @@ const DetailsViewContent = ({report, setEditReportState, onReportItemDelete}: {
                 />
             </Space>
             <Title level={2}>{report.name}</Title>
-            <Paragraph>
-                <Text strong>Sensor label:</Text> {report.sensorLabel}
-            </Paragraph>
             <Paragraph>{report.description}</Paragraph>
 
             <Space direction="vertical" size="large" style={{width: '100%'}}>
-                {Object.entries(report.dataBySensorType).map(([sensorType: string, data: SensorData[]]) => (
-                    <TimeChart
-                        key={sensorType}
-                        data={data}
-                        sensorType={sensorType}
-                        title={sensorType}
-                        days={getDaysFromReport()}
-                        numTicks={10}
-                    />
-                ))}
+                {Object.entries(report.dataBySensorType).flatMap(([sensorType, dataByLabel]: [string, Record<string,SensorData[]>]) => {
+                    const dataSource = config.dataSources[sensorType];
+                    return Object.entries(dataByLabel).map(([label, data]: [string, SensorData[]]) => (
+                        <TimeChart
+                            key={sensorType + label}
+                            data={data}
+                            sensorType={sensorType}
+                            title={`${dataSource?.displayName || sensorType} - ${
+                                dataSource?.availableLabels.find(l => l.label === label)?.displayName || label
+                            }`}
+                            days={getDaysFromReport()}
+                            numTicks={10}
+                        />
+                    ));
+                })}
             </Space>
         </>
     );
-}
+};
 
 export const ReportItemDetails = ({report, onReportItemUpdate, onReportItemDelete, onClose}: {
     report: GetReportDetailsResponse,
@@ -65,8 +83,7 @@ export const ReportItemDetails = ({report, onReportItemUpdate, onReportItemDelet
     onReportItemDelete: (id: string) => void,
     onClose: () => void
 }) => {
-
-    const [isEditReportState: boolean, setEditReportState: (boolean) => void] = useState(false);
+    const [isEditReportState, setEditReportState] = useState(false);
 
     return (
         <>

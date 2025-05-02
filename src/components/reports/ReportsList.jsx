@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import {ReportItemDetails} from "./ReportItemDetails";
 import type {GetReportDetailsResponse} from "../../datasource/ReportsClient";
 import {ReportPreview} from "../../datasource/ReportsClient";
+import {useConfigContext} from "../../datasource/ConfigContext";
 
 const TableWithHoverableRows = styled(Table)`
     .ant-table-tbody > tr {
@@ -17,7 +18,18 @@ export const ReportsList = ({reports, onReportUpdate, onReportDelete, onReportDe
     onReportDelete: (id: string) => void,
     onReportDetailsShowRequest: (id: string, onComplete: (GetReportDetailsResponse) => void) => void
 }) => {
-    const [selectedReport: GetReportDetailsResponse, setSelectedReport: (GetReportDetailsResponse) => void] = useState(null);
+    const [selectedReport, setSelectedReport] = useState(null);
+    const {config} = useConfigContext();
+
+    const formatSensorLabels = (sensorLabels: Record<string, string[]>) => {
+        return Object.entries(sensorLabels)
+            .map(([sensorType, labels]) => {
+                const dataSource = config.dataSources[sensorType];
+                const displaySensorType = dataSource?.displayName || sensorType;
+                return `${displaySensorType}: [ ${labels} ]`;
+            })
+            .join(', ');
+    };
 
     const columns = [
         {
@@ -26,15 +38,11 @@ export const ReportsList = ({reports, onReportUpdate, onReportDelete, onReportDe
             key: 'name',
         },
         {
-            title: 'Sensor label',
-            dataIndex: 'label',
-            key: 'label',
-        },
-        {
-            title: 'Included sensors',
-            dataIndex: 'includedSensors',
-            key: 'includedSensors',
-            render: (sensors) => sensors.join(', '),
+            title: 'Sensors',
+            key: 'sensors',
+            render: (_, record: ReportPreview) => {
+                return formatSensorLabels(record.sensorLabels)
+            }
         },
         {
             title: 'From date',
@@ -68,8 +76,8 @@ export const ReportsList = ({reports, onReportUpdate, onReportDelete, onReportDe
                 bordered
                 rowKey="id"
                 pagination={false}
-                onRow={(record: ReportPreview, _) => ({
-                    onClick: (_) => handleReportClick(record)
+                onRow={(record: ReportPreview) => ({
+                    onClick: () => handleReportClick(record)
                 })}
             />
             {selectedReport && (

@@ -2,13 +2,13 @@ import React, {useEffect, useState} from "react";
 import {ReportsList} from "./ReportsList";
 import {useApiContext} from "../../datasource/ApiContext";
 import {
-    createFilter,
-    createSearchReportsRequest,
-    createSorting,
+    Filter,
     GetReportDetailsResponse,
     GetReportListResponse,
     ReportPreview,
     ReportsApi,
+    SearchReportsRequest,
+    Sorting,
     UpsertReportRequest
 } from "../../datasource/ReportsClient";
 import {useConfigContext} from "../../datasource/ConfigContext";
@@ -50,21 +50,37 @@ export const ListPlaceholder = () => {
 
     const [isLoading, setIsLoading: (boolean) => void] = useState(true);
 
+    const allAvailableLabels = [];
+    const labelsMap = new Map();
+
+    Object.entries(config.dataSources).forEach(e => {
+        e[1].availableLabels.forEach(el => {
+            labelsMap.set(
+                el.label,
+                el.displayName || el.label,
+            )
+        })
+    })
+
+    labelsMap.forEach((key,value) => {
+        allAvailableLabels.push({
+            label: key,
+            value: value,
+        })
+    })
+
     const searchReports = () => {
         setIsLoading(true);
         reportsApi.searchReports(
-            createSearchReportsRequest(
-                createFilter(searchTerm,
-                    {
-                        "label": selectedLabels,
-                        "sensorTypes": selectedSensorTypes
-                    },
-                    ['title', 'description'],
+            new SearchReportsRequest(
+                new Filter(searchTerm,
+                    selectedSensorTypes,
+                    selectedLabels,
                     dateRange[0]?.valueOf(),
                     dateRange[1]?.valueOf()),
                 pageSize,
                 currentPage,
-                createSorting(sortDirection, sortProperty)),
+                [new Sorting(sortDirection, sortProperty)]),
             (data: GetReportListResponse) => {
                 setCurrentReports(data.results);
                 setTotalItems(data.totalItems);
@@ -79,10 +95,10 @@ export const ListPlaceholder = () => {
     const updateReport = (id: string, data: GetReportDetailsResponse) => {
         const request = new UpsertReportRequest(
             data.timeRange,
-            data.includedSensors,
-            data.label,
+            data.sensorLabels,
             data.name,
             data.description,
+            data.label
         )
         reportsApi.updateReport(id, request, (_) => searchReports())
     }
@@ -135,7 +151,8 @@ export const ListPlaceholder = () => {
                         placeholder="Select sensor labels"
                         value={selectedLabels}
                         onChange={setSelectedLabels}
-                        options={config.availableLabels}/>
+                        options={allAvailableLabels}
+                    />
                 </Col>
                 <Col flex="auto">
                     <Select
@@ -144,7 +161,10 @@ export const ListPlaceholder = () => {
                         placeholder="Select included sensor types"
                         value={selectedSensorTypes}
                         onChange={setSelectedSensorTypes}
-                        options={config.availableSensors}/>
+                        options={Object.entries(config.dataSources).map(e => ({
+                            value: e[0],
+                            label: e[1].displayName
+                        }))}/>
                 </Col>
                 <Col>
                     <Select
@@ -164,13 +184,13 @@ export const ListPlaceholder = () => {
                 </Col>
             </Row>
             <Space direction="vertical" size="middle" style={{display: 'flex'}}>
-                {isLoading? LoadingSpinner :
+                {isLoading ? LoadingSpinner :
                     <ReportsList
-                    reports={currentReports}
-                    onReportUpdate={updateReport}
-                    onReportDelete={deleteReport}
-                    onReportDetailsShowRequest={handleGetReportDetails}
-                />}
+                        reports={currentReports}
+                        onReportUpdate={updateReport}
+                        onReportDelete={deleteReport}
+                        onReportDetailsShowRequest={handleGetReportDetails}
+                    />}
                 <Pagination
                     current={currentPage}
                     total={totalItems}

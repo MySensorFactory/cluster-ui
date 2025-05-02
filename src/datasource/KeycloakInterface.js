@@ -11,7 +11,7 @@ const _kc = new Keycloak(keycloakConfig);
 
 const initKeycloak = (onAuthenticatedCallback) => {
     _kc.init(
-        { onLoad: 'login-required' }
+        { onLoad: 'login-required', checkLoginIframe: false }
     )
         .then((authenticated) => {
             if (!authenticated) {

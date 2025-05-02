@@ -12,15 +12,19 @@ export class Sorting {
 
 export class Filter {
     textQuery: string;
-    keywords: Record<string, string[]>;
-    textFields: string[];
+    sensorTypes: string[];
+    sensorLabels: string[];
     from: number;
     to: number;
 
-    constructor(textQuery: string | undefined, keywords: Record<string, string[]>, textFields: string[], from?: number, to?: number) {
+    constructor(textQuery: string | undefined,
+                sensorTypes?: string[],
+                sensorLabels?: string[],
+                from?: number,
+                to?: number) {
         this.textQuery = textQuery;
-        this.keywords = keywords;
-        this.textFields = textFields;
+        this.sensorTypes = sensorTypes;
+        this.sensorLabels = sensorLabels;
         this.from = from;
         this.to = to;
     }
@@ -52,15 +56,21 @@ export class TimeRange {
 
 export class UpsertReportRequest {
     timeRange: TimeRange;
-    sensorLabels: Record<string, string>;
+    sensorLabels: Record<string, string[]>;
     name: string;
     description: string;
+    label: string;
 
-    constructor(timeRange: TimeRange, sensorLabels: Record<string, string>, name: string, description: string) {
+    constructor(timeRange: TimeRange,
+                sensorLabels: Record<string, string[]>,
+                name: string,
+                description: string,
+                label: string) {
         this.timeRange = timeRange;
         this.sensorLabels = sensorLabels;
         this.name = name;
         this.description = description;
+        this.label = label;
     }
 }
 
@@ -75,7 +85,7 @@ export class UpsertReportResponse {
 export class ReportPreview {
     id: string;
     name: string;
-    sensorLabels: Record<string, string>;
+    sensorLabels: Record<string, string[]>;
     timeRange: TimeRange;
 
     constructor(id: string, name: string, sensorLabels: Record<string, string>, timeRange: TimeRange) {
@@ -108,15 +118,8 @@ export class SensorData {
 
 export class GetReportDetailsResponse extends ReportPreview {
     description: string;
-    dataBySensorType: Record<string, SensorData[]>;
-
-    constructor(id: string, name: string, sensorLabels: Record<string, string>,
-                timeRange: TimeRange, description: string,
-                dataBySensorType: Record<string, SensorData[]>) {
-        super(id, name, sensorLabels, timeRange);
-        this.description = description;
-        this.dataBySensorType = dataBySensorType;
-    }
+    label: string;
+    dataBySensorType: Record<string, Record<string, SensorData[]>>;
 }
 
 export function createUpsertReportRequest(
@@ -126,32 +129,6 @@ export function createUpsertReportRequest(
     description: string,
 ): UpsertReportRequest {
     return new UpsertReportRequest(timeRange, sensorLabels, name, description);
-}
-
-export function createSearchReportsRequest(
-    filter: Filter,
-    pageSize?: number,
-    page?: number,
-    sorting: Sorting[] = [],
-): SearchReportsRequest {
-    return new SearchReportsRequest(filter, pageSize, page, sorting);
-}
-
-export function createFilter(
-    textQuery: string | undefined,
-    keywords: Record<string, string[]>,
-    textFields: string[],
-    from?: number,
-    to?: number,
-): Filter {
-    return new Filter(textQuery, keywords, textFields, from, to);
-}
-
-export function createSorting(
-    order: 'asc' | 'desc',
-    name: string,
-): Sorting[] {
-    return [new Sorting(order, name)];
 }
 
 export class ReportsApi extends ClientBase {
