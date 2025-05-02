@@ -33,7 +33,7 @@ export const Charts = ({
     const {homeSubMenu} = useAppState();
 
     const handleAddChart = useCallback(() => {
-        onDataModificationConfirmed((sensorConfig: {sensorType: string, label: string}) => {
+        onDataModificationConfirmed((sensorConfig: { sensorType: string, label: string }) => {
             const newChartConfigs = [...chartConfigs, {
                 id: crypto.randomUUID(),
                 sensorType: sensorConfig.sensorType,
@@ -44,7 +44,7 @@ export const Charts = ({
     }, [chartConfigs, onDataModificationConfirmed, setChartConfigs]);
 
     const handleEditChart = useCallback((id: string) => {
-        onDataModificationConfirmed((sensorConfig: {sensorType: string, label: string}) => {
+        onDataModificationConfirmed((sensorConfig: { sensorType: string, label: string }) => {
             const newChartConfigs = chartConfigs.map(config =>
                 config.id === id ? {
                     ...config,
@@ -74,16 +74,28 @@ export const Charts = ({
     return (
         <Space direction="vertical" size="large" style={{width: '100%'}}>
             <Title level={3}>Realtime data charts</Title>
-            <Select
-                style={{width: 200}}
-                value={timeRange}
-                onChange={setTimeRange}
-                placeholder="Select Time Range"
-            >
-                {config.timeRangeOptions.map((option: TimeRangeOption) => (
-                    <Option key={option.value} value={option.value}>{option.label}</Option>
-                ))}
-            </Select>
+            <Space direction="horizontal" size="large">
+                <Select
+                    style={{width: 200}}
+                    value={timeRange}
+                    onChange={setTimeRange}
+                    placeholder="Select Time Range"
+                >
+                    {config.timeRangeOptions.map((option: TimeRangeOption) => (
+                        <Option key={option.value} value={option.value}>{option.label}</Option>
+                    ))}
+                </Select>
+                <Select
+                    style={{width: 200}}
+                    value={timeRange}
+                    onChange={setTimeRange}
+                    placeholder="Select Time Range For Prediction"
+                >
+                    {config.timeRangeOptions.map((option: TimeRangeOption) => (
+                        <Option key={option.value} value={option.value}>{option.label}</Option>
+                    ))}
+                </Select>
+            </Space>
             {chartData && chartConfigs.map((c: ChartConfig) => {
                 return <TimeChart
                     key={c.id}
