@@ -6,10 +6,8 @@ import {AddButton} from '../controls/Buttons';
 import {useAppState} from '../AppStateContext';
 import {useConfigContext} from "../../datasource/ConfigContext";
 import {TimeChart} from "../controls/TimeChart";
-import type {SensorValue} from "../../datasource/HomeClient";
 import {ChartConfig} from "../../datasource/HomeClient";
 import {Postprocessor} from "./Dashboard";
-import type {TimeRangeOption} from "../../datasource/ConfigClient";
 
 const {Title} = Typography;
 const {Option} = Select;
@@ -21,19 +19,12 @@ export const Charts = ({
                            onDataModificationConfirmed,
                            timeRange,
                            setTimeRange
-                       }: {
-    chartData: Record<string, SensorValue[]>,
-    chartConfigs: ChartConfig[],
-    setChartConfigs: (ChartConfig[]) => void,
-    onDataModificationConfirmed: (postprocessor: Postprocessor) => void,
-    timeRange: string,
-    setTimeRange: (string) => void
-}) => {
+                       }) => {
     const {config} = useConfigContext();
     const {homeSubMenu} = useAppState();
 
     const handleAddChart = useCallback(() => {
-        onDataModificationConfirmed((sensorConfig: { sensorType: string, label: string }) => {
+        onDataModificationConfirmed((sensorConfig) => {
             const newChartConfigs = [...chartConfigs, {
                 id: crypto.randomUUID(),
                 sensorType: sensorConfig.sensorType,
@@ -43,8 +34,8 @@ export const Charts = ({
         });
     }, [chartConfigs, onDataModificationConfirmed, setChartConfigs]);
 
-    const handleEditChart = useCallback((id: string) => {
-        onDataModificationConfirmed((sensorConfig: { sensorType: string, label: string }) => {
+    const handleEditChart = useCallback((id) => {
+        onDataModificationConfirmed((sensorConfig) => {
             const newChartConfigs = chartConfigs.map(config =>
                 config.id === id ? {
                     ...config,
@@ -56,12 +47,12 @@ export const Charts = ({
         });
     }, [chartConfigs, onDataModificationConfirmed, setChartConfigs]);
 
-    const handleDeleteChart = useCallback((id: string) => {
+    const handleDeleteChart = useCallback((id) => {
         const newChartConfigs = chartConfigs.filter(config => config.id !== id);
         setChartConfigs(newChartConfigs);
     }, [chartConfigs, setChartConfigs]);
 
-    const getDisplayName = (chartConfig: ChartConfig): string => {
+    const getDisplayName = (chartConfig) => {
         const dataSource = config.dataSources[chartConfig.sensorType];
         if (!dataSource) {
             return chartConfig.sensorType;
@@ -81,7 +72,7 @@ export const Charts = ({
                     onChange={setTimeRange}
                     placeholder="Select Time Range"
                 >
-                    {config.timeRangeOptions.map((option: TimeRangeOption) => (
+                    {config.timeRangeOptions.map((option) => (
                         <Option key={option.value} value={option.value}>{option.label}</Option>
                     ))}
                 </Select>
@@ -91,22 +82,23 @@ export const Charts = ({
                     onChange={setTimeRange}
                     placeholder="Select Time Range For Prediction"
                 >
-                    {config.timeRangeOptions.map((option: TimeRangeOption) => (
+                    {config.timeRangeOptions.map((option) => (
                         <Option key={option.value} value={option.value}>{option.label}</Option>
                     ))}
                 </Select>
             </Space>
-            {chartData && chartConfigs.map((c: ChartConfig) => {
+            {chartData && chartConfigs.map((c) => {
                 return <TimeChart
                     key={c.id}
                     data={chartData[c.id]}
                     sensorType={c.sensorType}
                     title={getDisplayName(c)}
-                    days={config.timeRangeOptions.find((option: TimeRangeOption): boolean =>
+                    days={config.timeRangeOptions.find((option) =>
                         option.value === timeRange).daysCount}
                     numTicks={10}
                     onEdit={() => handleEditChart(c.id)}
                     onDelete={() => handleDeleteChart(c.id)}
+                    realtime={true}
                 />
             })}
             {homeSubMenu === 'edit' && <AddButton onButtonClicked={handleAddChart}/>}
