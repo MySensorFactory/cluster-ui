@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback} from 'react';
 import Typography from 'antd/es/typography/Typography'
 import Select from 'antd/es/select';
 import Space from 'antd/es/space'
@@ -7,9 +7,6 @@ import {AddButton} from '../controls/Buttons';
 import {useAppState} from '../AppStateContext';
 import {useConfigContext} from "../../datasource/ConfigContext";
 import {TimeChart} from "../controls/TimeChart";
-import {ChartConfig} from "../../datasource/HomeClient";
-import {Postprocessor} from "./Dashboard";
-import {useApiContext} from "../../datasource/ApiContext";
 import {theme} from "../styles/theme";
 
 const {Title} = Typography;
@@ -21,44 +18,14 @@ export const Charts = ({
                            setChartConfigs,
                            onDataModificationConfirmed,
                            timeRange,
-                           setTimeRange
+                           setTimeRange,
+                           predictionTimeRange,
+                           setPredictionTimeRange,
+                           historicalPredictions,
+                           predictedData
                        }) => {
     const {config} = useConfigContext();
     const {homeSubMenu} = useAppState();
-    const {homeApi} = useApiContext();
-    
-    // State for prediction time range and data
-    const [predictionTimeRange, setPredictionTimeRange] = useState('1d');
-    const [predictedData, setPredictedData] = useState({});
-    const [historicalPredictions, setHistoricalPredictions] = useState({});
-
-    // Fetch historical predictions for comparison with actual data
-    useEffect(() => {
-        if (chartConfigs.length > 0 && chartData && Object.keys(chartData).length > 0) {
-            const chartConfigIds = chartConfigs.map(c => c.id);
-            
-            // Call API for historical predictions using the same timeRange as actual data
-            homeApi.getPredictions(chartConfigIds, timeRange, (data) => {
-                setHistoricalPredictions(data);
-            }, (error) => {
-                console.error("Error fetching historical predictions:", error);
-            });
-        }
-    }, [chartConfigs, timeRange, chartData, homeApi]);
-
-    // Fetch future predictions whenever the prediction time range changes
-    useEffect(() => {
-        if (chartConfigs.length > 0) {
-            const chartConfigIds = chartConfigs.map(c => c.id);
-            
-            // Call API for future predictions using the prediction timeRange
-            homeApi.getPredictions(chartConfigIds, predictionTimeRange, (data) => {
-                setPredictedData(data);
-            }, (error) => {
-                console.error("Error fetching predicted data:", error);
-            });
-        }
-    }, [chartConfigs, predictionTimeRange, homeApi]);
     
     // Convert data to series format for TimeChart
     const prepareComparisonChartSeries = (chartId) => {

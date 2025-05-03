@@ -36,6 +36,9 @@ export const Dashboard = () => {
     const {homeApi}: { homeApi: HomeApi } = useApiContext();
     const {config}: { config: Config } = useConfigContext();
     const [timeRange: string, setTimeRange: (string) => void] = useState(config.timeRangeOptions[0].value);
+    const [predictionTimeRange, setPredictionTimeRange] = useState(config.futurePredictionTimeRangeOptions[0].value);
+    const [historicalPredictions, setHistoricalPredictions] = useState({});
+    const [predictedData, setPredictedData] = useState({});
 
     const [isDashboardLoading, setIsDashboardLoading] = useState(true);
 
@@ -63,11 +66,47 @@ export const Dashboard = () => {
             });
     }, [dashboardConfig, timeRange, homeApi]);
 
+    const fetchHistoricalPredictions = useCallback(() => {
+        if (dashboardConfig == null || !chartData || Object.keys(chartData).length === 0) {
+            return;
+        }
+        
+        const chartConfigIds = dashboardConfig.chartConfigs.map(c => c.id);
+        
+        homeApi.getPredictions(chartConfigIds, timeRange, (data) => {
+            setHistoricalPredictions(data);
+        }, (error) => {
+            console.error("Error fetching historical predictions:", error);
+        });
+    }, [dashboardConfig, chartData, timeRange, homeApi]);
+
+    const fetchFuturePredictions = useCallback(() => {
+        if (dashboardConfig == null) {
+            return;
+        }
+        
+        const chartConfigIds = dashboardConfig.chartConfigs.map(c => c.id);
+        
+        homeApi.getPredictions(chartConfigIds, predictionTimeRange, (data) => {
+            setPredictedData(data);
+        }, (error) => {
+            console.error("Error fetching predicted data:", error);
+        });
+    }, [dashboardConfig, predictionTimeRange, homeApi]);
+
     useEffect(() => {
         fetchChartsData();
-    }, [dashboardConfig, timeRange]);
+    }, [dashboardConfig, timeRange, fetchChartsData]);
 
-    const activateUpsertPopup = (postprocessor: Postprocessor) => {
+    useEffect(() => {
+        fetchHistoricalPredictions();
+    }, [chartData, timeRange, fetchHistoricalPredictions]);
+
+    useEffect(() => {
+        fetchFuturePredictions();
+    }, [dashboardConfig, predictionTimeRange, fetchFuturePredictions]);
+
+    const activateUpsertPopup = (postprocessor) => {
         setPostprocessor(() => postprocessor)
         setIsUpsertPopupActive(true);
     };
@@ -138,6 +177,10 @@ export const Dashboard = () => {
                         onDataModificationConfirmed={activateUpsertPopup}
                         timeRange={timeRange}
                         setTimeRange={setTimeRange}
+                        predictionTimeRange={predictionTimeRange}
+                        setPredictionTimeRange={setPredictionTimeRange}
+                        historicalPredictions={historicalPredictions}
+                        predictedData={predictedData}
                     />}
                 </Content>
                 {isUpsertPopupActive && (
