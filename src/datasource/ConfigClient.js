@@ -42,22 +42,18 @@ export class TimeRangeOption extends LabeledValue {
 }
 
 export class Config {
-    dataSources: Record<string, DataSource>;
-    sortOptions: LabeledValue[];
-    timeRangeOptions: TimeRangeOption[];
-    unitMapping: Record<string, Record<string, string>>;
-    wideSensors: string[];
-
     constructor(
         dataSources: Record<string, DataSource>,
         sortOptions: LabeledValue[],
         timeRangeOptions: TimeRangeOption[],
+        futurePredictionTimeRangeOptions: TimeRangeOption[],
         unitMapping: Record<string, Record<string, string>>,
         wideSensors: string[]
     ) {
         this.dataSources = dataSources;
         this.sortOptions = sortOptions;
         this.timeRangeOptions = timeRangeOptions;
+        this.futurePredictionTimeRangeOptions = futurePredictionTimeRangeOptions || timeRangeOptions;
         this.unitMapping = unitMapping;
         this.wideSensors = wideSensors;
     }

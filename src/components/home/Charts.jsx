@@ -188,7 +188,7 @@ export const Charts = ({
                     onChange={setPredictionTimeRange}
                     placeholder="Select Time Range For Prediction"
                 >
-                    {config.timeRangeOptions.map((option) => (
+                    {config.futurePredictionTimeRangeOptions.map((option) => (
                         <Option key={option.value} value={option.value}>{option.label}</Option>
                     ))}
                 </Select>
@@ -228,7 +228,7 @@ export const Charts = ({
                                 series={prepareFuturePredictionSeries(c.id)}
                                 sensorType={c.sensorType}
                                 title="Future Predictions"
-                                days={config.timeRangeOptions.find((option) =>
+                                days={config.futurePredictionTimeRangeOptions.find((option) =>
                                     option.value === predictionTimeRange).daysCount}
                                 showAnnotations={true}
                                 onEdit={() => handleEditChart(c.id)}

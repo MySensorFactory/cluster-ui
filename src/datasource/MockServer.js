@@ -90,6 +90,12 @@ const mockConfig = new Config(
     new TimeRangeOption('7d', 'Last Week', 7),
     new TimeRangeOption('30d', 'Last Month', 30),
   ],
+  [
+    new TimeRangeOption('1d', 'Next 24 Hours', 1),
+    new TimeRangeOption('3d', 'Next 3 Days', 3),
+    new TimeRangeOption('7d', 'Next Week', 7),
+    new TimeRangeOption('30d', 'Next Month', 30),
+  ],
   {
     'temperature': { 'value': '°C', 'min': '°C', 'max': '°C' },
     'pressure': { 'value': 'bar', 'min': 'bar', 'max': 'bar' },
