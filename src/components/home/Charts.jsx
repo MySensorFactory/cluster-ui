@@ -37,8 +37,8 @@ export const Charts = ({
         if (chartConfigs.length > 0 && chartData && Object.keys(chartData).length > 0) {
             const chartConfigIds = chartConfigs.map(c => c.id);
             
-            // Call mock API for historical predictions
-            homeApi.getHistoricalPredictions(chartConfigIds, timeRange, (data) => {
+            // Call API for historical predictions using the same timeRange as actual data
+            homeApi.getPredictions(chartConfigIds, timeRange, (data) => {
                 setHistoricalPredictions(data);
             }, (error) => {
                 console.error("Error fetching historical predictions:", error);
@@ -51,8 +51,8 @@ export const Charts = ({
         if (chartConfigs.length > 0) {
             const chartConfigIds = chartConfigs.map(c => c.id);
             
-            // Call mock API for future predicted data
-            homeApi.getPredictedChartData(chartConfigIds, predictionTimeRange, (data) => {
+            // Call API for future predictions using the prediction timeRange
+            homeApi.getPredictions(chartConfigIds, predictionTimeRange, (data) => {
                 setPredictedData(data);
             }, (error) => {
                 console.error("Error fetching predicted data:", error);

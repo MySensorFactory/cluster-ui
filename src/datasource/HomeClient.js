@@ -1,4 +1,3 @@
-import type {RequestError} from "./Common";
 import {ClientBase} from "./Common";
 
 const qs = require('qs');
@@ -91,21 +90,8 @@ export class HomeApi extends ClientBase{
             .catch((err) => this.handleError(err, errorSetter));
     }
 
-    getPredictedChartData(chartConfigIds, timeRange, onComplete, errorSetter) {
-        return this.api.get('/predicted-chart-data', {
-            params: {
-                chartConfigIds, timeRange
-            },
-            'paramsSerializer': function (params) {
-                return qs.stringify(params, {arrayFormat: 'repeat', allowEmptyArrays: true})
-            }
-        })
-            .then(r => this.nullSafeOnComplete(r, onComplete))
-            .catch((err) => this.handleError(err, errorSetter));
-    }
-
-    getHistoricalPredictions(chartConfigIds, timeRange, onComplete, errorSetter) {
-        return this.api.get('/historical-predictions', {
+    getPredictions(chartConfigIds, timeRange, onComplete, errorSetter) {
+        return this.api.get('/predictions', {
             params: {
                 chartConfigIds, timeRange
             },

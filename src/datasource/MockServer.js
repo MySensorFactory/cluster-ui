@@ -306,27 +306,34 @@ export class MockServer {
     // GET /chart-data
     this.mock.onGet(`${homeApiBaseUrl}/chart-data`).reply(200, mockChartData);
     
-    // GET /historical-predictions
-    this.mock.onGet(`${homeApiBaseUrl}/historical-predictions`).reply((config) => {
-      console.log('Mock: GET /historical-predictions', config.params);
-      
-      // Generate historical predicted data for comparison with actual data
-      const historicalPredictions = {};
+    // GET /predictions - unified endpoint for both historical and future predictions
+    this.mock.onGet(`${homeApiBaseUrl}/predictions`).reply((config) => {
+      console.log('Mock: GET /predictions', config.params);
       
       // Get the time range in days
       const timeRangeParam = config.params.timeRange || '1d';
       const daysMatch = timeRangeParam.match(/(\d+)d/);
       const days = daysMatch ? parseInt(daysMatch[1]) : 1;
       
-      // For each chart config, generate historical predictions
+      // Determine if this is a request for historical or future predictions
+      // based on the time range parameter
+      const now = Date.now();
+      const predictions = {};
+      
+      // For each chart config, generate appropriate predictions
       if (config.params.chartConfigIds) {
         const chartConfigIds = Array.isArray(config.params.chartConfigIds) 
           ? config.params.chartConfigIds 
           : [config.params.chartConfigIds];
           
         chartConfigIds.forEach(id => {
-          // Use same timestamps as actual data, but slightly different values
+          const sensorConfig = mockDashboardConfig.chartConfigs.find(c => c.id === id);
+          if (!sensorConfig) return;
+          
+          // If actual data exists for this ID, we're generating historical predictions
+          // Otherwise, we're generating future predictions
           if (mockChartData[id]) {
+            // Historical predictions - use same timestamps as actual data but with varied values
             const dataPoints = mockChartData[id].map(originalPoint => {
               const timestamp = originalPoint.timestamp;
               
@@ -361,45 +368,16 @@ export class MockServer {
               );
             });
             
-            historicalPredictions[id] = dataPoints;
-          }
-        });
-      }
-      
-      return [200, historicalPredictions];
-    });
-    
-    // GET /predicted-chart-data
-    this.mock.onGet(`${homeApiBaseUrl}/predicted-chart-data`).reply((config) => {
-      console.log('Mock: GET /predicted-chart-data', config.params);
-      
-      // Generate predicted data based on the chartConfigIds
-      const predictedChartData = {};
-      
-      // Get the time range in days
-      const timeRangeParam = config.params.timeRange || '1d';
-      const daysMatch = timeRangeParam.match(/(\d+)d/);
-      const days = daysMatch ? parseInt(daysMatch[1]) : 1;
-      
-      // For each chart config, generate future data points
-      if (config.params.chartConfigIds) {
-        const chartConfigIds = Array.isArray(config.params.chartConfigIds) 
-          ? config.params.chartConfigIds 
-          : [config.params.chartConfigIds];
-          
-        chartConfigIds.forEach(id => {
-          // Start from the current time
-          const now = Date.now();
-          const dataPoints = [];
-          
-          // Generate data points for the future (hours beyond current time)
-          for (let hour = 0; hour < days * 24; hour++) {
-            const timestamp = now + hour * 3600000; // add hours
-            const sensorConfig = mockDashboardConfig.chartConfigs.find(c => c.id === id);
+            predictions[id] = dataPoints;
+          } else {
+            // Future predictions - generate data points starting from now
+            const dataPoints = [];
             
-            if (sensorConfig) {
+            // Generate data points for the future (hours beyond current time)
+            for (let hour = 0; hour < days * 24; hour++) {
+              const timestamp = now + hour * 3600000; // add hours
+              
               // Create a prediction with some randomness but following a trend
-              // More sophisticated models could be implemented here
               let value;
               if (sensorConfig.sensorType === 'temperature') {
                 // Temperature increases during the day and decreases at night
@@ -425,13 +403,13 @@ export class MockServer {
                 { value: value, min: value * 0.9, max: value * 1.1 }
               ));
             }
+            
+            predictions[id] = dataPoints;
           }
-          
-          predictedChartData[id] = dataPoints;
         });
       }
       
-      return [200, predictedChartData];
+      return [200, predictions];
     });
     
     // GET /dashboard-config/:id
