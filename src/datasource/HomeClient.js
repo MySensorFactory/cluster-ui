@@ -60,38 +60,25 @@ export class SensorValue extends ValueConfig {
 
 export class HomeApi extends ClientBase{
 
-    getEvents(params: {
-                  showOnlyAlerts?: boolean,
-                  searchTerm?: string,
-                  startDate?: string,
-                  endDate?: string
-              } = {},
-              onComplete ?: (data: Event[]) => void,
-              errorSetter?: (RequestError) => void) {
+    getEvents(params = {}, onComplete, errorSetter) {
         return this.api.get('/events', {params})
             .then(r => this.nullSafeOnComplete(r, onComplete))
             .catch((err) => this.handleError(err, errorSetter));
     }
 
-    getCurrentSensorValues(dashboardConfigId: string,
-                           onComplete ?: (data: SensorValue[]) => void,
-                           errorSetter?: (RequestError) => void) {
+    getCurrentSensorValues(dashboardConfigId, onComplete, errorSetter) {
         return this.api.get(`/sensor-values/${dashboardConfigId}`)
             .then(r => this.nullSafeOnComplete(r, onComplete))
             .catch((err) => this.handleError(err, errorSetter));
     }
 
-    getAverageSensorValues(dashboardConfigId: string,
-                           onComplete ?: (data: SensorValue[]) => void,
-                           errorSetter?: (RequestError) => void) {
+    getAverageSensorValues(dashboardConfigId, onComplete, errorSetter) {
         return this.api.get(`/average-sensor-values/${dashboardConfigId}`)
             .then(r => this.nullSafeOnComplete(r, onComplete))
             .catch((err) => this.handleError(err, errorSetter));
     }
 
-    getChartData(chartConfigIds: string[], timeRange: string,
-                 onComplete ?: (data: Record<string, SensorValue[]>) => void,
-                 errorSetter?: (RequestError) => void) {
+    getChartData(chartConfigIds, timeRange, onComplete, errorSetter) {
         return this.api.get('/chart-data', {
             params: {
                 chartConfigIds, timeRange
@@ -104,17 +91,39 @@ export class HomeApi extends ClientBase{
             .catch((err) => this.handleError(err, errorSetter));
     }
 
-    getDashboardConfig(id: string,
-                       onComplete ?: (data: DashboardConfig) => void,
-                       errorSetter?: (RequestError) => void) {
+    getPredictedChartData(chartConfigIds, timeRange, onComplete, errorSetter) {
+        return this.api.get('/predicted-chart-data', {
+            params: {
+                chartConfigIds, timeRange
+            },
+            'paramsSerializer': function (params) {
+                return qs.stringify(params, {arrayFormat: 'repeat', allowEmptyArrays: true})
+            }
+        })
+            .then(r => this.nullSafeOnComplete(r, onComplete))
+            .catch((err) => this.handleError(err, errorSetter));
+    }
+
+    getHistoricalPredictions(chartConfigIds, timeRange, onComplete, errorSetter) {
+        return this.api.get('/historical-predictions', {
+            params: {
+                chartConfigIds, timeRange
+            },
+            'paramsSerializer': function (params) {
+                return qs.stringify(params, {arrayFormat: 'repeat', allowEmptyArrays: true})
+            }
+        })
+            .then(r => this.nullSafeOnComplete(r, onComplete))
+            .catch((err) => this.handleError(err, errorSetter));
+    }
+
+    getDashboardConfig(id, onComplete, errorSetter) {
         return this.api.get(`/dashboard-config/${id}`)
             .then(r => this.nullSafeOnComplete(r, onComplete))
             .catch((err) => this.handleError(err, errorSetter));
     }
 
-    updateDashboardConfig(id: string, config: DashboardConfig,
-                          onComplete?: (data: DashboardConfig) => void,
-                          errorSetter?: (RequestError) => void) {
+    updateDashboardConfig(id, config, onComplete, errorSetter) {
         return this.api.put(`/dashboard-config/${id}`, config)
             .then(r => this.nullSafeOnComplete(r, onComplete))
             .catch((err) => this.handleError(err, errorSetter));

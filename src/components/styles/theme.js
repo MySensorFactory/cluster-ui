@@ -10,7 +10,13 @@ export const theme = {
         border: '#3a3a3a',
         negative: '#5f2424',
         hoverNegative: '#5f2424cc',
-        chartStroke: '"#4fc3f7"'
+        chartStroke: '#00E396',
+        success: '#52c41a',
+        warning: '#faad14',
+        error: '#f5222d',
+        info: '#1890ff',
+        predictedDataColor: '#FF9800',
+        historicalPredictionColor: '#FF4560'
     },
     sizes: {
         borderRadius: '5px',

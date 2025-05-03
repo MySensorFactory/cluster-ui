@@ -306,6 +306,134 @@ export class MockServer {
     // GET /chart-data
     this.mock.onGet(`${homeApiBaseUrl}/chart-data`).reply(200, mockChartData);
     
+    // GET /historical-predictions
+    this.mock.onGet(`${homeApiBaseUrl}/historical-predictions`).reply((config) => {
+      console.log('Mock: GET /historical-predictions', config.params);
+      
+      // Generate historical predicted data for comparison with actual data
+      const historicalPredictions = {};
+      
+      // Get the time range in days
+      const timeRangeParam = config.params.timeRange || '1d';
+      const daysMatch = timeRangeParam.match(/(\d+)d/);
+      const days = daysMatch ? parseInt(daysMatch[1]) : 1;
+      
+      // For each chart config, generate historical predictions
+      if (config.params.chartConfigIds) {
+        const chartConfigIds = Array.isArray(config.params.chartConfigIds) 
+          ? config.params.chartConfigIds 
+          : [config.params.chartConfigIds];
+          
+        chartConfigIds.forEach(id => {
+          // Use same timestamps as actual data, but slightly different values
+          if (mockChartData[id]) {
+            const dataPoints = mockChartData[id].map(originalPoint => {
+              const timestamp = originalPoint.timestamp;
+              
+              // Get the original value
+              const originalValue = originalPoint.values.value;
+              
+              // Create a slight deviation based on sensor type
+              // Simulate prediction model with some inaccuracy
+              let predictedValue;
+              if (originalPoint.sensorType === 'temperature') {
+                // Temperature predictions have slight offset and occasional spikes
+                const hourOfDay = new Date(timestamp).getHours();
+                const offset = Math.sin(hourOfDay * Math.PI / 12) * 3;
+                predictedValue = originalValue + offset;
+              } else if (originalPoint.sensorType === 'pressure') {
+                // Pressure predictions generally lag behind actual values slightly
+                predictedValue = originalValue - 0.2 + (Math.random() * 0.4);
+              } else if (originalPoint.sensorType === 'humidity') {
+                // Humidity predictions are generally smoother than actual readings
+                predictedValue = originalValue + Math.sin(timestamp / 7200000) * 3;
+              } else {
+                // Default: add some random deviation
+                predictedValue = originalValue * (0.9 + Math.random() * 0.2);
+              }
+              
+              return new SensorValue(
+                originalPoint.id,
+                originalPoint.label,
+                originalPoint.sensorType,
+                timestamp,
+                { value: predictedValue, min: predictedValue * 0.9, max: predictedValue * 1.1 }
+              );
+            });
+            
+            historicalPredictions[id] = dataPoints;
+          }
+        });
+      }
+      
+      return [200, historicalPredictions];
+    });
+    
+    // GET /predicted-chart-data
+    this.mock.onGet(`${homeApiBaseUrl}/predicted-chart-data`).reply((config) => {
+      console.log('Mock: GET /predicted-chart-data', config.params);
+      
+      // Generate predicted data based on the chartConfigIds
+      const predictedChartData = {};
+      
+      // Get the time range in days
+      const timeRangeParam = config.params.timeRange || '1d';
+      const daysMatch = timeRangeParam.match(/(\d+)d/);
+      const days = daysMatch ? parseInt(daysMatch[1]) : 1;
+      
+      // For each chart config, generate future data points
+      if (config.params.chartConfigIds) {
+        const chartConfigIds = Array.isArray(config.params.chartConfigIds) 
+          ? config.params.chartConfigIds 
+          : [config.params.chartConfigIds];
+          
+        chartConfigIds.forEach(id => {
+          // Start from the current time
+          const now = Date.now();
+          const dataPoints = [];
+          
+          // Generate data points for the future (hours beyond current time)
+          for (let hour = 0; hour < days * 24; hour++) {
+            const timestamp = now + hour * 3600000; // add hours
+            const sensorConfig = mockDashboardConfig.chartConfigs.find(c => c.id === id);
+            
+            if (sensorConfig) {
+              // Create a prediction with some randomness but following a trend
+              // More sophisticated models could be implemented here
+              let value;
+              if (sensorConfig.sensorType === 'temperature') {
+                // Temperature increases during the day and decreases at night
+                const hourOfDay = new Date(timestamp).getHours();
+                const baseValue = 70 + Math.sin((hourOfDay - 6) * Math.PI / 12) * 10;
+                value = baseValue + Math.random() * 5;
+              } else if (sensorConfig.sensorType === 'pressure') {
+                // Pressure has a general upward trend for prediction
+                value = 2 + (hour / (days * 24)) * 1.5 + Math.random() * 0.5;
+              } else if (sensorConfig.sensorType === 'humidity') {
+                // Humidity fluctuates but trends downward
+                value = 50 - (hour / (days * 24)) * 10 + Math.sin(hour * 0.5) * 5 + Math.random() * 3;
+              } else {
+                // Default random value with slight upward trend
+                value = 50 + (hour / (days * 24)) * 20 + Math.random() * 10;
+              }
+              
+              dataPoints.push(new SensorValue(
+                sensorConfig.id,
+                sensorConfig.label,
+                sensorConfig.sensorType,
+                timestamp,
+                { value: value, min: value * 0.9, max: value * 1.1 }
+              ));
+            }
+          }
+          
+          predictedChartData[id] = dataPoints;
+        });
+      }
+      
+      return [200, predictedChartData];
+    });
+    
     // GET /dashboard-config/:id
     this.mock.onGet(new RegExp(`${homeApiBaseUrl}/dashboard-config/.*`)).reply(200, mockDashboardConfig);
     

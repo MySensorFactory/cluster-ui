@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState} from "react";
 import Typography from 'antd/es/typography/Typography';
 import Card from 'antd/es/card/Card';
 import ReactApexChart from 'react-apexcharts';
@@ -19,20 +19,35 @@ const formatTime = (timestamp, days) => {
 };
 
 const LineTimedChart = ({
-                            data,
+                            series,
                             yAxisUnit,
                             days,
                             dataKey,
-                            realtime
+                            showAnnotations = false
                         }) => {
-    // Format data for ApexCharts
-    const series = [{
-        name: dataKey,
-        data: data.map(item => ({
-            x: item.timestamp,
-            y: item.values[dataKey]
-        }))
-    }];
+    const now = new Date().getTime();
+    
+    // Configure annotations
+    let annotations = {};
+    
+    // Add an annotation to show where predictions start if needed
+    if (showAnnotations) {
+        annotations = {
+            xaxis: [{
+                x: now, // Current time
+                strokeDashArray: 0,
+                borderColor: theme.colors.info,
+                borderWidth: 2,
+                label: {
+                    text: 'Now',
+                    style: {
+                        color: '#fff',
+                        background: theme.colors.info
+                    }
+                }
+            }]
+        };
+    }
 
     const options = {
         chart: {
@@ -47,24 +62,22 @@ const LineTimedChart = ({
             },
             animations: {
                 enabled: true,
-                easing: 'linear',
-                dynamicAnimation: {
-                    speed: 500
-                }
+                easing: 'easeinout',
+                speed: 800
             }
         },
-        colors: ['#00E396'],
         stroke: {
             curve: 'smooth',
-            width: 2.5
+            width: 2,
+            dashArray: series.map(s => s.dashArray || 0)
         },
+        colors: series.map(s => s.color || theme.colors.chartStroke || '#00E396'),
         dataLabels: {
             enabled: false
         },
-        markers: {
-            size: 0 // Hide markers for cleaner look
-        },
         tooltip: {
+            shared: true,
+            intersect: false,
             x: {
                 formatter: function(val) {
                     return formatTime(val, days);
@@ -74,78 +87,69 @@ const LineTimedChart = ({
                 formatter: function(val) {
                     return `${val.toFixed(2)} ${yAxisUnit}`;
                 }
-            },
-            theme: 'dark'
+            }
         },
-        grid: {
-            borderColor: 'rgba(255,255,255,0.1)',
-            strokeDashArray: 3,
-            xaxis: {
-                lines: {
-                    show: true
-                }
-            },
-            yaxis: {
-                lines: {
-                    show: true
-                }
-            },
-            padding: {
-                top: 0,
-                right: 0,
-                bottom: 0,
-                left: 10
+        legend: {
+            show: series.length > 1,
+            position: 'top',
+            horizontalAlign: 'right',
+            labels: {
+                colors: theme.colors.text
             }
         },
         xaxis: {
             type: 'datetime',
-            range: realtime ? 3600000 * 3 : undefined, // For realtime, show 3 hours of data
             labels: {
                 formatter: function(val) {
                     return formatTime(val, days);
                 },
                 style: {
-                    colors: theme.colors.textMuted,
-                    fontSize: '11px'
+                    colors: theme.colors.textMuted
                 }
             },
             title: {
                 text: 'Time',
                 style: {
-                    color: theme.colors.textMuted,
-                    fontSize: '12px'
+                    color: theme.colors.textMuted
                 }
-            },
-            axisBorder: {
-                color: 'rgba(255,255,255,0.1)'
-            },
-            axisTicks: {
-                color: 'rgba(255,255,255,0.1)'
             }
         },
         yaxis: {
             labels: {
                 formatter: function(val) {
-                    return val.toFixed(0);
+                    return val.toFixed(1);
                 },
                 style: {
-                    colors: theme.colors.textMuted,
-                    fontSize: '11px'
+                    colors: theme.colors.textMuted
                 }
             },
             title: {
                 text: yAxisUnit,
                 style: {
-                    color: theme.colors.textMuted,
-                    fontSize: '12px'
+                    color: theme.colors.textMuted
                 }
             }
         },
+        grid: {
+            borderColor: theme.colors.secondaryHover,
+            strokeDashArray: 3
+        },
         theme: {
-            mode: 'dark',
-            palette: 'palette1'
-        }
+            mode: 'dark'
+        },
+        markers: {
+            size: 0
+        },
+        annotations: annotations
     };
+
+    const chartSeries = series.map(s => ({
+        name: s.name,
+        data: s.data.map(item => ({
+            x: item.x,
+            y: item.y
+        }))
+    }));
 
     return (
         <>
@@ -156,98 +160,39 @@ const LineTimedChart = ({
             }}>
                 {dataKey}
             </Title>
-            <ReactApexChart 
-                options={options} 
-                series={series} 
-                type="line" 
-                height={300} 
-            />
+            {chartSeries.length > 0 ? (
+                <ReactApexChart 
+                    options={options} 
+                    series={chartSeries} 
+                    type="line" 
+                    height={300} 
+                />
+            ) : (
+                <div style={{ height: 300, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <span style={{ color: theme.colors.textMuted }}>No data available for this chart</span>
+                </div>
+            )}
         </>
     );
 };
 
 export const TimeChart = ({
-                              data,
+                              series,
                               sensorType,
                               title,
                               days,
-                              numTicks,
+                              showAnnotations = false,
                               onEdit,
-                              onDelete,
-                              realtime = false
+                              onDelete
                           }) => {
     const {config} = useConfigContext();
     const {homeSubMenu} = useAppState();
     const [isHovered, setIsHovered] = useState(false);
-    const dataKeys = data !== undefined && data.length > 0 ? Object.keys(data[0].values) : [];
     
-    // For real-time charts, we'll set up a chart update at regular intervals
-    const [chartData, setChartData] = useState(data);
-    
-    useEffect(() => {
-        setChartData(data);
-        
-        // Set up real-time updates if the realtime prop is true
-        let interval;
-        if (realtime && data && data.length > 0) {
-            // Keep track of the last timestamp
-            let lastTimestamp = Date.now();
-            
-            // Determine update interval - for real charts this would be your data collection rate
-            // For simulation, we'll use a faster rate for demo purposes
-            const updateInterval = days <= 1 ? 500 : 1000; // Faster updates for shorter time ranges
-            
-            interval = setInterval(() => {
-                // Update with new data point every interval
-                setChartData(prevData => {
-                    if (!prevData || prevData.length === 0) return prevData;
-                    
-                    // Create a copy of the existing data
-                    const newData = [...prevData];
-                    
-                    // Get the last data point as reference
-                    const lastPoint = newData[newData.length - 1];
-                    
-                    // Calculate next timestamp - increment by 15 seconds in chart time
-                    const timeIncrement = days <= 1 ? 15 * 1000 : 60 * 1000; // 15 sec or 1 min based on scale
-                    lastTimestamp = lastTimestamp + timeIncrement;
-                    
-                    // Create a new data point with values similar to the last one but with small changes
-                    const newPoint = {
-                        ...lastPoint,
-                        timestamp: lastTimestamp,
-                        values: Object.keys(lastPoint.values).reduce((acc, key) => {
-                            // Calculate a new value with a small random change
-                            const lastValue = lastPoint.values[key];
-                            const change = (Math.random() - 0.5) * 1.5; // Random change between -0.75 and 0.75
-                            
-                            // Keep the general trend but add some randomness
-                            acc[key] = lastValue + change;
-                            return acc;
-                        }, {})
-                    };
-                    
-                    // Add the new point to the data array
-                    newData.push(newPoint);
-                    
-                    // Limit the number of points to keep (for performance and to create scrolling effect)
-                    // For real-time charts, we'll keep a reasonable number of points based on the time range
-                    const hoursToKeep = days <= 1 ? 3 : 24; // Keep 3 hours or 24 hours of data
-                    const pointsToKeep = hoursToKeep * 60 * 60 * 1000 / timeIncrement;
-                    
-                    if (newData.length > pointsToKeep) {
-                        return newData.slice(newData.length - pointsToKeep);
-                    }
-                    
-                    return newData;
-                });
-            }, updateInterval);
-        }
-        
-        return () => {
-            if (interval) clearInterval(interval);
-        };
-    }, [data, realtime, days]);
+    // Extract data keys from the first series, if available
+    const dataKeys = series && series.length > 0 && series[0].data && series[0].data.length > 0
+        ? Object.keys(series[0].dataKeys || {})
+        : [];
 
     return (
         <Card
@@ -266,22 +211,29 @@ export const TimeChart = ({
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            {(!chartData || chartData.length === 0) ? (
+            {dataKeys.length === 0 ? (
                 <Title style={{color: theme.colors.textMuted}}>
                     No data available for this chart
                 </Title>
             ) : (
-                dataKeys.map(dataKey =>
-                    <LineTimedChart
-                        key={dataKey}
-                        data={chartData}
-                        sensorType={sensorType}
-                        yAxisUnit={config.unitMapping[sensorType][dataKey]}
-                        days={days}
-                        dataKey={dataKey}
-                        realtime={realtime}
-                    />
-                )
+                dataKeys.map(dataKey => {
+                    // Filter series for this data key
+                    const dataKeySeries = series.map(s => ({
+                        ...s,
+                        data: s.data.filter(d => d.dataKey === dataKey)
+                    })).filter(s => s.data.length > 0);
+                    
+                    return (
+                        <LineTimedChart
+                            key={dataKey}
+                            series={dataKeySeries}
+                            dataKey={dataKey}
+                            yAxisUnit={config.unitMapping[sensorType][dataKey]}
+                            days={days}
+                            showAnnotations={showAnnotations}
+                        />
+                    );
+                })
             )}
             {tryRenderEditBox(homeSubMenu, isHovered, onEdit, onDelete)}
         </Card>
